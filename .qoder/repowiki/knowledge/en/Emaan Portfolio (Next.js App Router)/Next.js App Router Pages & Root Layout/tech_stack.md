@@ -1,0 +1,1 @@
+Next.js App Router with React Server Components for layout/metadata and client components (`"use client"`) for interactivity; Tailwind CSS v4 via `@import "tailwindcss"`; Framer Motion for page transitions; Google Fonts loaded through `next/font/google`.

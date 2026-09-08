@@ -1,0 +1,1 @@
+Next.js 16 App Router with React 19, Tailwind CSS v4 via PostCSS, GSAP + @gsap/react for scroll animations, Framer Motion for transitions, Lenis for smooth scrolling, and Three.js (@react-three/fiber + drei) for the 3D room scene.

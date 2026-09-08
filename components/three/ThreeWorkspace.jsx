@@ -1,382 +1,90 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 
+import Avatar from "./Avatar";
+import Room from "./Room";
+import Desk from "./Desk";
+import Chair from "./Chair";
+import Cat from "./Cat";
+import WhimsyWorld from "./WhimsyWorld";
+
 gsap.registerPlugin(ScrollTrigger);
-
-/* =========================================
-   EMAAN PLACEHOLDER
-========================================= */
-
-function Emaan({ avatarRef }) {
-  return (
-    <group
-      ref={avatarRef}
-      position={[-1.8, 0, 0]}
-    >
-      {/* legs */}
-
-      <mesh position={[-0.18, -0.5, 0]}>
-        <boxGeometry args={[0.25, 0.8, 0.3]} />
-        <meshStandardMaterial color="#fff4e8" />
-      </mesh>
-
-      <mesh position={[0.18, -0.5, 0]}>
-        <boxGeometry args={[0.25, 0.8, 0.3]} />
-        <meshStandardMaterial color="#fff4e8" />
-      </mesh>
-
-      {/* body */}
-
-      <mesh position={[0, 0.25, 0]}>
-        <boxGeometry args={[0.8, 0.9, 0.45]} />
-        <meshStandardMaterial color="#70d6ff" />
-      </mesh>
-
-      {/* head */}
-
-      <mesh position={[0, 1.05, 0]}>
-        <boxGeometry args={[0.68, 0.68, 0.68]} />
-        <meshStandardMaterial color="#f2bea0" />
-      </mesh>
-
-      {/* hair */}
-
-      <mesh position={[0, 1.22, -0.08]}>
-        <boxGeometry args={[0.78, 0.45, 0.75]} />
-        <meshStandardMaterial color="#3c302d" />
-      </mesh>
-
-      {/* pink detail */}
-
-      <mesh position={[0, 0.28, 0.235]}>
-        <boxGeometry args={[0.18, 0.18, 0.03]} />
-        <meshStandardMaterial color="#ff70a6" />
-      </mesh>
-    </group>
-  );
-}
-
-/* =========================================
-   MONITOR
-========================================= */
-
-function Monitor() {
-  return (
-    <group position={[0, 1.35, 0]}>
-      <mesh>
-        <boxGeometry args={[1.7, 1.1, 0.16]} />
-        <meshStandardMaterial color="#202638" />
-      </mesh>
-
-      {/* glowing screen */}
-
-      <mesh position={[0, 0, 0.095]}>
-        <boxGeometry args={[1.45, 0.84, 0.025]} />
-
-        <meshStandardMaterial
-          color="#70d6ff"
-          emissive="#70d6ff"
-          emissiveIntensity={0.28}
-        />
-      </mesh>
-
-      <mesh position={[0, -0.72, 0]}>
-        <boxGeometry args={[0.13, 0.4, 0.13]} />
-        <meshStandardMaterial color="#aaaeb7" />
-      </mesh>
-
-      <mesh position={[0, -0.92, 0]}>
-        <boxGeometry args={[0.7, 0.08, 0.4]} />
-        <meshStandardMaterial color="#aaaeb7" />
-      </mesh>
-    </group>
-  );
-}
-
-/* =========================================
-   DESK
-========================================= */
-
-function Desk() {
-  return (
-    <group position={[1.5, -0.2, 0]}>
-      <mesh position={[0, 0.25, 0]}>
-        <boxGeometry args={[3.2, 0.18, 1.3]} />
-        <meshStandardMaterial color="#fffaf4" />
-      </mesh>
-
-      <mesh position={[-1.25, -0.55, 0]}>
-        <boxGeometry args={[0.18, 1.5, 0.18]} />
-        <meshStandardMaterial color="#ffd670" />
-      </mesh>
-
-      <mesh position={[1.25, -0.55, 0]}>
-        <boxGeometry args={[0.18, 1.5, 0.18]} />
-        <meshStandardMaterial color="#ffd670" />
-      </mesh>
-
-      <Monitor />
-    </group>
-  );
-}
-
-/* =========================================
-   CHAIR
-========================================= */
-
-function Chair() {
-  return (
-    <group position={[0.2, -0.4, 1.1]}>
-      <mesh position={[0, 0.55, 0]}>
-        <boxGeometry args={[0.9, 1.05, 0.18]} />
-        <meshStandardMaterial color="#ff70a6" />
-      </mesh>
-
-      <mesh position={[0, 0, 0.25]}>
-        <boxGeometry args={[1, 0.18, 0.9]} />
-        <meshStandardMaterial color="#ff9770" />
-      </mesh>
-
-      <mesh position={[0, -0.48, 0.2]}>
-        <boxGeometry args={[0.12, 0.8, 0.12]} />
-        <meshStandardMaterial color="#aeb4bc" />
-      </mesh>
-
-      <mesh position={[0, -0.88, 0.2]}>
-        <boxGeometry args={[0.95, 0.08, 0.2]} />
-        <meshStandardMaterial color="#aeb4bc" />
-      </mesh>
-    </group>
-  );
-}
-
-/* =========================================
-   FLOOR
-========================================= */
-
-function Floor() {
-  return (
-    <mesh
-      position={[0, -1, 0]}
-      rotation={[-Math.PI / 2, 0, 0]}
-      receiveShadow
-    >
-      <planeGeometry args={[20, 20]} />
-
-      <meshStandardMaterial color="#fffdf8" />
-    </mesh>
-  );
-}
 
 /* =========================================
    SCROLL + CAMERA CONTROLLER
 ========================================= */
 
-function ScrollCamera({
-  storyRef,
-  avatarRef,
-}) {
+function ScrollCamera({ storyRef, avatarRef }) {
   const { camera } = useThree();
-
-  /*
-    The camera needs somewhere to LOOK.
-
-    We animate this little invisible point.
-  */
-
-  const target = useRef({
-    x: 0,
-    y: 0.2,
-    z: 0,
-  });
-
-  /*
-    Every rendered frame:
-
-    camera looks toward our animated target.
-  */
+  const target = useRef({ x: 0, y: 0.2, z: 0 });
 
   useFrame(() => {
-    camera.lookAt(
-      target.current.x,
-      target.current.y,
-      target.current.z
-    );
+    camera.lookAt(target.current.x, target.current.y, target.current.z);
   });
 
   useGSAP(() => {
     if (!storyRef?.current) return;
-
-    /*
-      Starting camera position
-    */
 
     camera.position.set(6, 4, 8);
 
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: storyRef.current,
-
         start: "top top",
         end: "bottom bottom",
-
         scrub: 1,
       },
     });
 
-    /* =====================================
-       PHASE 1
-       ENTER THE ROOM
-    ===================================== */
+    /* Phase 1: Enter the room */
+    tl.to(camera.position, { x: 4.5, y: 3.2, z: 6.5, duration: 1, ease: "none" }, 0);
 
-    tl.to(
-      camera.position,
-      {
-        x: 5,
-        y: 3.3,
-        z: 7,
-
-        duration: 1,
-        ease: "none",
-      },
-      0
-    );
-
-    /* =====================================
-       PHASE 2
-       EMAAN MOVES TOWARD DESK
-    ===================================== */
-
+    /* Phase 2: Emaan walks to chair */
     tl.to(
       avatarRef.current.position,
-      {
-        x: 0.1,
-        z: 1,
-
-        duration: 1.8,
-        ease: "none",
-      },
-      0.7
+      { x: 0.15, z: 0.95, duration: 1.8, ease: "none" },
+      0.6
     );
 
-    /*
-      little up/down movement
+    /* Phase 3: Camera follows and frames her sitting */
+    tl.to(camera.position, { x: 3.2, y: 2.5, z: 4.6, duration: 1.4, ease: "power1.inOut" }, 1.2);
+    tl.to(target.current, { x: 0.5, y: 0.6, z: 0.4, duration: 1.4, ease: "power1.inOut" }, 1.2);
 
-      Fake walking for now.
-    */
+    /* Phase 4: Camera turns toward monitor */
+    tl.to(target.current, { x: 1.5, y: 1.05, z: 0, duration: 1.2, ease: "power1.inOut" }, 2.4);
+    tl.to(camera.position, { x: 2.6, y: 1.9, z: 3.4, duration: 1.2, ease: "power1.inOut" }, 2.4);
 
-    tl.to(
-      avatarRef.current.position,
-      {
-        y: 0.08,
-
-        duration: 0.18,
-
-        repeat: 7,
-        yoyo: true,
-
-        ease: "sine.inOut",
-      },
-      0.7
-    );
-
-    /* =====================================
-       PHASE 3
-       CAMERA FOLLOWS HER
-    ===================================== */
-
+    /* Phase 5: Zoom into the screen */
     tl.to(
       camera.position,
-      {
-        x: 4,
-        y: 2.7,
-        z: 5.5,
+      { x: 1.5, y: 1.05, z: 1.6, duration: 1.6, ease: "power2.inOut" },
+      3.4
+    );
 
-        duration: 1.5,
-        ease: "power1.inOut",
-      },
-      1.3
+    /* Phase 6: Pass through monitor into whimsical world */
+    tl.to(
+      camera.position,
+      { x: 1.5, y: 1.05, z: -1.5, duration: 0.8, ease: "none" },
+      4.8
+    );
+
+    /* Phase 7: Pull back to wide whimsical view */
+    tl.to(
+      camera.position,
+      { x: 0, y: 3, z: 10, duration: 2, ease: "power2.inOut" },
+      5.4
     );
 
     tl.to(
       target.current,
-      {
-        x: 0.6,
-        y: 0.5,
-        z: 0.3,
-
-        duration: 1.5,
-        ease: "power1.inOut",
-      },
-      1.3
-    );
-
-    /* =====================================
-       PHASE 4
-       CAMERA TURNS TOWARD MONITOR
-    ===================================== */
-
-    tl.to(
-      target.current,
-      {
-        /*
-          monitor global position is about:
-          x = 1.5
-          y = 1.15
-          z = 0
-        */
-
-        x: 1.5,
-        y: 1.15,
-        z: 0,
-
-        duration: 1.3,
-        ease: "power1.inOut",
-      },
-      2.7
-    );
-
-    tl.to(
-      camera.position,
-      {
-        x: 3.1,
-        y: 2.1,
-        z: 4.3,
-
-        duration: 1.3,
-        ease: "power1.inOut",
-      },
-      2.7
-    );
-
-    /* =====================================
-       PHASE 5
-       BIG MONITOR ZOOM
-    ===================================== */
-
-    tl.to(
-      camera.position,
-      {
-        x: 1.5,
-        y: 1.15,
-
-        /*
-          We're physically moving the
-          camera toward the monitor now.
-        */
-
-        z: 1.25,
-
-        duration: 2,
-        ease: "power2.inOut",
-      },
-      4
+      { x: 0, y: 1.2, z: -3, duration: 2, ease: "power2.inOut" },
+      5.4
     );
   }, []);
 
@@ -389,37 +97,55 @@ function ScrollCamera({
 
 function Scene({ storyRef }) {
   const avatarRef = useRef();
+  const [progress, setProgress] = useState(0);
+
+  useGSAP(() => {
+    if (!storyRef?.current) return;
+
+    ScrollTrigger.create({
+      trigger: storyRef.current,
+      start: "top top",
+      end: "bottom bottom",
+      onUpdate: (self) => {
+        setProgress(self.progress);
+      },
+    });
+  }, [storyRef]);
 
   return (
     <>
-      <ambientLight intensity={1.5} />
-
+      {/* Warm, welcoming lighting */}
+      <ambientLight intensity={1.3} />
       <directionalLight
-        position={[5, 7, 6]}
-        intensity={2.5}
+        position={[4, 6, 5]}
+        intensity={2}
         castShadow
+        shadow-mapSize={[2048, 2048]}
+        shadow-camera-far={20}
+        shadow-camera-left={-10}
+        shadow-camera-right={10}
+        shadow-camera-top={10}
+        shadow-camera-bottom={-10}
       />
+      <pointLight position={[-3, 4, 4]} intensity={8} color="#ffd670" />
+      <pointLight position={[3.5, 2.5, -2]} intensity={5} color="#70d6ff" />
+      <pointLight position={[-4, 2, -2]} intensity={4} color="#ff70a6" />
 
-      <pointLight
-        position={[-4, 4, 4]}
-        intensity={10}
-        color="#ffd670"
+      <Room />
+
+      <Avatar
+        ref={avatarRef}
+        position={[-1.8, 0, 0]}
+        progress={progress}
       />
-
-      <Floor />
-
-      <Emaan avatarRef={avatarRef} />
 
       <Desk />
-
       <Chair />
+      <Cat position={[-2.6, -1, 1.2]} />
 
-      {/* SCROLL NOW CONTROLS EVERYTHING */}
+      <WhimsyWorld progress={progress} />
 
-      <ScrollCamera
-        storyRef={storyRef}
-        avatarRef={avatarRef}
-      />
+      <ScrollCamera storyRef={storyRef} avatarRef={avatarRef} />
     </>
   );
 }
@@ -428,13 +154,12 @@ function Scene({ storyRef }) {
    CANVAS
 ========================================= */
 
-export default function ThreeWorkspace({
-  storyRef,
-}) {
+export default function ThreeWorkspace({ storyRef }) {
   return (
     <div className="three-workspace">
       <Canvas
         shadows
+        dpr={[1, 1.5]}
         camera={{
           position: [6, 4, 8],
           fov: 45,

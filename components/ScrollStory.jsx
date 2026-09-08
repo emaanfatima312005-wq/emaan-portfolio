@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 
 import ThreeWorkspace from "@/components/three/ThreeWorkspace";
+import StoryContent from "@/components/StoryContent";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -15,19 +16,14 @@ export default function ScrollStory() {
 
   useGSAP(
     () => {
-      /*
-        Fade the hero away as we begin scrolling
-      */
-
       gsap.to(introRef.current, {
         opacity: 0,
         y: -60,
         scale: 0.96,
-
         scrollTrigger: {
           trigger: storyRef.current,
           start: "top top",
-          end: "25% top",
+          end: "18% top",
           scrub: 1,
         },
       });
@@ -41,11 +37,8 @@ export default function ScrollStory() {
     <section ref={storyRef} className="three-scroll-story">
       <div className="three-sticky">
         {/* HERO TEXT */}
-
         <div ref={introRef} className="three-intro">
-          <p>
-            SOFTWARE ENGINEERING · AI · WEB · EXPLORING 3D
-          </p>
+          <p>SOFTWARE ENGINEERING · AI · WEB · EXPLORING 3D</p>
 
           <h1>
             Hi, I&apos;m
@@ -65,8 +58,10 @@ export default function ScrollStory() {
           </div>
         </div>
 
-        {/* ACTUAL 3D WORLD */}
+        {/* WHIMSICAL CONTENT OVERLAYS */}
+        <StoryContent storyRef={storyRef} />
 
+        {/* ACTUAL 3D WORLD */}
         <ThreeWorkspace storyRef={storyRef} />
       </div>
     </section>

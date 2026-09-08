@@ -1,0 +1,4 @@
+- Global chrome (fonts, metadata, smooth scrolling, custom cursor) is composed once in the root `layout.js` and applied to every route via `children`.
+- Per-route visual transitions are implemented as a sibling `template.js` wrapping children in a Framer Motion `motion.div` rather than animating inside individual pages.
+- Client-side interactivity is opt-in via the `"use client"` directive at the top of files that use React state/effects (e.g., `page.js`, `template.js`).
+- Dynamic routes derive their slugs from a central data source via `generateStaticParams`, mapping each item in `@/lib/data` to a pre-rendered URL segment.

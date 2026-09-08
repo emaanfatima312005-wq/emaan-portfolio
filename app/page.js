@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import ScrollStory from "@/components/ScrollStory";
+import ScrollProgress from "@/components/ScrollProgress";
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
@@ -54,7 +55,12 @@ export default function Home() {
         </section>
       )}
 
-      {!loading && <ScrollStory />}
+      {!loading && (
+        <>
+          <ScrollProgress />
+          <ScrollStory />
+        </>
+      )}
     </main>
   );
 }

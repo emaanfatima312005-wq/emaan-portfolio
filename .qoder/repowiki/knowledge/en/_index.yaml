@@ -1,0 +1,47 @@
+# 知识卡导出索引文件
+schema_version: 1
+locale: en-US
+branch: master
+nodes_managed: true
+exported_at: "2026-09-08T17:16:12Z"
+modules:
+    "":
+        dir_name: Emaan Portfolio (Next.js App Router)
+        title: Emaan Portfolio (Next.js App Router)
+        scope:
+            - README.md
+            - AGENTS.md
+            - CLAUDE.md
+            - .gitignore
+            - package.json
+            - package-lock.json
+            - next.config.mjs
+            - postcss.config.mjs
+            - eslint.config.mjs
+            - jsconfig.json
+        source_files: []
+        children:
+            - app_pages
+            - components
+        depends_on: []
+        related_to: []
+    app_pages:
+        dir_name: Next.js App Router Pages & Root Layout
+        title: Next.js App Router Pages & Root Layout
+        scope:
+            - app/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: components
+    components:
+        dir_name: Scroll-Driven Story & 3D Workspace Components
+        title: Scroll-Driven Story & 3D Workspace Components
+        scope:
+            - components/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: app_pages
