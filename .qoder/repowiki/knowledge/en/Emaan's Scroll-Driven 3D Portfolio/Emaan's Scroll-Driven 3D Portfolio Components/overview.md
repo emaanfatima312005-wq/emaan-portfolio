@@ -1,0 +1,1 @@
+Orchestrates a scroll-driven narrative that layers GSAP/ScrollTrigger story panels and a custom cursor over a Three.js room scene, with per-section React components driving the CV, projects, skills, education, experience, contact, and about content.

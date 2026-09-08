@@ -1,0 +1,17 @@
+schema_version: 1
+module_path: ""
+title: Emaan's Scroll-Driven 3D Portfolio
+scope:
+    - README.md
+    - AGENTS.md
+    - CLAUDE.md
+    - .gitignore
+    - package.json
+    - package-lock.json
+    - next.config.mjs
+    - postcss.config.mjs
+    - eslint.config.mjs
+    - jsconfig.json
+source_files: []
+depends_on: []
+related_to: []

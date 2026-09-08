@@ -1,1 +1,0 @@
-React Server Components with `'use client'` directives; GSAP + ScrollTrigger (`@gsap/react`) for scroll-driven timelines; React Three Fiber (`@react-three/fiber`) with `useFrame`/`useThree` for the 3D scene; Lenis for smooth scrolling.

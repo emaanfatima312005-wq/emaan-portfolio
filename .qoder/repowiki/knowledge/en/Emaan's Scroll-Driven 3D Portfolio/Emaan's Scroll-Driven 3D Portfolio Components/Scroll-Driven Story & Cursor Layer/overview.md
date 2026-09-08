@@ -1,0 +1,1 @@
+Provides the scroll-driven narrative layer of Emaan's portfolio, combining Lenis smooth scrolling, GSAP ScrollTrigger animations, a custom particle cursor, and overlay story panels over the Three.js workspace.

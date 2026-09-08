@@ -1,0 +1,1 @@
+Standard Next.js scripts only: `npm run dev` starts the development server on localhost:3000, `npm run build` produces production builds, `npm run start` serves the built app, and `npm run lint` runs ESLint.

@@ -1,0 +1,1 @@
+Defines the Next.js App Router entry points — root layout with fonts and shared chrome, a client-side home page with a loading screen driving ScrollStory, and a static project detail route.

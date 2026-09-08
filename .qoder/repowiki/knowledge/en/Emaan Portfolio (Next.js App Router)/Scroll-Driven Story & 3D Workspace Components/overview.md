@@ -1,1 +1,0 @@
-React components that compose a scroll-driven portfolio story with GSAP ScrollTrigger animations, an overlay of content panels, and a React Three Fiber 3D room scene.

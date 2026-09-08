@@ -1,3 +1,0 @@
-- Pages and components are organized under `app/` and `components/` respectively, following Next.js App Router conventions.
-- Animation logic is split between GSAP ScrollTrigger for page-level scroll choreography and Framer Motion for component-level transitions.
-- ESLint configuration extends `eslint-config-next/core-web-vitals` and ignores build artifacts via `globalIgnores`.

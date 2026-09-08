@@ -1,0 +1,1 @@
+React client components with Next.js `'use client'`; Lenis for smooth scrolling; GSAP + ScrollTrigger (registered once per file) for scroll-linked animations; `@gsap/react` hook `useGSAP` for declarative trigger setup; native Canvas API for the custom cursor particle effect.

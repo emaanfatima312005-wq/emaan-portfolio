@@ -1,0 +1,1 @@
+Each file that uses GSAP calls `gsap.registerPlugin(ScrollTrigger)` at module scope because the same plugin may be registered multiple times across files without error. `SmoothScroll` must wrap the app tree so Lenis can hijack the native scroll wheel and feed `ScrollTrigger.update` on every scroll event.

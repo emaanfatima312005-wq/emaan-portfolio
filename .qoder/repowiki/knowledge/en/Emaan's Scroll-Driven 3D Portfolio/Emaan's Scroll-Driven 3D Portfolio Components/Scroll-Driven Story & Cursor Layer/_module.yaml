@@ -1,0 +1,13 @@
+schema_version: 1
+module_path: components/scroll_and_cursor
+title: Scroll-Driven Story & Cursor Layer
+scope:
+    - components/Cursor.jsx
+    - components/ScrollProgress.jsx
+    - components/ScrollStory.jsx
+    - components/SmoothScroll.jsx
+    - components/StoryContent.jsx
+source_files: []
+depends_on: []
+related_to:
+    - path: app_pages

@@ -1,0 +1,3 @@
+- Pages under `app/` are thin route shells that import and compose heavy 3D/scroll logic from the sibling `components/` directory rather than embedding scene code inline.
+- Client-side interactivity (R3F scenes, GSAP timelines, cursor, scroll effects) is isolated in client components imported by server-rendered page layouts.
+- Imports between `app/` and `components/` use relative paths instead of path aliases, keeping the root configuration minimal.

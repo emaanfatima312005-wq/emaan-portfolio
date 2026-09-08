@@ -1,0 +1,10 @@
+schema_version: 1
+module_path: app_pages
+title: Next.js App Router Pages & Global Chrome
+scope:
+    - app/
+source_files: []
+depends_on: []
+related_to:
+    - path: components
+    - path: components/scroll_and_cursor

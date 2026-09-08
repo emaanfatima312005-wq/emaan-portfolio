@@ -1,0 +1,1 @@
+Next.js App Router portfolio that mounts a shared Three.js room scene and GSAP/ScrollTrigger narrative from `components` into thin route pages under `app/`, driven by Tailwind v4 styling.

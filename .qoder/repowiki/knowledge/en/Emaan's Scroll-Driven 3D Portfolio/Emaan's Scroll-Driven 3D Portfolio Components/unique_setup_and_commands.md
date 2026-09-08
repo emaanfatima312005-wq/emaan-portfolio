@@ -1,0 +1,1 @@
+Each phase of the implementation is kept runnable end-to-end; new sections are added by creating a matching `sections/<Name>Section.jsx` and registering it in the shared scroll story so the 3D scene and overlays stay in sync without extra wiring.

@@ -1,1 +1,0 @@
-No build or setup scripts live in this scope; pages rely on Next.js App Router conventions (file-based routing, `generateStaticParams`, `metadata` export). The project data driving routes comes from `@/lib/data`, so adding a new project requires updating that module to be statically generated.

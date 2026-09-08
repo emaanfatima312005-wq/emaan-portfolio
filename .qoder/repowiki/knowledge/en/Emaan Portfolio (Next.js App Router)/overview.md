@@ -1,1 +1,0 @@
-Root of a Next.js 16 portfolio site that composes scroll-driven story pages with GSAP/Three.js 3D scenes under the App Router layout.

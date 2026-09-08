@@ -1,6 +1,0 @@
-- Every component file begins with the `'use client'` directive to opt into client-side rendering for DOM/GSAP/Three.js usage.
-- Scroll-triggered animations are implemented by creating a `storyRef` (or `containerRef`) and binding GSAP `ScrollTrigger` instances to it with `start: 'top top'` / `end: 'bottom bottom'` and `scrub: 1` for smooth scrubbing.
-- Panel sections follow a uniform shape: a default-exported function component that reads static data from `@/lib/data` and renders markup styled exclusively via semantic CSS class names (e.g. `story-panel`, `panel-title`, `experience-card`).
-- 3D scene objects are split into small reusable components under `three/` (Room, Desk, Chair, Cat, Avatar, WhimsyWorld) and composed inside `ThreeWorkspace.jsx`, which owns the `<Canvas>`, lighting, and scroll-driven camera animation.
-- Per-frame 3D updates use `useFrame` from `@react-three/fiber` to mutate refs directly rather than triggering React re-renders (e.g. floating orbs, camera lookAt).
-- Touch-device detection is handled via `useSyncExternalStore` wrapping `window.matchMedia('(pointer: coarse)')` and components short-circuit their behavior when touch is detected.

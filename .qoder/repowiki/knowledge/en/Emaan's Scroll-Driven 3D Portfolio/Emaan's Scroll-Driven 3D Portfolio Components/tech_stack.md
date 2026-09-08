@@ -1,0 +1,1 @@
+React Three Fiber / Drei for the 3D scene, GSAP + ScrollTrigger for scroll-driven animation, Lenis for smooth scrolling — all children share this stack as the single animation/scroll contract between sections and the Three.js workspace.

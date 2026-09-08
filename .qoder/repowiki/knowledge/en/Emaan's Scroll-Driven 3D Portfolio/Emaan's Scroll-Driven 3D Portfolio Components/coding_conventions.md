@@ -1,0 +1,3 @@
+- Each portfolio topic lives in its own `sections/<Topic>Section.jsx` component that drives both 2D overlay content and 3D scene changes via ScrollTrigger on the shared scroll timeline.
+- Scroll-driven motion is expressed declaratively with GSAP timelines keyed by scroll position rather than imperative DOM manipulation.
+- Custom cursor state and scroll progress are consumed as shared context across both the 2D story panels and the 3D scene to keep visual feedback consistent.

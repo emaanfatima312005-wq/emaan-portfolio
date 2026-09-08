@@ -1,0 +1,5 @@
+- All components are marked with the `'use client'` directive since they attach DOM listeners, canvas contexts, or browser APIs in `useEffect`.
+- ScrollTrigger animations are declared declaratively via the `useGSAP` hook with a `scope` ref so triggers are scoped to a specific element rather than the whole document.
+- Panel visibility is driven by percentage-based `start`/`end` values in a central `PANELS` config array, with each entry pairing a section Component with its scroll window.
+- Browser-only initialization is guarded by `typeof window === 'undefined'` checks inside `useEffect` to support server-side rendering.
+- Event listeners are attached with `{ passive: true }` on `scroll` and `mousemove` handlers to avoid blocking the main thread during high-frequency updates.

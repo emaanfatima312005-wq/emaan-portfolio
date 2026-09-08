@@ -1,1 +1,0 @@
-Standard Next.js scripts: `npm run dev` to start the development server, `npm run build` to produce a static output, `npm run start` to serve the built site, and `npm run lint` to run ESLint with the Next Vitals config.
