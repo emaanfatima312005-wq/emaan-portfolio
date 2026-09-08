@@ -42,15 +42,29 @@ function ScrollCamera({ storyRef, avatarRef }) {
       },
     });
 
-    /* Phase 1: Enter the room */
-    tl.to(camera.position, { x: 4.5, y: 3.2, z: 6.5, duration: 1, ease: "none" }, 0);
-
     /* Phase 2: Emaan walks to chair */
-    tl.to(
-      avatarRef.current.position,
-      { x: 0.15, z: 0.95, duration: 1.8, ease: "none" },
-      0.6
-    );
+
+tl.to(
+  avatarRef.current.position,
+  {
+    x: 0.2,
+    z: 1.32,
+    duration: 1.8,
+    ease: "none",
+  },
+  0.6
+);
+/* Turn Emaan toward the desk */
+
+tl.to(
+  avatarRef.current.rotation,
+  {
+    y: Math.PI,
+    duration: 0.75,
+    ease: "power2.inOut",
+  },
+  1.65
+);
 
     /* Phase 3: Camera follows and frames her sitting */
     tl.to(camera.position, { x: 3.2, y: 2.5, z: 4.6, duration: 1.4, ease: "power1.inOut" }, 1.2);
