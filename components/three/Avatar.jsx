@@ -221,9 +221,6 @@ function TinyFlower({
 
 /* =====================================================
    LONG BLOCKY CURL
-
-   This makes the deep chunky curls from the
-   visual instead of a giant helmet.
 ===================================================== */
 
 function CurlStrand({
@@ -319,326 +316,1385 @@ function CurlStrand({
 }
 
 /* =====================================================
-   HAIR
-
-   Inspired by your real hair:
-   center part
-   high volume
-   long curls
-   two face-framing curls
-===================================================== */
-/* =====================================================
    LONG CURL STRAND
 ===================================================== */
 
 function Ringlet({
   position,
   side = "left",
-  pieces = 8,
+  loops = 4.5,
+  length = 1.15,
+  radius = 0.075,
+  thickness = 0.024,
   tone = "dark",
   back = false,
 }) {
   const dir = side === "left" ? -1 : 1;
 
   const baseColor =
-    tone === "light" ? COLORS.hairHighlight : COLORS.hair;
+    tone === "light"
+      ? COLORS.hairHighlight
+      : COLORS.hair;
 
-  const secondaryColor =
-    tone === "light" ? COLORS.hair : COLORS.hairHighlight;
+  const secondColor =
+    tone === "light"
+      ? COLORS.hair
+      : COLORS.hairHighlight;
 
-  const length = 0.78 + pieces * 0.09;
-  const waveWidth = back ? 0.085 : 0.11;
-  const depthBase = back ? -0.04 : 0.02;
+  const depthShift = back ? -0.06 : 0.02;
 
-  const buildCurlGeometry = (
+  const makeCoil = (
     xOffset = 0,
     zOffset = 0,
-    phaseShift = 0,
+    phase = 0,
+    radiusScale = 1,
     lengthScale = 1,
-    widthScale = 1
+    tubeScale = 1
   ) => {
-    const pts = [];
-    const total = 30;
+    const coilPoints = [];
+    const total = 60;
+
+    /* =========================================
+       ORIGINAL COIL
+       SAME SHAPE YOU ALREADY LIKE
+    ========================================= */
 
     for (let i = 0; i <= total; i++) {
       const t = i / total;
 
-      // side-to-side curl/wave
-      const swing =
-        Math.sin(t * Math.PI * 2.5 + phaseShift) *
-        waveWidth *
-        widthScale *
-        (1 - t * 0.1);
+      const angle =
+        t * Math.PI * 2 * loops + phase;
 
-      // small inward fall so it frames the face
-      const inward = dir * 0.02 * t;
+      const taper = 1 - t * 0.18;
 
-      const x = dir * swing + inward + xOffset;
-      const y = -t * length * lengthScale;
+      const r =
+        radius *
+        radiusScale *
+        taper;
 
-      // soft depth motion
+      const x =
+        dir *
+          (Math.cos(angle) *
+            r *
+            0.95) +
+        xOffset +
+        dir * 0.012 * t;
+
+      const y =
+        -t *
+        length *
+        lengthScale;
+
       const z =
-        Math.cos(t * Math.PI * 1.9 + phaseShift) * 0.028 +
-        Math.sin(t * Math.PI * 0.9 + phaseShift) * 0.012 +
-        depthBase +
+        Math.sin(angle) *
+          r *
+          0.72 +
+        depthShift +
         zOffset;
 
-      pts.push(new THREE.Vector3(x, y, z));
+      coilPoints.push(
+        new THREE.Vector3(
+          x,
+          y,
+          z
+        )
+      );
     }
 
-    const curve = new THREE.CatmullRomCurve3(pts);
-    return new THREE.TubeGeometry(curve, 52, 0.04, 10, false);
+    /* =========================================
+       NEW ROOT CONNECTION
+
+       These points begin INSIDE the crown,
+       then smoothly flow into the first point
+       of the existing curl.
+    ========================================= */
+
+    const first =
+      coilPoints[0];
+
+        const rootTop =
+      new THREE.Vector3(
+        xOffset +
+          dir *
+            radius *
+            radiusScale *
+            0.12,
+        0.08,
+        depthShift +
+          zOffset -
+          0.11
+      );
+
+    const rootMiddle =
+      new THREE.Vector3(
+        xOffset +
+          dir *
+            radius *
+            radiusScale *
+            0.24,
+        0.035,
+        depthShift +
+          zOffset -
+          0.07
+      );
+
+    const rootLower =
+      new THREE.Vector3(
+        THREE.MathUtils.lerp(
+          rootMiddle.x,
+          first.x,
+          0.78
+        ),
+        0.01,
+        THREE.MathUtils.lerp(
+          rootMiddle.z,
+          first.z,
+          0.78
+        )
+      );
+
+    /* root + original curl become ONE continuous strand */
+
+    const points = [
+      rootTop,
+      rootMiddle,
+      rootLower,
+      ...coilPoints,
+    ];
+
+    const curve =
+      new THREE.CatmullRomCurve3(
+        points
+      );
+
+    return new THREE.TubeGeometry(
+      curve,
+      96,
+      thickness * tubeScale,
+      12,
+      false
+    );
   };
 
-  const mainGeometry = useMemo(
-    () => buildCurlGeometry(0, 0, 0, 1, 1),
-    [dir, length, waveWidth, depthBase]
+  const geo1 = useMemo(
+    () =>
+      makeCoil(
+        0,
+        0,
+        0,
+        1,
+        1,
+        1
+      ),
+    [
+      dir,
+      loops,
+      length,
+      radius,
+      thickness,
+      depthShift,
+    ]
   );
 
-  const innerGeometry = useMemo(
+  const geo2 = useMemo(
     () =>
-      buildCurlGeometry(
-        dir * 0.03,
-        0.018,
-        0.5,
-        0.97,
+      makeCoil(
+        dir * 0.026,
+        0.02,
+        0.7,
+        0.82,
+        0.96,
         0.82
       ),
-    [dir, length, waveWidth, depthBase]
+    [
+      dir,
+      loops,
+      length,
+      radius,
+      thickness,
+      depthShift,
+    ]
   );
 
-  const outerGeometry = useMemo(
+  const geo3 = useMemo(
     () =>
-      buildCurlGeometry(
-        -dir * 0.026,
-        -0.014,
-        -0.45,
-        1.03,
-        0.88
+      makeCoil(
+        -dir * 0.024,
+        -0.015,
+        -0.55,
+        0.88,
+        1.02,
+        0.78
       ),
-    [dir, length, waveWidth, depthBase]
+    [
+      dir,
+      loops,
+      length,
+      radius,
+      thickness,
+      depthShift,
+    ]
   );
 
   return (
     <group
       position={position}
-      rotation={back ? [0, dir * 0.2, 0] : [0, 0, 0]}
+      rotation={
+        back
+          ? [
+              0,
+              dir * 0.18,
+              0,
+            ]
+          : [0, 0, 0]
+      }
     >
-      {/* main curl */}
-      <mesh geometry={mainGeometry} castShadow receiveShadow>
-        <meshStandardMaterial color={baseColor} roughness={0.84} />
+      <mesh
+        geometry={geo1}
+        castShadow
+        receiveShadow
+      >
+        <meshStandardMaterial
+          color={baseColor}
+          roughness={0.84}
+        />
       </mesh>
 
-      {/* companion strand 1 */}
-      <mesh geometry={innerGeometry} castShadow receiveShadow>
-        <meshStandardMaterial color={secondaryColor} roughness={0.86} />
+      <mesh
+        geometry={geo2}
+        castShadow
+        receiveShadow
+      >
+        <meshStandardMaterial
+          color={secondColor}
+          roughness={0.86}
+        />
       </mesh>
 
-      {/* companion strand 2 */}
-      <mesh geometry={outerGeometry} castShadow receiveShadow>
-        <meshStandardMaterial color={baseColor} roughness={0.84} />
+      <mesh
+        geometry={geo3}
+        castShadow
+        receiveShadow
+      >
+        <meshStandardMaterial
+          color={baseColor}
+          roughness={0.84}
+        />
       </mesh>
     </group>
   );
 }
+
+/* =====================================================
+   HAIR
+===================================================== */
+
 function Hair() {
   return (
     <group>
       {/* =================================================
-          BACK HAIR BASE
+          REAL SCALP CAP
 
-          This stays BEHIND the face.
-          No hair slab across the forehead.
+          This is the important fix.
+
+          It wraps across the top of the head and extends
+          toward the hairline, but stays BEHIND the face
+          features so it won't cover the eyes/brows.
       ================================================= */}
 
-      <SoftBox
-        args={[0.78, 0.48, 0.42]}
-        position={[0, 1.27, -0.25]}
-        color={COLORS.hair}
-        radius={0.045}
-      />
+      <mesh
+        position={[0, 1.25, -0.09]}
+        scale={[0.42, 0.31, 0.35]}
+        castShadow
+        receiveShadow
+      >
+        
+        <sphereGeometry
+          args={[
+            1,
+            32,
+            24,
+            0,
+            Math.PI * 2,
+            0,
+            Math.PI * 0.62,
+          ]}
+        />
 
-      <SoftBox
-        args={[0.64, 0.28, 0.36]}
-        position={[0, 1.48, -0.18]}
-        color={COLORS.hairHighlight}
-        radius={0.04}
-      />
+        <meshStandardMaterial
+          color={COLORS.hair}
+          roughness={0.82}
+        />
+      </mesh>
 
+      {/* subtle back volume */}
+      <mesh
+        position={[0, 1.24, -0.23]}
+        scale={[0.43, 0.3, 0.29]}
+        castShadow
+        receiveShadow
+      >
+        <sphereGeometry
+          args={[
+            1,
+            28,
+            20,
+            0,
+            Math.PI * 2,
+            0,
+            Math.PI * 0.62,
+          ]}
+        />
+
+        <meshStandardMaterial
+          color={COLORS.hairHighlight}
+          roughness={0.84}
+        />
+      </mesh>
+         {/* =================================================
+    FULL CROWN CONNECTOR LAYER
+
+    Short curls across the ENTIRE hairline so every
+    long curl visually grows from the crown.
+================================================= */}
+
+{/* FAR LEFT ROOT */}
+<Ringlet
+  position={[-0.53, 1.28, -0.04]}
+  side="left"
+  loops={1.8}
+  length={0.4}
+  radius={0.052}
+  thickness={0.022}
+  tone="dark"
+  back
+/>
+
+{/* LEFT OUTER ROOT */}
+<Ringlet
+  position={[-0.45, 1.31, 0.02]}
+  side="left"
+  loops={1.75}
+  length={0.4}
+  radius={0.053}
+  thickness={0.022}
+  tone="light"
+/>
+
+{/* LEFT MID ROOT */}
+<Ringlet
+  position={[-0.36, 1.34, 0.07]}
+  side="left"
+  loops={1.7}
+  length={0.38}
+  radius={0.052}
+  thickness={0.022}
+  tone="dark"
+/>
+
+{/* LEFT INNER ROOT */}
+<Ringlet
+  position={[-0.27, 1.37, 0.1]}
+  side="left"
+  loops={1.65}
+  length={0.36}
+  radius={0.05}
+  thickness={0.021}
+  tone="light"
+/>
+
+{/* LEFT CENTER ROOT */}
+<Ringlet
+  position={[-0.17, 1.39, 0.1]}
+  side="left"
+  loops={1.55}
+  length={0.34}
+  radius={0.048}
+  thickness={0.021}
+  tone="dark"
+/>
+
+{/* LEFT CENTER-BACK ROOT */}
+<Ringlet
+  position={[-0.08, 1.37, -0.02]}
+  side="left"
+  loops={1.65}
+  length={0.36}
+  radius={0.049}
+  thickness={0.021}
+  tone="light"
+  back
+/>
+
+{/* RIGHT CENTER-BACK ROOT */}
+<Ringlet
+  position={[0.08, 1.37, -0.02]}
+  side="right"
+  loops={1.65}
+  length={0.36}
+  radius={0.049}
+  thickness={0.021}
+  tone="dark"
+  back
+/>
+
+{/* RIGHT CENTER ROOT */}
+<Ringlet
+  position={[0.17, 1.39, 0.1]}
+  side="right"
+  loops={1.55}
+  length={0.34}
+  radius={0.048}
+  thickness={0.021}
+  tone="light"
+/>
+
+{/* RIGHT INNER ROOT */}
+<Ringlet
+  position={[0.27, 1.37, 0.1]}
+  side="right"
+  loops={1.65}
+  length={0.36}
+  radius={0.05}
+  thickness={0.021}
+  tone="dark"
+/>
+
+{/* RIGHT MID ROOT */}
+<Ringlet
+  position={[0.36, 1.34, 0.07]}
+  side="right"
+  loops={1.7}
+  length={0.38}
+  radius={0.052}
+  thickness={0.022}
+  tone="light"
+/>
+
+{/* RIGHT OUTER ROOT */}
+<Ringlet
+  position={[0.45, 1.31, 0.02]}
+  side="right"
+  loops={1.75}
+  length={0.4}
+  radius={0.053}
+  thickness={0.022}
+  tone="dark"
+/>
+
+{/* FAR RIGHT ROOT */}
+<Ringlet
+  position={[0.53, 1.28, -0.04]}
+  side="right"
+  loops={1.8}
+  length={0.4}
+  radius={0.052}
+  thickness={0.022}
+  tone="light"
+  back
+/>
       {/* =================================================
-          MIDDLE PART
-
-          Two tiny crown sections.
-          They DO NOT fall onto the forehead.
-      ================================================= */}
-
-      <SoftBox
-        args={[0.29, 0.14, 0.28]}
-        position={[-0.17, 1.48, -0.03]}
-        rotation={[0, 0, -0.08]}
-        color={COLORS.hair}
-        radius={0.035}
-      />
-
-      <SoftBox
-        args={[0.29, 0.14, 0.28]}
-        position={[0.17, 1.48, -0.03]}
-        rotation={[0, 0, 0.08]}
-        color={COLORS.hairHighlight}
-        radius={0.035}
-      />
-
-      {/* =================================================
-          TEMPLE PIECES
-
-          Start BESIDE the forehead.
-          Nothing crosses the forehead.
-      ================================================= */}
-
-      <SoftBox
-        args={[0.13, 0.3, 0.16]}
-        position={[-0.37, 1.25, 0.12]}
-        rotation={[0, 0, -0.12]}
-        color={COLORS.hair}
-        radius={0.03}
-      />
-
-      <SoftBox
-        args={[0.13, 0.3, 0.16]}
-        position={[0.37, 1.25, 0.12]}
-        rotation={[0, 0, 0.12]}
-        color={COLORS.hairHighlight}
-        radius={0.03}
-      />
-
-      {/* =================================================
-          LEFT SIDE
-
-          Fewer strands.
-          Longer.
-          More separated.
+          TOP COVER CURLS
+          Small crown-cover curls for density
       ================================================= */}
 
       <Ringlet
-        position={[-0.42, 1.18, 0.14]}
+        position={[-0.28, 1.34, -0.02]}
         side="left"
-        pieces={8}
-        tone="dark"
-      />
-
-      <Ringlet
-        position={[-0.52, 1.07, -0.02]}
-        side="left"
-        pieces={9}
-        tone="light"
-      />
-
-      <Ringlet
-        position={[-0.58, 0.91, -0.18]}
-        side="left"
-        pieces={8}
+        loops={2.0}
+        length={0.42}
+        radius={0.05}
+        thickness={0.021}
         tone="dark"
         back
       />
 
-      {/* one front face-framing curl */}
+      <Ringlet
+        position={[-0.12, 1.36, -0.01]}
+        side="left"
+        loops={1.9}
+        length={0.38}
+        radius={0.048}
+        thickness={0.021}
+        tone="light"
+        back
+      />
 
       <Ringlet
-        position={[-0.34, 1.12, 0.22]}
+        position={[0.12, 1.36, -0.01]}
+        side="right"
+        loops={1.9}
+        length={0.38}
+        radius={0.048}
+        thickness={0.021}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[0.28, 1.34, -0.02]}
+        side="right"
+        loops={2.0}
+        length={0.42}
+        radius={0.05}
+        thickness={0.021}
+        tone="light"
+        back
+      />
+
+      <Ringlet
+        position={[-0.39, 1.29, -0.08]}
         side="left"
-        pieces={6}
+        loops={2.1}
+        length={0.46}
+        radius={0.052}
+        thickness={0.021}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[0.39, 1.29, -0.08]}
+        side="right"
+        loops={2.1}
+        length={0.46}
+        radius={0.052}
+        thickness={0.021}
+        tone="light"
+        back
+      />
+{/* =================================================
+    SECOND ROOT ROW
+    Fills the tiny spaces behind the first row
+================================================= */}
+
+<Ringlet
+  position={[-0.43, 1.27, -0.13]}
+  side="left"
+  loops={1.8}
+  length={0.4}
+  radius={0.052}
+  thickness={0.021}
+  tone="dark"
+  back
+/>
+
+<Ringlet
+  position={[-0.31, 1.29, -0.13]}
+  side="left"
+  loops={1.75}
+  length={0.39}
+  radius={0.051}
+  thickness={0.021}
+  tone="light"
+  back
+/>
+
+<Ringlet
+  position={[-0.19, 1.3, -0.15]}
+  side="left"
+  loops={1.7}
+  length={0.38}
+  radius={0.05}
+  thickness={0.021}
+  tone="dark"
+  back
+/>
+
+<Ringlet
+  position={[-0.06, 1.3, -0.17]}
+  side="left"
+  loops={1.65}
+  length={0.37}
+  radius={0.049}
+  thickness={0.021}
+  tone="light"
+  back
+/>
+
+<Ringlet
+  position={[0.06, 1.3, -0.17]}
+  side="right"
+  loops={1.65}
+  length={0.37}
+  radius={0.049}
+  thickness={0.021}
+  tone="dark"
+  back
+/>
+
+<Ringlet
+  position={[0.19, 1.3, -0.15]}
+  side="right"
+  loops={1.7}
+  length={0.38}
+  radius={0.05}
+  thickness={0.021}
+  tone="light"
+  back
+/>
+
+<Ringlet
+  position={[0.31, 1.29, -0.13]}
+  side="right"
+  loops={1.75}
+  length={0.39}
+  radius={0.051}
+  thickness={0.021}
+  tone="dark"
+  back
+/>
+
+<Ringlet
+  position={[0.43, 1.27, -0.13]}
+  side="right"
+  loops={1.8}
+  length={0.4}
+  radius={0.052}
+  thickness={0.021}
+  tone="light"
+  back
+/>
+
+      {/* =================================================
+          TOP ROOT COILS
+
+          These sit ON the scalp cap so you no longer get:
+
+          scalp
+          GAP
+          curls
+
+          Instead:
+          scalp -> short coils -> long curls
+      ================================================= */}
+
+      <Ringlet
+        position={[-0.18, 1.48, 0.01]}
+        side="left"
+        loops={2.0}
+        length={0.46}
+        radius={0.052}
+        thickness={0.022}
+        tone="dark"
+      />
+
+      <Ringlet
+        position={[0.18, 1.48, 0.01]}
+        side="right"
+        loops={2.0}
+        length={0.46}
+        radius={0.052}
+        thickness={0.022}
+        tone="light"
+      />
+
+      <Ringlet
+        position={[-0.31, 1.42, 0.05]}
+        side="left"
+        loops={2.1}
+        length={0.48}
+        radius={0.055}
+        thickness={0.022}
+        tone="light"
+      />
+
+      <Ringlet
+        position={[0.31, 1.42, 0.05]}
+        side="right"
+        loops={2.1}
+        length={0.48}
+        radius={0.055}
+        thickness={0.022}
+        tone="dark"
+      />
+
+      {/* =================================================
+          FRONT HAIRLINE ROOTS
+
+          These fill exactly the bald strip visible
+          in your screenshot.
+
+          They start high enough to connect to the cap,
+          but don't cross over the face.
+      ================================================= */}
+
+      <Ringlet
+        position={[-0.12, 1.37, 0.18]}
+        side="left"
+        loops={1.8}
+        length={0.38}
+        radius={0.048}
+        thickness={0.021}
+        tone="dark"
+      />
+
+      <Ringlet
+        position={[0.12, 1.37, 0.18]}
+        side="right"
+        loops={1.8}
+        length={0.38}
+        radius={0.048}
+        thickness={0.021}
+        tone="light"
+      />
+
+      <Ringlet
+        position={[-0.26, 1.36, 0.16]}
+        side="left"
+        loops={2.0}
+        length={0.44}
+        radius={0.052}
+        thickness={0.022}
+        tone="light"
+      />
+
+      <Ringlet
+        position={[0.26, 1.36, 0.16]}
+        side="right"
+        loops={2.0}
+        length={0.44}
+        radius={0.052}
+        thickness={0.022}
+        tone="dark"
+      />
+
+      <Ringlet
+        position={[-0.38, 1.31, 0.09]}
+        side="left"
+        loops={2.1}
+        length={0.48}
+        radius={0.055}
+        thickness={0.022}
+        tone="dark"
+      />
+
+      <Ringlet
+        position={[0.38, 1.31, 0.09]}
+        side="right"
+        loops={2.1}
+        length={0.48}
+        radius={0.055}
+        thickness={0.022}
         tone="light"
       />
 
       {/* =================================================
-          RIGHT SIDE
+          FRONT FACE-FRAMING CURLS
       ================================================= */}
 
       <Ringlet
-        position={[0.42, 1.18, 0.14]}
-        side="right"
-        pieces={8}
+        position={[-0.25, 1.27, 0.24]}
+        side="left"
+        loops={3.8}
+        length={0.82}
+        radius={0.06}
+        thickness={0.022}
         tone="light"
       />
 
       <Ringlet
-        position={[0.52, 1.07, -0.02]}
+        position={[0.25, 1.27, 0.24]}
         side="right"
-        pieces={9}
-        tone="dark"
-      />
-
-      <Ringlet
-        position={[0.58, 0.91, -0.18]}
-        side="right"
-        pieces={8}
-        tone="light"
-        back
-      />
-
-      {/* one front face-framing curl */}
-
-      <Ringlet
-        position={[0.34, 1.12, 0.22]}
-        side="right"
-        pieces={6}
+        loops={3.8}
+        length={0.82}
+        radius={0.06}
+        thickness={0.022}
         tone="dark"
       />
 
       {/* =================================================
-          BACK HAIR DEPTH
-
-          Only three.
-          Prevents giant block curtain.
+          ROOT / ATTACHMENT FILLERS
       ================================================= */}
 
       <Ringlet
-        position={[-0.25, 1.08, -0.38]}
+        position={[-0.42, 1.22, 0.05]}
         side="left"
-        pieces={9}
+        loops={4.1}
+        length={0.86}
+        radius={0.062}
+        thickness={0.021}
         tone="dark"
-        back
       />
 
       <Ringlet
-        position={[0, 1.12, -0.43]}
+        position={[-0.2, 1.22, -0.03]}
         side="left"
-        pieces={9}
+        loops={4.1}
+        length={0.82}
+        radius={0.06}
+        thickness={0.021}
         tone="light"
         back
       />
 
       <Ringlet
-        position={[0.25, 1.08, -0.38]}
+        position={[0.2, 1.22, -0.03]}
         side="right"
-        pieces={9}
+        loops={4.1}
+        length={0.82}
+        radius={0.06}
+        thickness={0.021}
         tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[0.42, 1.22, 0.05]}
+        side="right"
+        loops={4.1}
+        length={0.86}
+        radius={0.062}
+        thickness={0.021}
+        tone="light"
+      />
+
+      <Ringlet
+        position={[-0.08, 1.21, -0.1]}
+        side="left"
+        loops={4.0}
+        length={0.82}
+        radius={0.058}
+        thickness={0.021}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[0.08, 1.21, -0.1]}
+        side="right"
+        loops={4.0}
+        length={0.82}
+        radius={0.058}
+        thickness={0.021}
+        tone="light"
+        back
+      />
+
+      {/* =================================================
+          INNER TOP FILL
+      ================================================= */}
+
+      <Ringlet
+        position={[-0.31, 1.27, 0.1]}
+        side="left"
+        loops={4.1}
+        length={0.92}
+        radius={0.065}
+        thickness={0.022}
+        tone="dark"
+      />
+
+      <Ringlet
+        position={[0.31, 1.27, 0.1]}
+        side="right"
+        loops={4.1}
+        length={0.92}
+        radius={0.065}
+        thickness={0.022}
+        tone="light"
+      />
+
+      <Ringlet
+        position={[-0.18, 1.28, 0.08]}
+        side="left"
+        loops={3.9}
+        length={0.78}
+        radius={0.055}
+        thickness={0.021}
+        tone="light"
+      />
+
+      <Ringlet
+        position={[0.18, 1.28, 0.08]}
+        side="right"
+        loops={3.9}
+        length={0.78}
+        radius={0.055}
+        thickness={0.021}
+        tone="dark"
+      />
+
+      {/* =================================================
+          TOP-BACK DENSE FILL
+      ================================================= */}
+
+      <Ringlet
+        position={[-0.28, 1.23, -0.12]}
+        side="left"
+        loops={4.2}
+        length={0.92}
+        radius={0.064}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[0.28, 1.23, -0.12]}
+        side="right"
+        loops={4.2}
+        length={0.92}
+        radius={0.064}
+        thickness={0.022}
+        tone="light"
+        back
+      />
+
+      <Ringlet
+        position={[-0.48, 1.17, -0.08]}
+        side="left"
+        loops={4.4}
+        length={0.98}
+        radius={0.067}
+        thickness={0.022}
+        tone="light"
+        back
+      />
+
+      <Ringlet
+        position={[-0.22, 1.17, -0.12]}
+        side="left"
+        loops={4.3}
+        length={0.96}
+        radius={0.066}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[0.22, 1.17, -0.12]}
+        side="right"
+        loops={4.3}
+        length={0.96}
+        radius={0.066}
+        thickness={0.022}
+        tone="light"
+        back
+      />
+
+      <Ringlet
+        position={[0.48, 1.17, -0.08]}
+        side="right"
+        loops={4.4}
+        length={0.98}
+        radius={0.067}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      {/* =================================================
+          LEFT SIDE MAIN CURLS
+      ================================================= */}
+
+      <Ringlet
+        position={[-0.4, 1.2, 0.16]}
+        side="left"
+        loops={4.3}
+        length={1.0}
+        radius={0.072}
+        thickness={0.024}
+        tone="dark"
+      />
+
+      <Ringlet
+        position={[-0.5, 1.13, 0.03]}
+        side="left"
+        loops={4.8}
+        length={1.18}
+        radius={0.078}
+        thickness={0.025}
+        tone="light"
+      />
+
+      <Ringlet
+        position={[-0.58, 1.0, -0.12]}
+        side="left"
+        loops={5.1}
+        length={1.25}
+        radius={0.08}
+        thickness={0.025}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[-0.34, 1.07, -0.25]}
+        side="left"
+        loops={4.5}
+        length={1.1}
+        radius={0.072}
+        thickness={0.024}
+        tone="light"
+        back
+      />
+
+      <Ringlet
+        position={[-0.46, 1.03, -0.02]}
+        side="left"
+        loops={4.6}
+        length={1.06}
+        radius={0.07}
+        thickness={0.023}
+        tone="dark"
+      />
+
+      <Ringlet
+        position={[-0.28, 1.09, -0.12]}
+        side="left"
+        loops={4.4}
+        length={0.98}
+        radius={0.067}
+        thickness={0.022}
+        tone="light"
+        back
+      />
+
+      <Ringlet
+        position={[-0.37, 1.12, 0.03]}
+        side="left"
+        loops={4.25}
+        length={0.94}
+        radius={0.064}
+        thickness={0.022}
+        tone="light"
+      />
+
+      <Ringlet
+        position={[-0.22, 1.04, -0.03]}
+        side="left"
+        loops={4.2}
+        length={0.9}
+        radius={0.062}
+        thickness={0.021}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[-0.42, 1.0, -0.15]}
+        side="left"
+        loops={4.55}
+        length={1.04}
+        radius={0.069}
+        thickness={0.022}
+        tone="light"
+        back
+      />
+
+      <Ringlet
+        position={[-0.32, 0.98, -0.2]}
+        side="left"
+        loops={4.5}
+        length={1.0}
+        radius={0.067}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      {/* =================================================
+          RIGHT SIDE MAIN CURLS
+      ================================================= */}
+
+      <Ringlet
+        position={[0.4, 1.2, 0.16]}
+        side="right"
+        loops={4.3}
+        length={1.0}
+        radius={0.072}
+        thickness={0.024}
+        tone="light"
+      />
+
+      <Ringlet
+        position={[0.5, 1.13, 0.03]}
+        side="right"
+        loops={4.8}
+        length={1.18}
+        radius={0.078}
+        thickness={0.025}
+        tone="dark"
+      />
+
+      <Ringlet
+        position={[0.58, 1.0, -0.12]}
+        side="right"
+        loops={5.1}
+        length={1.25}
+        radius={0.08}
+        thickness={0.025}
+        tone="light"
+        back
+      />
+
+      <Ringlet
+        position={[0.34, 1.07, -0.25]}
+        side="right"
+        loops={4.5}
+        length={1.1}
+        radius={0.072}
+        thickness={0.024}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[0.46, 1.03, -0.02]}
+        side="right"
+        loops={4.6}
+        length={1.06}
+        radius={0.07}
+        thickness={0.023}
+        tone="light"
+      />
+
+      <Ringlet
+        position={[0.28, 1.09, -0.12]}
+        side="right"
+        loops={4.4}
+        length={0.98}
+        radius={0.067}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[0.37, 1.12, 0.03]}
+        side="right"
+        loops={4.25}
+        length={0.94}
+        radius={0.064}
+        thickness={0.022}
+        tone="dark"
+      />
+
+      <Ringlet
+        position={[0.22, 1.04, -0.03]}
+        side="right"
+        loops={4.2}
+        length={0.9}
+        radius={0.062}
+        thickness={0.021}
+        tone="light"
+        back
+      />
+
+      <Ringlet
+        position={[0.42, 1.0, -0.15]}
+        side="right"
+        loops={4.55}
+        length={1.04}
+        radius={0.069}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[0.32, 0.98, -0.2]}
+        side="right"
+        loops={4.5}
+        length={1.0}
+        radius={0.067}
+        thickness={0.022}
+        tone="light"
+        back
+      />
+
+      {/* =================================================
+          BACK CURLS
+      ================================================= */}
+
+      <Ringlet
+        position={[-0.18, 1.11, -0.36]}
+        side="left"
+        loops={4.9}
+        length={1.22}
+        radius={0.075}
+        thickness={0.024}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[0.02, 1.13, -0.42]}
+        side="left"
+        loops={5.0}
+        length={1.26}
+        radius={0.075}
+        thickness={0.024}
+        tone="light"
+        back
+      />
+
+      <Ringlet
+        position={[0.22, 1.11, -0.36]}
+        side="right"
+        loops={4.9}
+        length={1.22}
+        radius={0.075}
+        thickness={0.024}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[-0.05, 1.07, -0.31]}
+        side="left"
+        loops={4.8}
+        length={1.1}
+        radius={0.07}
+        thickness={0.023}
+        tone="light"
+        back
+      />
+
+      <Ringlet
+        position={[0.12, 1.05, -0.29]}
+        side="right"
+        loops={4.8}
+        length={1.08}
+        radius={0.07}
+        thickness={0.023}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[-0.28, 1.01, -0.28]}
+        side="left"
+        loops={4.7}
+        length={1.02}
+        radius={0.068}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[0.3, 1.01, -0.28]}
+        side="right"
+        loops={4.7}
+        length={1.02}
+        radius={0.068}
+        thickness={0.022}
+        tone="light"
+        back
+      />
+
+      <Ringlet
+        position={[-0.38, 0.98, -0.34]}
+        side="left"
+        loops={4.8}
+        length={1.08}
+        radius={0.07}
+        thickness={0.022}
+        tone="light"
+        back
+      />
+
+      <Ringlet
+        position={[-0.14, 0.98, -0.4]}
+        side="left"
+        loops={4.9}
+        length={1.1}
+        radius={0.07}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[0.1, 0.98, -0.4]}
+        side="right"
+        loops={4.9}
+        length={1.1}
+        radius={0.07}
+        thickness={0.022}
+        tone="light"
+        back
+      />
+
+      <Ringlet
+        position={[0.36, 0.98, -0.34]}
+        side="right"
+        loops={4.8}
+        length={1.08}
+        radius={0.07}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      {/* =================================================
+          FINAL NECK GAP FILLERS
+      ================================================= */}
+
+      <Ringlet
+        position={[-0.24, 0.92, -0.24]}
+        side="left"
+        loops={4.6}
+        length={0.96}
+        radius={0.068}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[-0.08, 0.9, -0.3]}
+        side="left"
+        loops={4.7}
+        length={0.98}
+        radius={0.067}
+        thickness={0.022}
+        tone="light"
+        back
+      />
+
+      <Ringlet
+        position={[0.08, 0.9, -0.3]}
+        side="right"
+        loops={4.7}
+        length={0.98}
+        radius={0.067}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[0.24, 0.92, -0.24]}
+        side="right"
+        loops={4.6}
+        length={0.96}
+        radius={0.068}
+        thickness={0.022}
+        tone="light"
         back
       />
     </group>
   );
 }
+/* =====================================================
+   FACE
+===================================================== */
 
 function Face() {
   return (
     <group>
-      {/* ===============================================
-          FACE
-
-          Slightly smaller than the old block head,
-          but wide enough to keep the expression visible.
-      =============================================== */}
-
       <SoftBox
-        args={[0.64, 0.62, 0.58]}
-        position={[0, 1.07, 0]}
+        args={[0.6, 0.64, 0.6]}
+        position={[0, 1.08, 0]}
         color={COLORS.skin}
-        radius={0.065}
+        radius={0.11}
       />
 
-      {/* ===============================================
-          THIN EYEBROWS
-      =============================================== */}
+      {/* THIN EYEBROWS */}
 
       <SoftBox
         args={[0.095, 0.018, 0.018]}
@@ -656,9 +1712,7 @@ function Face() {
         radius={0.008}
       />
 
-      {/* ===============================================
-          HAPPY CLOSED EYES
-      =============================================== */}
+      {/* HAPPY CLOSED EYES */}
 
       <SoftBox
         args={[0.105, 0.025, 0.022]}
@@ -692,9 +1746,7 @@ function Face() {
         color={COLORS.eye}
       />
 
-      {/* ===============================================
-          SMALL BLUSH
-      =============================================== */}
+      {/* SMALL BLUSH */}
 
       <SoftBox
         args={[0.085, 0.04, 0.018]}
@@ -710,11 +1762,7 @@ function Face() {
         radius={0.012}
       />
 
-      {/* ===============================================
-          BIG HAPPY SMILE
-
-          Much closer to the personality in your photo.
-      =============================================== */}
+      {/* BIG HAPPY SMILE */}
 
       <SoftBox
         args={[0.18, 0.075, 0.024]}
@@ -723,8 +1771,6 @@ function Face() {
         radius={0.026}
       />
 
-      {/* light smile center */}
-
       <SoftBox
         args={[0.095, 0.022, 0.014]}
         position={[0, 0.89, 0.326]}
@@ -732,9 +1778,7 @@ function Face() {
         radius={0.008}
       />
 
-      {/* ===============================================
-          YOUR BLUE DANGLING EARRINGS
-      =============================================== */}
+      {/* BLUE DANGLING EARRINGS */}
 
       <Box
         args={[0.018, 0.1, 0.018]}
@@ -1324,8 +2368,6 @@ const Avatar = forwardRef(
               radius={0.035}
             />
 
-            {/* embroidered cuff */}
-
             <Box
               args={[
                 0.28,
@@ -1341,8 +2383,6 @@ const Avatar = forwardRef(
                 COLORS.dupattaShadow
               }
             />
-
-            {/* hand */}
 
             <SoftBox
               args={[
@@ -1421,15 +2461,11 @@ const Avatar = forwardRef(
             />
           </group>
 
-          {/* ===================================
-              FACE
-          =================================== */}
+          {/* FACE */}
 
           <Face />
 
-          {/* ===================================
-              HAIR
-          =================================== */}
+          {/* HAIR */}
 
           <Hair />
         </group>
