@@ -585,6 +585,236 @@ function Ringlet({
   );
 }
 
+
+/* =====================================================
+   BACK CROWN RINGLET
+
+   Same coily hair language as Ringlet, but this version
+   has NO upward root. It follows the curved back surface
+   of the scalp so it fills the exposed oval instead of
+   standing on top of the head.
+===================================================== */
+
+/* =====================================================
+   CROWN SURFACE CURL
+
+   These curls physically follow the rounded surface
+   of the brown crown. They do NOT stand upward and
+   they do NOT hang behind it.
+===================================================== */
+
+function CrownSurfaceCurl({
+  baseX = 0,
+  yTop = 1.5,
+  yBottom = 1.14,
+  turns = 2.8,
+  phase = 0,
+  tone = "dark",
+  thickness = 0.022,
+}) {
+  const baseColor =
+    tone === "light"
+      ? COLORS.hairHighlight
+      : COLORS.hair;
+
+  const secondColor =
+    tone === "light"
+      ? COLORS.hair
+      : COLORS.hairHighlight;
+
+  /*
+    THESE NUMBERS MATCH YOUR EXISTING CROWN:
+
+    position={[0, 1.25, -0.09]}
+    scale={[0.42, 0.31, 0.35]}
+  */
+
+  const centerX = 0;
+  const centerY = 1.25;
+  const centerZ = -0.09;
+
+  const radiusX = 0.42;
+  const radiusY = 0.31;
+  const radiusZ = 0.35;
+
+  const buildCurl = (
+    xOffset = 0,
+    phaseOffset = 0,
+    tubeScale = 1
+  ) => {
+    const points = [];
+    const total = 70;
+
+    for (let i = 0; i <= total; i++) {
+      const t = i / total;
+
+      const y =
+        THREE.MathUtils.lerp(
+          yTop,
+          yBottom,
+          t
+        );
+
+      /*
+        Small left/right coil movement.
+        This gives us visible curls instead of straight strips.
+      */
+      const wave =
+        Math.sin(
+          t * Math.PI * 2 * turns +
+            phase +
+            phaseOffset
+        ) * 0.026;
+
+      const x =
+        baseX +
+        xOffset +
+        wave;
+
+      /*
+        Calculate the BACK surface of the exact
+        ellipsoid used as your brown crown.
+      */
+
+      const nx =
+        (x - centerX) / radiusX;
+
+      const ny =
+        (y - centerY) / radiusY;
+
+      const surface =
+        Math.max(
+          0.01,
+          1 -
+            nx * nx -
+            ny * ny
+        );
+
+      /*
+        Negative Z = BACK of the crown.
+
+        -0.018 pushes the curl JUST outside the brown
+        sphere so it renders visibly over the crown.
+      */
+
+      const z =
+        centerZ -
+        radiusZ *
+          Math.sqrt(surface) -
+        0.018;
+
+      points.push(
+        new THREE.Vector3(
+          x,
+          y,
+          z
+        )
+      );
+    }
+
+    const curve =
+      new THREE.CatmullRomCurve3(
+        points
+      );
+
+    return new THREE.TubeGeometry(
+      curve,
+      90,
+      thickness * tubeScale,
+      10,
+      false
+    );
+  };
+
+  const mainGeo = useMemo(
+    () =>
+      buildCurl(
+        0,
+        0,
+        1
+      ),
+    [
+      baseX,
+      yTop,
+      yBottom,
+      turns,
+      phase,
+      thickness,
+    ]
+  );
+
+  const leftGeo = useMemo(
+    () =>
+      buildCurl(
+        -0.018,
+        0.6,
+        0.78
+      ),
+    [
+      baseX,
+      yTop,
+      yBottom,
+      turns,
+      phase,
+      thickness,
+    ]
+  );
+
+  const rightGeo = useMemo(
+    () =>
+      buildCurl(
+        0.018,
+        -0.55,
+        0.78
+      ),
+    [
+      baseX,
+      yTop,
+      yBottom,
+      turns,
+      phase,
+      thickness,
+    ]
+  );
+
+  return (
+    <group>
+      <mesh
+        geometry={mainGeo}
+        castShadow
+        receiveShadow
+      >
+        <meshStandardMaterial
+          color={baseColor}
+          roughness={0.84}
+        />
+      </mesh>
+
+      <mesh
+        geometry={leftGeo}
+        castShadow
+        receiveShadow
+      >
+        <meshStandardMaterial
+          color={secondColor}
+          roughness={0.86}
+        />
+      </mesh>
+
+      <mesh
+        geometry={rightGeo}
+        castShadow
+        receiveShadow
+      >
+        <meshStandardMaterial
+          color={baseColor}
+          roughness={0.84}
+        />
+      </mesh>
+    </group>
+  );
+}
+
 /* =====================================================
    HAIR
 ===================================================== */
@@ -651,6 +881,240 @@ function Hair() {
           roughness={0.84}
         />
       </mesh>
+
+      {/* =================================================
+          BACK OVAL RINGLET FILL
+          FULL OVAL COVER VERSION
+
+          This version places MORE ringlets directly
+          on the exposed oval so the crown gets covered
+          instead of only framed.
+      ================================================= */}
+
+      {/* TOP OVAL COVER ROW */}
+      <Ringlet
+        position={[-0.26, 1.37, -0.13]}
+        side="left"
+        loops={2.8}
+        length={0.92}
+        radius={0.058}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[-0.1, 1.39, -0.14]}
+        side="left"
+        loops={2.95}
+        length={0.98}
+        radius={0.06}
+        thickness={0.022}
+        tone="light"
+        back
+      />
+
+      <Ringlet
+        position={[0.08, 1.39, -0.14]}
+        side="right"
+        loops={2.95}
+        length={0.98}
+        radius={0.06}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[0.25, 1.37, -0.13]}
+        side="right"
+        loops={2.8}
+        length={0.92}
+        radius={0.058}
+        thickness={0.022}
+        tone="light"
+        back
+      />
+
+      {/* INNER OVAL COVER ROW */}
+      <Ringlet
+        position={[-0.31, 1.31, -0.17]}
+        side="left"
+        loops={2.95}
+        length={1.0}
+        radius={0.06}
+        thickness={0.022}
+        tone="light"
+        back
+      />
+
+      <Ringlet
+        position={[-0.16, 1.31, -0.18]}
+        side="left"
+        loops={3.05}
+        length={1.05}
+        radius={0.061}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[0, 1.32, -0.19]}
+        side="left"
+        loops={3.15}
+        length={1.08}
+        radius={0.062}
+        thickness={0.022}
+        tone="light"
+        back
+      />
+
+      <Ringlet
+        position={[0.16, 1.31, -0.18]}
+        side="right"
+        loops={3.05}
+        length={1.05}
+        radius={0.061}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[0.31, 1.31, -0.17]}
+        side="right"
+        loops={2.95}
+        length={1.0}
+        radius={0.06}
+        thickness={0.022}
+        tone="light"
+        back
+      />
+
+      {/* CENTER OVAL DENSITY ROW */}
+      <Ringlet
+        position={[-0.24, 1.25, -0.24]}
+        side="left"
+        loops={3.1}
+        length={1.02}
+        radius={0.061}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[-0.08, 1.24, -0.26]}
+        side="left"
+        loops={3.15}
+        length={1.08}
+        radius={0.062}
+        thickness={0.022}
+        tone="light"
+        back
+      />
+
+      <Ringlet
+        position={[0.08, 1.24, -0.26]}
+        side="right"
+        loops={3.15}
+        length={1.08}
+        radius={0.062}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[0.24, 1.25, -0.24]}
+        side="right"
+        loops={3.1}
+        length={1.02}
+        radius={0.061}
+        thickness={0.022}
+        tone="light"
+        back
+      />
+
+      {/* DEEP BACK FILL ROW */}
+      <Ringlet
+        position={[-0.18, 1.18, -0.31]}
+        side="left"
+        loops={3.1}
+        length={1.08}
+        radius={0.062}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[0, 1.18, -0.33]}
+        side="left"
+        loops={3.2}
+        length={1.12}
+        radius={0.063}
+        thickness={0.022}
+        tone="light"
+        back
+      />
+
+      <Ringlet
+        position={[0.18, 1.18, -0.31]}
+        side="right"
+        loops={3.1}
+        length={1.08}
+        radius={0.062}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      {/* LOWER BLEND INTO MAIN HAIR */}
+      <Ringlet
+        position={[-0.28, 1.1, -0.34]}
+        side="left"
+        loops={3.05}
+        length={1.05}
+        radius={0.06}
+        thickness={0.022}
+        tone="light"
+        back
+      />
+
+      <Ringlet
+        position={[-0.1, 1.08, -0.37]}
+        side="left"
+        loops={3.15}
+        length={1.12}
+        radius={0.062}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[0.1, 1.08, -0.37]}
+        side="right"
+        loops={3.15}
+        length={1.12}
+        radius={0.062}
+        thickness={0.022}
+        tone="light"
+        back
+      />
+
+      <Ringlet
+        position={[0.28, 1.1, -0.34]}
+        side="right"
+        loops={3.05}
+        length={1.05}
+        radius={0.06}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
          {/* =================================================
     FULL CROWN CONNECTOR LAYER
 
@@ -793,76 +1257,6 @@ function Hair() {
   tone="light"
   back
 />
-      {/* =================================================
-          TOP COVER CURLS
-          Small crown-cover curls for density
-      ================================================= */}
-
-      <Ringlet
-        position={[-0.28, 1.34, -0.02]}
-        side="left"
-        loops={2.0}
-        length={0.42}
-        radius={0.05}
-        thickness={0.021}
-        tone="dark"
-        back
-      />
-
-      <Ringlet
-        position={[-0.12, 1.36, -0.01]}
-        side="left"
-        loops={1.9}
-        length={0.38}
-        radius={0.048}
-        thickness={0.021}
-        tone="light"
-        back
-      />
-
-      <Ringlet
-        position={[0.12, 1.36, -0.01]}
-        side="right"
-        loops={1.9}
-        length={0.38}
-        radius={0.048}
-        thickness={0.021}
-        tone="dark"
-        back
-      />
-
-      <Ringlet
-        position={[0.28, 1.34, -0.02]}
-        side="right"
-        loops={2.0}
-        length={0.42}
-        radius={0.05}
-        thickness={0.021}
-        tone="light"
-        back
-      />
-
-      <Ringlet
-        position={[-0.39, 1.29, -0.08]}
-        side="left"
-        loops={2.1}
-        length={0.46}
-        radius={0.052}
-        thickness={0.021}
-        tone="dark"
-        back
-      />
-
-      <Ringlet
-        position={[0.39, 1.29, -0.08]}
-        side="right"
-        loops={2.1}
-        length={0.46}
-        radius={0.052}
-        thickness={0.021}
-        tone="light"
-        back
-      />
 {/* =================================================
     SECOND ROOT ROW
     Fills the tiny spaces behind the first row
