@@ -22,21 +22,24 @@ const COLORS = {
   hair: "#3c302d",
   hairHighlight: "#4d3d39",
 
-  kurta: "#FBBCEE",
-  kurtaLight: "#FBBCEE",
-  kurtaDark: "#F78ECF",
+  // Basic Cozy Sweats & Shirt Palette
+  shirt: "#E0CEFD",          // Clean relaxed off-white shirt
+  shirtCollar: "#E0CEFD",    // Ribbed collar / subtle trim
+  sweats: "#D199F1",         // Heather grey sweatpants
+  sweatsWaist: "#E0CEFD",    // Elastic waistband & cuffs
+  sweatsPocket: "#E0CEFD",   // Pocket trim
+  drawstrings: "#ffffff",    // Clean white drawstrings
+  sneakers: "#F992AD",       // Classic clean white sneakers
+  sneakerSole: "#e5e7eb",    // Neutral grey sneaker sole
+  sneakerTrim: "#cbd1db",    // Minimal sneaker detail
+  watchBand: "#374151",      // Sleek minimalist smartwatch band
+  watchScreen: "#70d6ff",    // Subtle screen accent
 
-  pants: "#D4B0F9",
-  pantsDark: "#A480F2",
-
-  dupatta: "#E0CEFD",
-  dupattaShadow: "#CFB9F7",
-
-  pink: "#F992AD",
-  cream: "#FBBCEE",
-  techNavy: "#A480F2",
-  lime: "#C580ED",
-  gold: "#FAB4C8",
+  // Compatibility aliases for hair / flower accents
+  pink: "#ff70a6",
+  cream: "#fff5eb",
+  lime: "#7ae582",
+  gold: "#ffd166",
 
   shoes: "#ffffff",
   shoeAccent: "#70d6ff",
@@ -2911,6 +2914,211 @@ function Face() {
 }
 
 /* =====================================================
+   BASIC SWEATS & SHIRT OUTFIT
+===================================================== */
+
+function BasicArm({ armRef, side = "left" }) {
+  const isLeft = side === "left";
+  const posX = isLeft ? 0.48 : -0.48;
+
+  return (
+    <group ref={armRef} position={[posX, 0.5, 0]}>
+      {/* Short sleeve in shirt color */}
+      <SoftBox
+        args={[0.28, 0.32, 0.28]}
+        position={[0, 0.04, 0]}
+        color={COLORS.shirt}
+        radius={0.045}
+      />
+
+      {/* Sleeve hem cuff */}
+      <SoftBox
+        args={[0.27, 0.06, 0.27]}
+        position={[0, -0.12, 0]}
+        color={COLORS.shirtCollar}
+        radius={0.02}
+      />
+
+      {/* Forearm - natural skin tone */}
+      <SoftBox
+        args={[0.22, 0.46, 0.22]}
+        position={[0, -0.38, 0]}
+        color={COLORS.skin}
+        radius={0.035}
+      />
+
+      {isLeft ? (
+        /* Minimalist Smartwatch on Left Wrist */
+        <group position={[0, -0.55, 0]}>
+          <SoftBox
+            args={[0.24, 0.075, 0.24]}
+            position={[0, 0, 0]}
+            color={COLORS.watchBand}
+            radius={0.015}
+          />
+          <Box
+            args={[0.08, 0.05, 0.012]}
+            position={[0, 0, 0.125]}
+            color={COLORS.watchScreen}
+          />
+        </group>
+      ) : null}
+
+      {/* Hand */}
+      <SoftBox
+        args={[0.18, 0.18, 0.18]}
+        position={[0, -0.83, 0]}
+        color={COLORS.skin}
+        radius={0.04}
+      />
+    </group>
+  );
+}
+
+function BasicSweats({ position, rotation }) {
+  return (
+    <group position={position} rotation={rotation}>
+      {/* Left leg - relaxed cozy sweatpants */}
+      <SoftBox
+        args={[0.32, 0.9, 0.35]}
+        position={[-0.19, 0, 0]}
+        color={COLORS.sweats}
+        radius={0.045}
+      />
+
+      {/* Right leg */}
+      <SoftBox
+        args={[0.32, 0.9, 0.35]}
+        position={[0.19, 0, 0]}
+        color={COLORS.sweats}
+        radius={0.045}
+      />
+
+      {/* Elastic ribbed waistband */}
+      <SoftBox
+        args={[0.74, 0.13, 0.38]}
+        position={[0, 0.43, 0]}
+        color={COLORS.sweatsWaist}
+        radius={0.025}
+      />
+
+      {/* Clean white drawstrings */}
+      <Box
+        args={[0.018, 0.14, 0.018]}
+        position={[-0.035, 0.33, 0.195]}
+        rotation={[0, 0, -0.05]}
+        color={COLORS.drawstrings}
+      />
+      <Box
+        args={[0.018, 0.14, 0.018]}
+        position={[0.035, 0.33, 0.195]}
+        rotation={[0, 0, 0.05]}
+        color={COLORS.drawstrings}
+      />
+
+      {/* Sweatpants front pockets */}
+      <SoftBox
+        args={[0.16, 0.14, 0.025]}
+        position={[-0.19, 0.14, 0.185]}
+        color={COLORS.sweatsPocket}
+        radius={0.015}
+      />
+      <SoftBox
+        args={[0.16, 0.14, 0.025]}
+        position={[0.19, 0.14, 0.185]}
+        color={COLORS.sweatsPocket}
+        radius={0.015}
+      />
+
+      {/* Tapered ankle cuffs */}
+      <SoftBox
+        args={[0.29, 0.11, 0.33]}
+        position={[-0.19, -0.41, 0]}
+        color={COLORS.sweatsWaist}
+        radius={0.025}
+      />
+      <SoftBox
+        args={[0.29, 0.11, 0.33]}
+        position={[0.19, -0.41, 0]}
+        color={COLORS.sweatsWaist}
+        radius={0.025}
+      />
+    </group>
+  );
+}
+
+function BasicSneakers({ visible }) {
+  if (!visible) return null;
+
+  return (
+    <group position={[0, -1.38, 0.06]}>
+      {[-0.19, 0.19].map((x, i) => (
+        <group key={i} position={[x, 0, 0]}>
+          {/* Main clean white sneaker body */}
+          <SoftBox
+            args={[0.36, 0.16, 0.48]}
+            position={[0, 0, 0]}
+            color={COLORS.sneakers}
+            radius={0.03}
+          />
+          {/* Neutral grey outsole */}
+          <SoftBox
+            args={[0.37, 0.04, 0.5]}
+            position={[0, -0.08, 0]}
+            color={COLORS.sneakerSole}
+            radius={0.015}
+          />
+          {/* Subtle lace / heel detail */}
+          <Box
+            args={[0.2, 0.02, 0.06]}
+            position={[0, 0.09, 0.08]}
+            color={COLORS.sneakerTrim}
+          />
+        </group>
+      ))}
+    </group>
+  );
+}
+
+function BasicShirt() {
+  return (
+    <group>
+      {/* Main Shirt Torso - relaxed, comfortable fit */}
+      <SoftBox
+        args={[0.8, 0.68, 0.46]}
+        position={[0, 0.28, 0]}
+        color={COLORS.shirt}
+        radius={0.06}
+      />
+
+      {/* Shirt bottom hem - resting gently over sweatpants */}
+      <SoftBox
+        args={[0.78, 0.16, 0.44]}
+        position={[0, -0.15, 0]}
+        color={COLORS.shirt}
+        radius={0.04}
+      />
+
+      {/* Ribbed crew-neck collar */}
+      <SoftBox
+        args={[0.42, 0.1, 0.38]}
+        position={[0, 0.63, 0.02]}
+        color={COLORS.shirtCollar}
+        radius={0.03}
+      />
+
+      {/* Subtle chest pocket detail */}
+      <SoftBox
+        args={[0.18, 0.16, 0.015]}
+        position={[-0.22, 0.34, 0.235]}
+        color={COLORS.shirtCollar}
+        radius={0.015}
+      />
+    </group>
+  );
+}
+
+/* =====================================================
    AVATAR
 ===================================================== */
 
@@ -2925,14 +3133,10 @@ const Avatar = forwardRef(
     const groupRef = useRef();
     const bodyRef = useRef();
 
-    const rightArmRef =
-      useRef();
+    const rightArmRef = useRef();
+    const leftArmRef = useRef();
 
-    const leftArmRef =
-      useRef();
-
-    const timeRef =
-      useRef(0);
+    const timeRef = useRef(0);
 
     useImperativeHandle(
       ref,
@@ -2940,771 +3144,94 @@ const Avatar = forwardRef(
     );
 
     /* ==================================================
-       EXISTING SCROLL STATES
+       SCROLL STATES
     ================================================== */
 
-    const waveAmount =
-      Math.max(
-        0,
-        1 - progress / 0.12
-      );
+    const waveAmount = Math.max(0, 1 - progress / 0.12);
 
-    const sitAmount =
-      Math.min(
-        1,
-        Math.max(
-          0,
-          (progress - 0.28) /
-            0.12
-        )
-      );
-
-    /* ==================================================
-       EXISTING ANIMATION
-    ================================================== */
-
-    useFrame(
-      (state, delta) => {
-        if (
-          !rightArmRef.current
-        )
-          return;
-
-        timeRef.current +=
-          delta * 5;
-
-        /* wave */
-
-        if (
-          waveAmount > 0 &&
-          sitAmount < 0.5
-        ) {
-          const waveAngle =
-            Math.PI -
-            0.5 +
-            Math.sin(
-              timeRef.current
-            ) *
-              0.4;
-
-          rightArmRef.current.rotation.z =
-            waveAngle *
-            waveAmount;
-
-          rightArmRef.current.rotation.x =
-            Math.sin(
-              timeRef.current *
-                0.7
-            ) *
-            0.2 *
-            waveAmount;
-        }
-
-        /* seated arms */
-
-        const targetRightZ =
-          0.15 *
-            (1 -
-              sitAmount) +
-          0.1 *
-            sitAmount;
-
-        const targetRightX =
-          -1.1 *
-          sitAmount;
-
-        const targetLeftZ =
-          -0.15 *
-            (1 -
-              sitAmount) -
-          0.1 *
-            sitAmount;
-
-        const targetLeftX =
-          -1.1 *
-          sitAmount;
-
-        if (
-          waveAmount <= 0
-        ) {
-          rightArmRef.current.rotation.z =
-            targetRightZ;
-
-          rightArmRef.current.rotation.x =
-            targetRightX;
-        }
-
-        if (
-          leftArmRef.current
-        ) {
-          leftArmRef.current.rotation.z =
-            targetLeftZ;
-
-          leftArmRef.current.rotation.x =
-            targetLeftX;
-        }
-
-        /* breathing */
-
-        if (
-          bodyRef.current
-        ) {
-          bodyRef.current.position.y =
-            Math.sin(
-              state.clock
-                .elapsedTime * 2
-            ) * 0.012;
-        }
-      }
+    const sitAmount = Math.min(
+      1,
+      Math.max(0, (progress - 0.28) / 0.12)
     );
 
     /* ==================================================
-       EXISTING SIT
+       ANIMATION FRAME
     ================================================== */
 
-    const legRotation = [
-      (-Math.PI / 2) *
-        sitAmount,
-      0,
-      0,
-    ];
+    useFrame((state, delta) => {
+      if (!rightArmRef.current) return;
 
-    const legPositionY =
-      -0.92 +
-      sitAmount * 0.35;
+      timeRef.current += delta * 5;
 
-    const legPositionZ =
-      sitAmount * 0.55;
+      /* wave */
+      if (waveAmount > 0 && sitAmount < 0.5) {
+        const waveAngle =
+          Math.PI -
+          0.5 +
+          Math.sin(timeRef.current) * 0.4;
 
-    const bodyLowerY =
-      sitAmount * -0.18;
+        rightArmRef.current.rotation.z = waveAngle * waveAmount;
+
+        rightArmRef.current.rotation.x =
+          Math.sin(timeRef.current * 0.7) * 0.2 * waveAmount;
+      }
+
+      /* seated arms */
+      const targetRightZ = 0.15 * (1 - sitAmount) + 0.1 * sitAmount;
+      const targetRightX = -1.1 * sitAmount;
+
+      const targetLeftZ = -0.15 * (1 - sitAmount) - 0.1 * sitAmount;
+      const targetLeftX = -1.1 * sitAmount;
+
+      if (waveAmount <= 0) {
+        rightArmRef.current.rotation.z = targetRightZ;
+        rightArmRef.current.rotation.x = targetRightX;
+      }
+
+      if (leftArmRef.current) {
+        leftArmRef.current.rotation.z = targetLeftZ;
+        leftArmRef.current.rotation.x = targetLeftX;
+      }
+
+      /* breathing */
+      if (bodyRef.current) {
+        bodyRef.current.position.y =
+          Math.sin(state.clock.elapsedTime * 2) * 0.012;
+      }
+    });
+
+    /* ==================================================
+       SIT TRANSFORMS
+    ================================================== */
+
+    const legRotation = [(-Math.PI / 2) * sitAmount, 0, 0];
+    const legPositionY = -0.92 + sitAmount * 0.35;
+    const legPositionZ = sitAmount * 0.55;
+    const bodyLowerY = sitAmount * -0.18;
 
     return (
-      <group
-        ref={groupRef}
-        {...props}
-      >
-        <group
-          ref={bodyRef}
-          position={[
-            0,
-            bodyLowerY,
-            0,
-          ]}
-        >
-                    {/* ===================================
-              CLEAN TAPERED SWEATPANTS
-          =================================== */}
-
-          <group
-            position={[
-              0,
-              legPositionY,
-              legPositionZ,
-            ]}
-            rotation={
-              legRotation
-            }
-          >
-            {/* left leg */}
-            <SoftBox
-              args={[
-                0.32,
-                0.9,
-                0.35,
-              ]}
-              position={[
-                -0.19,
-                0,
-                0,
-              ]}
-              color={
-                COLORS.pants
-              }
-              radius={0.045}
-            />
-
-            {/* right leg */}
-            <SoftBox
-              args={[
-                0.32,
-                0.9,
-                0.35,
-              ]}
-              position={[
-                0.19,
-                0,
-                0,
-              ]}
-              color={
-                COLORS.pants
-              }
-              radius={0.045}
-            />
-
-            {/* structured waistband */}
-            <SoftBox
-              args={[
-                0.72,
-                0.12,
-                0.37,
-              ]}
-              position={[
-                0,
-                0.43,
-                0,
-              ]}
-              color={
-                COLORS.pantsDark
-              }
-              radius={0.025}
-            />
-
-            {/* subtle drawstrings */}
-            <Box
-              args={[
-                0.018,
-                0.14,
-                0.018,
-              ]}
-              position={[
-                -0.035,
-                0.33,
-                0.19,
-              ]}
-              rotation={[
-                0,
-                0,
-                -0.05,
-              ]}
-              color={
-                COLORS.cream
-              }
-            />
-
-            <Box
-              args={[
-                0.018,
-                0.14,
-                0.018,
-              ]}
-              position={[
-                0.035,
-                0.33,
-                0.19,
-              ]}
-              rotation={[
-                0,
-                0,
-                0.05,
-              ]}
-              color={
-                COLORS.cream
-              }
-            />
-
-            {/* clean front pocket details */}
-            <SoftBox
-              args={[
-                0.17,
-                0.13,
-                0.025,
-              ]}
-              position={[
-                -0.19,
-                0.13,
-                0.19,
-              ]}
-              color={
-                COLORS.pantsDark
-              }
-              radius={0.015}
-            />
-
-            <SoftBox
-              args={[
-                0.17,
-                0.13,
-                0.025,
-              ]}
-              position={[
-                0.19,
-                0.13,
-                0.19,
-              ]}
-              color={
-                COLORS.pantsDark
-              }
-              radius={0.015}
-            />
-
-            {/* tapered ankle cuffs */}
-            <SoftBox
-              args={[
-                0.29,
-                0.1,
-                0.34,
-              ]}
-              position={[
-                -0.19,
-                -0.41,
-                0,
-              ]}
-              color={
-                COLORS.pantsDark
-              }
-              radius={0.025}
-            />
-
-            <SoftBox
-              args={[
-                0.29,
-                0.1,
-                0.34,
-              ]}
-              position={[
-                0.19,
-                -0.41,
-                0,
-              ]}
-              color={
-                COLORS.pantsDark
-              }
-              radius={0.025}
-            />
-          </group>
-          {/* ===================================
-              SHOES
-          =================================== */}
-
-          <group
-            position={[
-              0,
-              -1.38,
-              0.06,
-            ]}
-            visible={
-              sitAmount < 0.5
-            }
-          >
-            <SoftBox
-              args={[
-                0.36,
-                0.16,
-                0.48,
-              ]}
-              position={[
-                -0.19,
-                0,
-                0,
-              ]}
-              color={
-                COLORS.shoes
-              }
-              radius={0.03}
-            />
-
-            <SoftBox
-              args={[
-                0.36,
-                0.16,
-                0.48,
-              ]}
-              position={[
-                0.19,
-                0,
-                0,
-              ]}
-              color={
-                COLORS.shoes
-              }
-              radius={0.03}
-            />
-
-            <Box
-              args={[
-                0.36,
-                0.04,
-                0.08,
-              ]}
-              position={[
-                -0.19,
-                -0.06,
-                0.15,
-              ]}
-              color={
-                COLORS.shoeAccent
-              }
-            />
-
-            <Box
-              args={[
-                0.36,
-                0.04,
-                0.08,
-              ]}
-              position={[
-                0.19,
-                -0.06,
-                0.15,
-              ]}
-              color={
-                COLORS.shoeAccent
-              }
-            />
-          </group>
-
-                   {/* ===================================
-              PASTEL TECH GIRL SHIRT
-          =================================== */}
-
-          {/* main shirt body */}
-          <SoftBox
-            args={[0.8, 0.7, 0.47]}
-            position={[0, 0.27, 0]}
-            color={COLORS.kurtaLight}
-            radius={0.07}
+      <group ref={groupRef} {...props}>
+        <group ref={bodyRef} position={[0, bodyLowerY, 0]}>
+          {/* BASIC SWEATPANTS */}
+          <BasicSweats
+            position={[0, legPositionY, legPositionZ]}
+            rotation={legRotation}
           />
 
-          {/* lower shirt section */}
-          <SoftBox
-            args={[0.76, 0.24, 0.45]}
-            position={[0, -0.2, 0]}
-            color={COLORS.kurtaLight}
-            radius={0.055}
-          />
+          {/* BASIC CLEAN SNEAKERS */}
+          <BasicSneakers visible={sitAmount < 0.5} />
 
-          {/* soft shoulder yoke */}
-          <SoftBox
-            args={[0.78, 0.12, 0.42]}
-            position={[0, 0.56, -0.01]}
-            color={COLORS.dupatta}
-            radius={0.03}
-          />
+          {/* BASIC RELAXED SHIRT */}
+          <BasicShirt />
 
-          {/* collar */}
-          <SoftBox
-            args={[0.28, 0.07, 0.04]}
-            position={[0, 0.61, 0.235]}
-            color={COLORS.kurtaDark}
-            radius={0.022}
-          />
-
-          {/* front placket */}
-          <SoftBox
-            args={[0.08, 0.5, 0.022]}
-            position={[0, 0.21, 0.246]}
-            color={COLORS.dupattaShadow}
-            radius={0.016}
-          />
-
-          {/* button row */}
-          {[0.44, 0.32, 0.2, 0.08, -0.04].map((y) => (
-            <SoftBox
-              key={y}
-              args={[0.032, 0.032, 0.012]}
-              position={[0, y, 0.262]}
-              color={COLORS.techNavy}
-              radius={0.01}
-            />
-          ))}
-
-          {/* shirt hem */}
-          <SoftBox
-            args={[0.74, 0.055, 0.45]}
-            position={[0, -0.31, 0]}
-            color={COLORS.kurtaDark}
-            radius={0.018}
-          />
-
-          {/* chest panel detail */}
-          <SoftBox
-            args={[0.2, 0.12, 0.02]}
-            position={[-0.2, 0.39, 0.245]}
-            color={COLORS.dupatta}
-            radius={0.02}
-          />
-
-          {/* subtle tech badge */}
-          <SoftBox
-            args={[0.085, 0.065, 0.018]}
-            position={[-0.26, 0.39, 0.258]}
-            color={COLORS.techNavy}
-            radius={0.015}
-          />
-
-          {/* badge dot */}
-          <SoftBox
-            args={[0.024, 0.024, 0.012]}
-            position={[-0.26, 0.39, 0.272]}
-            color={COLORS.lime}
-            radius={0.008}
-          />
-
-          {/* right chest accent line */}
-          <Box
-            args={[0.14, 0.016, 0.012]}
-            position={[0.23, 0.39, 0.25]}
-            color={COLORS.cream}
-          />
-
-          {/* soft side accent strips */}
-          <SoftBox
-            args={[0.06, 0.48, 0.02]}
-            position={[-0.31, 0.14, 0.24]}
-            color={COLORS.kurtaDark}
-            radius={0.012}
-          />
-
-          <SoftBox
-            args={[0.06, 0.48, 0.02]}
-            position={[0.31, 0.14, 0.24]}
-            color={COLORS.dupattaShadow}
-            radius={0.012}
-          />
-
-          {/* ===================================
-              FULL SLEEVES + ARMS
-          =================================== */}
-
-          <group
-            ref={rightArmRef}
-            position={[
-              -0.48,
-              0.5,
-              0,
-            ]}
-          >
-            {/* upper sleeve */}
-            <SoftBox
-              args={[
-                0.28,
-                0.5,
-                0.28,
-              ]}
-              position={[
-                0,
-                -0.04,
-                0,
-              ]}
-              color={
-                COLORS.kurtaLight
-              }
-              radius={0.05}
-            />
-
-            {/* lower sleeve */}
-            <SoftBox
-              args={[
-                0.24,
-                0.34,
-                0.24,
-              ]}
-              position={[
-                0,
-                -0.47,
-                0,
-              ]}
-              color={
-                COLORS.dupatta
-              }
-              radius={0.04}
-            />
-
-            {/* cuff */}
-            <SoftBox
-              args={[
-                0.24,
-                0.075,
-                0.24,
-              ]}
-              position={[
-                0,
-                -0.66,
-                0,
-              ]}
-              color={
-                COLORS.techNavy
-              }
-              radius={0.018}
-            />
-
-            {/* cuff accent */}
-            <Box
-              args={[
-                0.18,
-                0.02,
-                0.22,
-              ]}
-              position={[
-                0,
-                -0.66,
-                0.13,
-              ]}
-              color={
-                COLORS.cream
-              }
-            />
-
-            {/* hand */}
-            <SoftBox
-              args={[
-                0.18,
-                0.18,
-                0.18,
-              ]}
-              position={[
-                0,
-                -0.83,
-                0,
-              ]}
-              color={
-                COLORS.skin
-              }
-              radius={0.04}
-            />
-          </group>
-
-          <group
-            ref={leftArmRef}
-            position={[
-              0.48,
-              0.5,
-              0,
-            ]}
-          >
-            {/* upper sleeve */}
-            <SoftBox
-              args={[
-                0.28,
-                0.5,
-                0.28,
-              ]}
-              position={[
-                0,
-                -0.04,
-                0,
-              ]}
-              color={
-                COLORS.kurtaLight
-              }
-              radius={0.05}
-            />
-
-            {/* lower sleeve */}
-            <SoftBox
-              args={[
-                0.24,
-                0.34,
-                0.24,
-              ]}
-              position={[
-                0,
-                -0.47,
-                0,
-              ]}
-              color={
-                COLORS.dupatta
-              }
-              radius={0.04}
-            />
-
-            {/* cuff */}
-            <SoftBox
-              args={[
-                0.24,
-                0.075,
-                0.24,
-              ]}
-              position={[
-                0,
-                -0.66,
-                0,
-              ]}
-              color={
-                COLORS.techNavy
-              }
-              radius={0.018}
-            />
-
-            {/* subtle smartwatch band */}
-            <SoftBox
-              args={[
-                0.25,
-                0.08,
-                0.25,
-              ]}
-              position={[
-                0,
-                -0.56,
-                0,
-              ]}
-              color={
-                COLORS.kurtaDark
-              }
-              radius={0.018}
-            />
-
-            {/* smartwatch screen */}
-            <SoftBox
-              args={[
-                0.09,
-                0.05,
-                0.02,
-              ]}
-              position={[
-                0,
-                -0.56,
-                0.13,
-              ]}
-              color={
-                COLORS.lime
-              }
-              radius={0.008}
-            />
-
-            {/* cuff accent */}
-            <Box
-              args={[
-                0.18,
-                0.02,
-                0.22,
-              ]}
-              position={[
-                0,
-                -0.66,
-                0.13,
-              ]}
-              color={
-                COLORS.cream
-              }
-            />
-
-            {/* hand */}
-            <SoftBox
-              args={[
-                0.18,
-                0.18,
-                0.18,
-              ]}
-              position={[
-                0,
-                -0.83,
-                0,
-              ]}
-              color={
-                COLORS.skin
-              }
-              radius={0.04}
-            />
-          </group>
+          {/* ARMS WITH SHORT SLEEVES */}
+          <BasicArm armRef={rightArmRef} side="right" />
+          <BasicArm armRef={leftArmRef} side="left" />
 
           {/* FACE */}
-
           <Face />
 
           {/* HAIR */}
-
           <Hair />
         </group>
       </group>
