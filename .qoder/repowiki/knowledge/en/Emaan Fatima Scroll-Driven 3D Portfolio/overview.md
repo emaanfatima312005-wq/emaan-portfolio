@@ -1,0 +1,1 @@
+A Next.js portfolio that animates a warm 3D room with a boxy avatar, scroll-triggered camera transitions into a whimsical world, and overlaying content panels for about, projects, skills, experience, education, and contact.

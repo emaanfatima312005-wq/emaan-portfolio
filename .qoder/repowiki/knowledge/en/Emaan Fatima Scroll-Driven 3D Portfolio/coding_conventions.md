@@ -1,0 +1,6 @@
+- All interactive components are marked with the `'use client'` directive at the top of the file before any imports.
+- GSAP ScrollTrigger timelines are registered once at module load via `gsap.registerPlugin(ScrollTrigger)` and driven inside `useGSAP` callbacks bound to a `storyRef` element.
+- Section visibility is controlled by computing an opacity from a shared `progress` prop using `Math.max(0, Math.min(1, (progress - start) / range))` so multiple layers can crossfade on the same scroll axis.
+- Reusable 3D primitives are extracted as small functional components (e.g., `Box`, `FloatingOrb`) that accept geometry args, position, rotation, and color props rather than hardcoding meshes inline.
+- Data is kept out of components in `lib/data.js` and imported by sections/routes, keeping UI logic decoupled from profile, education, experience, projects, and skills content.
+- Each story panel is declared as a row in a `PANELS` array with `{id, Component, start, end}` and rendered via `.map`, driving animation ranges declaratively instead of imperative per-section code.

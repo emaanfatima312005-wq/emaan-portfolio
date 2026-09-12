@@ -1,0 +1,1 @@
+Run development with `npm run dev` (Next dev), production build with `npm run build`, and lint with `npm run lint`; the 3D scene depends on a local model file `3d-work/EmaanAvatar.bbmodel` loaded at runtime by the Avatar component.

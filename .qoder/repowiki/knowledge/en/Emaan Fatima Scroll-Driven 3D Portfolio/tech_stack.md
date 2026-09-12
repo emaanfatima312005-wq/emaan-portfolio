@@ -1,0 +1,1 @@
+Next.js 16 App Router with React 19 client components; @react-three/fiber + drei + three@0.185 for the 3D scene; GSAP 3 with ScrollTrigger (@gsap/react) for scroll-driven timelines; Lenis for smooth scrolling; Framer Motion for UI animations; Tailwind CSS v4 via @tailwindcss/postcss.

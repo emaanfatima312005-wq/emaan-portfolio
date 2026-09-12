@@ -22,18 +22,21 @@ const COLORS = {
   hair: "#3c302d",
   hairHighlight: "#4d3d39",
 
-  kurta: "#9fd8f5",
-  kurtaLight: "#b9e5fa",
-  kurtaDark: "#70bce4",
+  kurta: "#FBBCEE",
+  kurtaLight: "#FBBCEE",
+  kurtaDark: "#F78ECF",
 
-  pants: "#5575bb",
-  pantsDark: "#4663a3",
+  pants: "#D4B0F9",
+  pantsDark: "#A480F2",
 
-  dupatta: "#aadff7",
-  dupattaShadow: "#84ccea",
+  dupatta: "#E0CEFD",
+  dupattaShadow: "#CFB9F7",
 
-  pink: "#ff70a6",
-  cream: "#fff4e8",
+  pink: "#F992AD",
+  cream: "#FBBCEE",
+  techNavy: "#A480F2",
+  lime: "#C580ED",
+  gold: "#FAB4C8",
 
   shoes: "#ffffff",
   shoeAccent: "#70d6ff",
@@ -48,7 +51,6 @@ const COLORS = {
   earringMetal: "#f4f2ef",
   earringBlue: "#70d6ff",
 };
-
 /* =====================================================
    BASIC BOX
 ===================================================== */
@@ -589,11 +591,201 @@ function Ringlet({
 /* =====================================================
    BACK CROWN RINGLET
 
-   Same coily hair language as Ringlet, but this version
-   has NO upward root. It follows the curved back surface
-   of the scalp so it fills the exposed oval instead of
-   standing on top of the head.
+   Small coily curls that lie flat against the curved
+   back of the scalp cap, covering the exposed brown
+   oval. They follow the surface tangent so they look
+   like they grow from the crown rather than hanging
+   behind it.
 ===================================================== */
+
+function BackCrownRinglet({
+  baseX = 0,
+  yCenter = 1.35,
+  side = "left",
+  loops = 2.2,
+  length = 0.36,
+  radius = 0.055,
+  thickness = 0.022,
+  tone = "dark",
+  phase = 0,
+}) {
+  const dir = side === "left" ? -1 : 1;
+
+  const baseColor =
+    tone === "light"
+      ? COLORS.hairHighlight
+      : COLORS.hair;
+
+  const secondColor =
+    tone === "light"
+      ? COLORS.hair
+      : COLORS.hairHighlight;
+
+  const geometries = useMemo(() => {
+    const centerX = 0;
+    const centerY = 1.25;
+    const centerZ = -0.09;
+    const radiusX = 0.42;
+    const radiusY = 0.31;
+    const radiusZ = 0.35;
+
+    const nx = (baseX - centerX) / radiusX;
+    const ny = (yCenter - centerY) / radiusY;
+    const surface = Math.max(0.001, 1 - nx * nx - ny * ny);
+    const zCenter = centerZ - radiusZ * Math.sqrt(surface);
+
+    const origin = new THREE.Vector3(
+      baseX,
+      yCenter,
+      zCenter
+    );
+
+    const normal = new THREE.Vector3(
+      nx / radiusX,
+      ny / radiusY,
+      -Math.sqrt(surface) / radiusZ
+    ).normalize();
+
+    const worldDown = new THREE.Vector3(0, -1, 0);
+    const tangentDown = worldDown
+      .clone()
+      .sub(
+        normal
+          .clone()
+          .multiplyScalar(worldDown.dot(normal))
+      )
+      .normalize();
+
+    const tangentAcross = new THREE.Vector3()
+      .crossVectors(normal, tangentDown)
+      .normalize();
+
+    const makeCurl = (
+      xOffset = 0,
+      zOffset = 0,
+      phaseOffset = 0,
+      radiusScale = 1,
+      lengthScale = 1,
+      tubeScale = 1
+    ) => {
+      const points = [];
+      const total = 50;
+
+      for (let i = 0; i <= total; i++) {
+        const t = i / total;
+        const angle =
+          t * Math.PI * 2 * loops +
+          phase +
+          phaseOffset;
+        const taper = 1 - t * 0.18;
+        const r = radius * radiusScale * taper;
+
+        const localX =
+          dir *
+            Math.cos(angle) *
+            r *
+            0.9 +
+          xOffset;
+        const localY = t * length * lengthScale;
+        const localZ =
+          Math.sin(angle) * r * 0.65 +
+          zOffset;
+
+        const point = new THREE.Vector3()
+          .copy(tangentAcross)
+          .multiplyScalar(localX)
+          .add(tangentDown.clone().multiplyScalar(localY))
+          .add(origin);
+
+        point.add(
+          normal
+            .clone()
+            .multiplyScalar(localZ + 0.012)
+        );
+
+        points.push(point);
+      }
+
+      const curve = new THREE.CatmullRomCurve3(
+        points
+      );
+
+      return new THREE.TubeGeometry(
+        curve,
+        80,
+        thickness * tubeScale,
+        10,
+        false
+      );
+    };
+
+    return [
+      makeCurl(0, 0, 0, 1, 1, 1),
+      makeCurl(
+        dir * 0.018,
+        0.012,
+        0.7,
+        0.78,
+        0.92,
+        0.8
+      ),
+      makeCurl(
+        -dir * 0.016,
+        -0.01,
+        -0.6,
+        0.85,
+        1.02,
+        0.75
+      ),
+    ];
+  }, [
+    baseX,
+    yCenter,
+    dir,
+    length,
+    loops,
+    phase,
+    radius,
+    thickness,
+  ]);
+
+  return (
+    <group>
+      <mesh
+        geometry={geometries[0]}
+        castShadow
+        receiveShadow
+      >
+        <meshStandardMaterial
+          color={baseColor}
+          roughness={0.84}
+        />
+      </mesh>
+
+      <mesh
+        geometry={geometries[1]}
+        castShadow
+        receiveShadow
+      >
+        <meshStandardMaterial
+          color={secondColor}
+          roughness={0.86}
+        />
+      </mesh>
+
+      <mesh
+        geometry={geometries[2]}
+        castShadow
+        receiveShadow
+      >
+        <meshStandardMaterial
+          color={baseColor}
+          roughness={0.84}
+        />
+      </mesh>
+    </group>
+  );
+}
 
 /* =====================================================
    CROWN SURFACE CURL
@@ -883,6 +1075,273 @@ function Hair() {
       </mesh>
 
       {/* =================================================
+          BACK CROWN SURFACE RINGLETS
+
+          Longer curls that start on the exposed back oval
+          and fall down to blend with the hanging coils below.
+      ================================================= */}
+
+      {/* top crown — short, just to break the bare skin */}
+      <BackCrownRinglet
+        baseX={-0.15}
+        yCenter={1.50}
+        side="left"
+        loops={2.1}
+        length={0.44}
+        radius={0.0936}
+        tone="dark"
+        phase={0.2}
+      />
+
+      <BackCrownRinglet
+        baseX={0}
+        yCenter={1.51}
+        side="left"
+        loops={2.2}
+        length={0.46}
+        radius={0.0994}
+        tone="light"
+        phase={1.0}
+      />
+
+      <BackCrownRinglet
+        baseX={0.15}
+        yCenter={1.50}
+        side="right"
+        loops={2.1}
+        length={0.44}
+        radius={0.0936}
+        tone="dark"
+        phase={2.4}
+      />
+
+      {/* upper crown */}
+      <BackCrownRinglet
+        baseX={-0.28}
+        yCenter={1.43}
+        side="left"
+        loops={2.4}
+        length={0.58}
+        radius={0.0851}
+        tone="light"
+        phase={0.6}
+      />
+
+      <BackCrownRinglet
+        baseX={-0.10}
+        yCenter={1.44}
+        side="left"
+        loops={2.5}
+        length={0.62}
+        radius={0.0905}
+        tone="dark"
+        phase={1.7}
+      />
+
+      <BackCrownRinglet
+        baseX={0.10}
+        yCenter={1.44}
+        side="right"
+        loops={2.5}
+        length={0.62}
+        radius={0.0905}
+        tone="light"
+        phase={2.9}
+      />
+
+      <BackCrownRinglet
+        baseX={0.28}
+        yCenter={1.43}
+        side="right"
+        loops={2.4}
+        length={0.58}
+        radius={0.0851}
+        tone="dark"
+        phase={3.8}
+      />
+
+      {/* middle crown — main oval cover */}
+      <BackCrownRinglet
+        baseX={-0.34}
+        yCenter={1.34}
+        side="left"
+        loops={2.6}
+        length={0.72}
+        radius={0.0696}
+        tone="dark"
+        phase={0.3}
+      />
+
+      <BackCrownRinglet
+        baseX={-0.18}
+        yCenter={1.36}
+        side="left"
+        loops={2.7}
+        length={0.78}
+        radius={0.0769}
+        tone="light"
+        phase={1.3}
+      />
+
+      <BackCrownRinglet
+        baseX={0}
+        yCenter={1.37}
+        side="left"
+        loops={2.8}
+        length={0.82}
+        radius={0.0819}
+        tone="dark"
+        phase={2.5}
+      />
+
+      <BackCrownRinglet
+        baseX={0.18}
+        yCenter={1.36}
+        side="right"
+        loops={2.7}
+        length={0.78}
+        radius={0.0769}
+        tone="light"
+        phase={3.6}
+      />
+
+      <BackCrownRinglet
+        baseX={0.34}
+        yCenter={1.34}
+        side="right"
+        loops={2.6}
+        length={0.72}
+        radius={0.0696}
+        tone="dark"
+        phase={0.1}
+      />
+
+      {/* lower-middle crown — blend into hanging hair */}
+      <BackCrownRinglet
+        baseX={-0.30}
+        yCenter={1.24}
+        side="left"
+        loops={2.7}
+        length={0.84}
+        radius={0.062}
+        tone="light"
+        phase={0.9}
+      />
+
+      <BackCrownRinglet
+        baseX={-0.14}
+        yCenter={1.26}
+        side="left"
+        loops={2.8}
+        length={0.90}
+        radius={0.064}
+        tone="dark"
+        phase={2.1}
+      />
+
+      <BackCrownRinglet
+        baseX={0.14}
+        yCenter={1.26}
+        side="right"
+        loops={2.8}
+        length={0.90}
+        radius={0.064}
+        tone="light"
+        phase={3.2}
+      />
+
+      <BackCrownRinglet
+        baseX={0.30}
+        yCenter={1.24}
+        side="right"
+        loops={2.7}
+        length={0.84}
+        radius={0.062}
+        tone="dark"
+        phase={0.5}
+      />
+
+      {/* bottom bridge row — overlaps the first row of hanging ringlets */}
+      <BackCrownRinglet
+        baseX={-0.22}
+        yCenter={1.14}
+        side="left"
+        loops={2.8}
+        length={0.92}
+        radius={0.064}
+        tone="dark"
+        phase={1.1}
+      />
+
+      <BackCrownRinglet
+        baseX={0}
+        yCenter={1.16}
+        side="left"
+        loops={2.9}
+        length={0.98}
+        radius={0.066}
+        tone="light"
+        phase={2.3}
+      />
+
+      <BackCrownRinglet
+        baseX={0.22}
+        yCenter={1.14}
+        side="right"
+        loops={2.8}
+        length={0.92}
+        radius={0.064}
+        tone="dark"
+        phase={3.5}
+      />
+
+      {/* side bridge — fills the gap between crown curls and side/back curls */}
+      <BackCrownRinglet
+        baseX={-0.38}
+        yCenter={1.20}
+        side="left"
+        loops={2.6}
+        length={0.80}
+        radius={0.060}
+        tone="light"
+        phase={0.7}
+      />
+
+      <BackCrownRinglet
+        baseX={0.38}
+        yCenter={1.20}
+        side="right"
+        loops={2.6}
+        length={0.80}
+        radius={0.060}
+        tone="dark"
+        phase={1.9}
+      />
+
+      {/* deep center bridge — directly over the lowest exposed patch */}
+      <BackCrownRinglet
+        baseX={-0.10}
+        yCenter={1.06}
+        side="left"
+        loops={3.0}
+        length={1.05}
+        radius={0.066}
+        tone="dark"
+        phase={0.4}
+      />
+
+      <BackCrownRinglet
+        baseX={0.10}
+        yCenter={1.06}
+        side="right"
+        loops={3.0}
+        length={1.05}
+        radius={0.066}
+        tone="light"
+        phase={1.6}
+      />
+
+      {/* =================================================
           BACK OVAL RINGLET FILL
           FULL OVAL COVER VERSION
 
@@ -890,7 +1349,241 @@ function Hair() {
           on the exposed oval so the crown gets covered
           instead of only framed.
       ================================================= */}
+      {/* =================================================
+          EXTRA CENTER OVAL COVER
+          Add these directly on the exposed brown oval
+          so the strands fall over it.
+      ================================================= */}
+      {/* =================================================
+          DIRECT OVAL COVER LAYER
+          These ringlets sit ON the exposed oval and fall
+          downward to cover it instead of framing it.
+      ================================================= */}
 
+      {/* top-center cover */}
+      <Ringlet
+        position={[-0.14, 1.34, -0.08]}
+        side="left"
+        loops={3.05}
+        length={1.12}
+        radius={0.06}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[0, 1.36, -0.09]}
+        side="left"
+        loops={3.2}
+        length={1.2}
+        radius={0.062}
+        thickness={0.022}
+        tone="light"
+        back
+      />
+
+      <Ringlet
+        position={[0.14, 1.34, -0.08]}
+        side="right"
+        loops={3.05}
+        length={1.12}
+        radius={0.06}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      {/* upper-middle cover */}
+      <Ringlet
+        position={[-0.24, 1.3, -0.12]}
+        side="left"
+        loops={3.05}
+        length={1.08}
+        radius={0.06}
+        thickness={0.022}
+        tone="light"
+        back
+      />
+
+      <Ringlet
+        position={[-0.08, 1.29, -0.14]}
+        side="left"
+        loops={3.15}
+        length={1.14}
+        radius={0.061}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[0.08, 1.29, -0.14]}
+        side="right"
+        loops={3.15}
+        length={1.14}
+        radius={0.061}
+        thickness={0.022}
+        tone="light"
+        back
+      />
+
+      <Ringlet
+        position={[0.24, 1.3, -0.12]}
+        side="right"
+        loops={3.05}
+        length={1.08}
+        radius={0.06}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      {/* center blend cover */}
+      <Ringlet
+        position={[-0.16, 1.24, -0.18]}
+        side="left"
+        loops={3.2}
+        length={1.12}
+        radius={0.061}
+        thickness={0.022}
+        tone="light"
+        back
+      />
+
+      <Ringlet
+        position={[0, 1.23, -0.2]}
+        side="left"
+        loops={3.3}
+        length={1.18}
+        radius={0.063}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[0.16, 1.24, -0.18]}
+        side="right"
+        loops={3.2}
+        length={1.12}
+        radius={0.061}
+        thickness={0.022}
+        tone="light"
+        back
+      />
+      {/* center crown row */}
+      <Ringlet
+        position={[-0.22, 1.36, -0.12]}
+        side="left"
+        loops={3.0}
+        length={1.02}
+        radius={0.06}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[-0.1, 1.38, -0.11]}
+        side="left"
+        loops={3.05}
+        length={1.08}
+        radius={0.061}
+        thickness={0.022}
+        tone="light"
+        back
+      />
+
+      <Ringlet
+        position={[0, 1.39, -0.12]}
+        side="left"
+        loops={3.15}
+        length={1.14}
+        radius={0.062}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[0.1, 1.38, -0.11]}
+        side="right"
+        loops={3.05}
+        length={1.08}
+        radius={0.061}
+        thickness={0.022}
+        tone="light"
+        back
+      />
+
+      <Ringlet
+        position={[0.22, 1.36, -0.12]}
+        side="right"
+        loops={3.0}
+        length={1.02}
+        radius={0.06}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      {/* deeper oval row */}
+      <Ringlet
+        position={[-0.18, 1.31, -0.18]}
+        side="left"
+        loops={3.1}
+        length={1.1}
+        radius={0.061}
+        thickness={0.022}
+        tone="light"
+        back
+      />
+
+      <Ringlet
+        position={[0, 1.32, -0.2]}
+        side="left"
+        loops={3.2}
+        length={1.18}
+        radius={0.063}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[0.18, 1.31, -0.18]}
+        side="right"
+        loops={3.1}
+        length={1.1}
+        radius={0.061}
+        thickness={0.022}
+        tone="light"
+        back
+      />
+
+      {/* lower center blend */}
+      <Ringlet
+        position={[-0.08, 1.25, -0.25]}
+        side="left"
+        loops={3.15}
+        length={1.12}
+        radius={0.062}
+        thickness={0.022}
+        tone="dark"
+        back
+      />
+
+      <Ringlet
+        position={[0.08, 1.25, -0.25]}
+        side="right"
+        loops={3.15}
+        length={1.12}
+        radius={0.062}
+        thickness={0.022}
+        tone="light"
+        back
+      />
       {/* TOP OVAL COVER ROW */}
       <Ringlet
         position={[-0.26, 1.37, -0.13]}
@@ -2081,123 +2774,137 @@ function Hair() {
 function Face() {
   return (
     <group>
+      {/* FACE BASE */}
       <SoftBox
-        args={[0.6, 0.64, 0.6]}
-        position={[0, 1.08, 0]}
+        args={[0.56, 0.6, 0.56]}
+        position={[0, 1.07, 0]}
         color={COLORS.skin}
-        radius={0.11}
+        radius={0.13}
+      />
+
+      {/* SOFT CHEEKS */}
+      <SoftBox
+        args={[0.13, 0.1, 0.07]}
+        position={[-0.17, 0.98, 0.2]}
+        color={COLORS.skin}
+        radius={0.04}
+      />
+      <SoftBox
+        args={[0.13, 0.1, 0.07]}
+        position={[0.17, 0.98, 0.2]}
+        color={COLORS.skin}
+        radius={0.04}
       />
 
       {/* THIN EYEBROWS */}
-
       <SoftBox
-        args={[0.095, 0.018, 0.018]}
-        position={[-0.19, 1.19, 0.3]}
-        rotation={[0, 0, -0.08]}
-        color={COLORS.brow ?? COLORS.hair}
+        args={[0.09, 0.014, 0.014]}
+        position={[-0.17, 1.18, 0.295]}
+        rotation={[0, 0, -0.04]}
+        color={COLORS.brow}
+        radius={0.004}
+      />
+      <SoftBox
+        args={[0.09, 0.014, 0.014]}
+        position={[0.17, 1.18, 0.295]}
+        rotation={[0, 0, 0.04]}
+        color={COLORS.brow}
+        radius={0.004}
+      />
+
+      {/* PIXEL EYES - neutral and soft */}
+      <SoftBox
+        args={[0.05, 0.07, 0.02]}
+        position={[-0.17, 1.075, 0.302]}
+        color={COLORS.eye}
+        radius={0.01}
+      />
+      <SoftBox
+        args={[0.05, 0.07, 0.02]}
+        position={[0.17, 1.075, 0.302]}
+        color={COLORS.eye}
+        radius={0.01}
+      />
+
+      {/* SMALL EYE HIGHLIGHTS */}
+      <Box
+        args={[0.012, 0.012, 0.01]}
+        position={[-0.158, 1.09, 0.314]}
+        color="#fffaf6"
+      />
+      <Box
+        args={[0.012, 0.012, 0.01]}
+        position={[0.182, 1.09, 0.314]}
+        color="#fffaf6"
+      />
+
+      {/* TINY NOSE */}
+      <SoftBox
+        args={[0.02, 0.03, 0.015]}
+        position={[0, 1.005, 0.304]}
+        color={COLORS.skinShadow}
         radius={0.008}
       />
 
+      {/* SOFT BLUSH */}
       <SoftBox
-        args={[0.095, 0.018, 0.018]}
-        position={[0.19, 1.19, 0.3]}
-        rotation={[0, 0, 0.08]}
-        color={COLORS.brow ?? COLORS.hair}
-        radius={0.008}
-      />
-
-      {/* HAPPY CLOSED EYES */}
-
-      <SoftBox
-        args={[0.105, 0.025, 0.022]}
-        position={[-0.19, 1.095, 0.3]}
-        rotation={[0, 0, -0.24]}
-        color={COLORS.eye}
-        radius={0.009}
-      />
-
-      <SoftBox
-        args={[0.105, 0.025, 0.022]}
-        position={[0.19, 1.095, 0.3]}
-        rotation={[0, 0, 0.24]}
-        color={COLORS.eye}
-        radius={0.009}
-      />
-
-      {/* tiny lashes */}
-
-      <Box
-        args={[0.025, 0.012, 0.015]}
-        position={[-0.255, 1.105, 0.303]}
-        rotation={[0, 0, -0.42]}
-        color={COLORS.eye}
-      />
-
-      <Box
-        args={[0.025, 0.012, 0.015]}
-        position={[0.255, 1.105, 0.303]}
-        rotation={[0, 0, 0.42]}
-        color={COLORS.eye}
-      />
-
-      {/* SMALL BLUSH */}
-
-      <SoftBox
-        args={[0.085, 0.04, 0.018]}
-        position={[-0.265, 0.995, 0.3]}
+        args={[0.075, 0.04, 0.014]}
+        position={[-0.245, 0.975, 0.295]}
         color={COLORS.blush}
-        radius={0.012}
+        radius={0.016}
       />
-
       <SoftBox
-        args={[0.085, 0.04, 0.018]}
-        position={[0.265, 0.995, 0.3]}
+        args={[0.075, 0.04, 0.014]}
+        position={[0.245, 0.975, 0.295]}
         color={COLORS.blush}
-        radius={0.012}
+        radius={0.016}
       />
 
-      {/* BIG HAPPY SMILE */}
-
+      {/* NEUTRAL PIXEL MOUTH */}
       <SoftBox
-        args={[0.18, 0.075, 0.024]}
-        position={[0, 0.91, 0.31]}
+        args={[0.075, 0.018, 0.014]}
+        position={[0, 0.91, 0.305]}
         color={COLORS.mouth}
-        radius={0.026}
+        radius={0.006}
       />
 
-      <SoftBox
-        args={[0.095, 0.022, 0.014]}
-        position={[0, 0.89, 0.326]}
-        color="#f8c0c7"
-        radius={0.008}
+      {/* TINY MOUTH CORNERS - very slight softness */}
+      <Box
+        args={[0.012, 0.012, 0.01]}
+        position={[-0.042, 0.908, 0.307]}
+        rotation={[0, 0, -0.18]}
+        color={COLORS.mouth}
+      />
+      <Box
+        args={[0.012, 0.012, 0.01]}
+        position={[0.042, 0.908, 0.307]}
+        rotation={[0, 0, 0.18]}
+        color={COLORS.mouth}
       />
 
       {/* BLUE DANGLING EARRINGS */}
-
       <Box
-        args={[0.018, 0.1, 0.018]}
-        position={[-0.37, 0.99, 0.07]}
+        args={[0.014, 0.085, 0.014]}
+        position={[-0.34, 0.985, 0.06]}
         color="#f5f1ea"
       />
-
       <Box
-        args={[0.018, 0.1, 0.018]}
-        position={[0.37, 0.99, 0.07]}
+        args={[0.014, 0.085, 0.014]}
+        position={[0.34, 0.985, 0.06]}
         color="#f5f1ea"
       />
 
       <SoftBox
-        args={[0.075, 0.075, 0.035]}
-        position={[-0.37, 0.91, 0.07]}
-        color="#70d6ff"
-        radius={0.018}
+        args={[0.055, 0.055, 0.028]}
+        position={[-0.34, 0.915, 0.06]}
+        color={COLORS.earringBlue}
+        radius={0.02}
       />
-
       <SoftBox
-        args={[0.075, 0.075, 0.035]}
-        position={[0.37, 0.91, 0.07]}
-        color="#70d6ff"
-        radius={0.018}
+        args={[0.055, 0.055, 0.028]}
+        position={[0.34, 0.915, 0.06]}
+        color={COLORS.earringBlue}
+        radius={0.02}
       />
     </group>
   );
@@ -2385,8 +3092,8 @@ const Avatar = forwardRef(
             0,
           ]}
         >
-          {/* ===================================
-              LEGS / BLUE PANTS
+                    {/* ===================================
+              CLEAN TAPERED SWEATPANTS
           =================================== */}
 
           <group
@@ -2399,11 +3106,12 @@ const Avatar = forwardRef(
               legRotation
             }
           >
+            {/* left leg */}
             <SoftBox
               args={[
-                0.3,
+                0.32,
                 0.9,
-                0.34,
+                0.35,
               ]}
               position={[
                 -0.19,
@@ -2413,14 +3121,15 @@ const Avatar = forwardRef(
               color={
                 COLORS.pants
               }
-              radius={0.035}
+              radius={0.045}
             />
 
+            {/* right leg */}
             <SoftBox
               args={[
-                0.3,
+                0.32,
                 0.9,
-                0.34,
+                0.35,
               ]}
               position={[
                 0.19,
@@ -2430,42 +3139,140 @@ const Avatar = forwardRef(
               color={
                 COLORS.pants
               }
-              radius={0.035}
+              radius={0.045}
             />
 
-            <Box
+            {/* structured waistband */}
+            <SoftBox
               args={[
-                0.23,
-                0.18,
-                0.025,
+                0.72,
+                0.12,
+                0.37,
               ]}
               position={[
-                -0.19,
-                -0.19,
-                0.18,
+                0,
+                0.43,
+                0,
               ]}
               color={
                 COLORS.pantsDark
+              }
+              radius={0.025}
+            />
+
+            {/* subtle drawstrings */}
+            <Box
+              args={[
+                0.018,
+                0.14,
+                0.018,
+              ]}
+              position={[
+                -0.035,
+                0.33,
+                0.19,
+              ]}
+              rotation={[
+                0,
+                0,
+                -0.05,
+              ]}
+              color={
+                COLORS.cream
               }
             />
 
             <Box
               args={[
-                0.23,
-                0.18,
+                0.018,
+                0.14,
+                0.018,
+              ]}
+              position={[
+                0.035,
+                0.33,
+                0.19,
+              ]}
+              rotation={[
+                0,
+                0,
+                0.05,
+              ]}
+              color={
+                COLORS.cream
+              }
+            />
+
+            {/* clean front pocket details */}
+            <SoftBox
+              args={[
+                0.17,
+                0.13,
+                0.025,
+              ]}
+              position={[
+                -0.19,
+                0.13,
+                0.19,
+              ]}
+              color={
+                COLORS.pantsDark
+              }
+              radius={0.015}
+            />
+
+            <SoftBox
+              args={[
+                0.17,
+                0.13,
                 0.025,
               ]}
               position={[
                 0.19,
-                -0.19,
-                0.18,
+                0.13,
+                0.19,
               ]}
               color={
                 COLORS.pantsDark
               }
+              radius={0.015}
+            />
+
+            {/* tapered ankle cuffs */}
+            <SoftBox
+              args={[
+                0.29,
+                0.1,
+                0.34,
+              ]}
+              position={[
+                -0.19,
+                -0.41,
+                0,
+              ]}
+              color={
+                COLORS.pantsDark
+              }
+              radius={0.025}
+            />
+
+            <SoftBox
+              args={[
+                0.29,
+                0.1,
+                0.34,
+              ]}
+              position={[
+                0.19,
+                -0.41,
+                0,
+              ]}
+              color={
+                COLORS.pantsDark
+              }
+              radius={0.025}
             />
           </group>
-
           {/* ===================================
               SHOES
           =================================== */}
@@ -2547,194 +3354,117 @@ const Avatar = forwardRef(
             />
           </group>
 
-          {/* ===================================
-              LONG BLUE KURTA
+                   {/* ===================================
+              PASTEL TECH GIRL SHIRT
           =================================== */}
 
+          {/* main shirt body */}
           <SoftBox
-            args={[
-              0.83,
-              0.9,
-              0.47,
-            ]}
-            position={[
-              0,
-              0.25,
-              0,
-            ]}
-            color={
-              COLORS.kurta
-            }
-            radius={0.045}
+            args={[0.8, 0.7, 0.47]}
+            position={[0, 0.27, 0]}
+            color={COLORS.kurtaLight}
+            radius={0.07}
           />
 
-          {/* lower kurta */}
-
+          {/* lower shirt section */}
           <SoftBox
-            args={[
-              0.89,
-              0.52,
-              0.49,
-            ]}
-            position={[
-              0,
-              -0.36,
-              0,
-            ]}
-            color={
-              COLORS.kurta
-            }
-            radius={0.04}
+            args={[0.76, 0.24, 0.45]}
+            position={[0, -0.2, 0]}
+            color={COLORS.kurtaLight}
+            radius={0.055}
           />
 
-          {/* ===================================
-              DUPATTA
-          =================================== */}
-
+          {/* soft shoulder yoke */}
           <SoftBox
-            args={[
-              0.86,
-              0.12,
-              0.54,
-            ]}
-            position={[
-              0,
-              0.66,
-              0.025,
-            ]}
-            rotation={[
-              0,
-              0,
-              -0.05,
-            ]}
-            color={
-              COLORS.dupatta
-            }
-            radius={0.035}
-          />
-
-          <SoftBox
-            args={[
-              0.72,
-              0.1,
-              0.55,
-            ]}
-            position={[
-              0.08,
-              0.58,
-              0.05,
-            ]}
-            rotation={[
-              0,
-              0,
-              -0.13,
-            ]}
-            color={
-              COLORS.dupattaShadow
-            }
+            args={[0.78, 0.12, 0.42]}
+            position={[0, 0.56, -0.01]}
+            color={COLORS.dupatta}
             radius={0.03}
           />
 
-          {/* ===================================
-              KURTA CENTER EMBROIDERY
-          =================================== */}
+          {/* collar */}
+          <SoftBox
+            args={[0.28, 0.07, 0.04]}
+            position={[0, 0.61, 0.235]}
+            color={COLORS.kurtaDark}
+            radius={0.022}
+          />
 
+          {/* front placket */}
+          <SoftBox
+            args={[0.08, 0.5, 0.022]}
+            position={[0, 0.21, 0.246]}
+            color={COLORS.dupattaShadow}
+            radius={0.016}
+          />
+
+          {/* button row */}
+          {[0.44, 0.32, 0.2, 0.08, -0.04].map((y) => (
+            <SoftBox
+              key={y}
+              args={[0.032, 0.032, 0.012]}
+              position={[0, y, 0.262]}
+              color={COLORS.techNavy}
+              radius={0.01}
+            />
+          ))}
+
+          {/* shirt hem */}
+          <SoftBox
+            args={[0.74, 0.055, 0.45]}
+            position={[0, -0.31, 0]}
+            color={COLORS.kurtaDark}
+            radius={0.018}
+          />
+
+          {/* chest panel detail */}
+          <SoftBox
+            args={[0.2, 0.12, 0.02]}
+            position={[-0.2, 0.39, 0.245]}
+            color={COLORS.dupatta}
+            radius={0.02}
+          />
+
+          {/* subtle tech badge */}
+          <SoftBox
+            args={[0.085, 0.065, 0.018]}
+            position={[-0.26, 0.39, 0.258]}
+            color={COLORS.techNavy}
+            radius={0.015}
+          />
+
+          {/* badge dot */}
+          <SoftBox
+            args={[0.024, 0.024, 0.012]}
+            position={[-0.26, 0.39, 0.272]}
+            color={COLORS.lime}
+            radius={0.008}
+          />
+
+          {/* right chest accent line */}
           <Box
-            args={[
-              0.055,
-              0.55,
-              0.025,
-            ]}
-            position={[
-              0,
-              0.28,
-              0.25,
-            ]}
-            color={
-              COLORS.cream
-            }
+            args={[0.14, 0.016, 0.012]}
+            position={[0.23, 0.39, 0.25]}
+            color={COLORS.cream}
           />
 
-          {[
-            0.48,
-            0.38,
-            0.28,
-            0.18,
-            0.08,
-          ].map(
-            (y, index) => (
-              <SoftBox
-                key={y}
-                args={[
-                  0.055,
-                  0.055,
-                  0.03,
-                ]}
-                position={[
-                  0,
-                  y,
-                  0.268,
-                ]}
-                color={
-                  index % 2 ===
-                  0
-                    ? COLORS.pink
-                    : COLORS.cream
-                }
-                radius={0.012}
-              />
-            )
-          )}
-
-          {/* ===================================
-              FLORAL EMBROIDERY
-          =================================== */}
-
-          <TinyFlower
-            position={[
-              -0.27,
-              0.37,
-              0.25,
-            ]}
+          {/* soft side accent strips */}
+          <SoftBox
+            args={[0.06, 0.48, 0.02]}
+            position={[-0.31, 0.14, 0.24]}
+            color={COLORS.kurtaDark}
+            radius={0.012}
           />
 
-          <TinyFlower
-            position={[
-              0.3,
-              0.18,
-              0.25,
-            ]}
-          />
-
-          <TinyFlower
-            position={[
-              -0.24,
-              -0.02,
-              0.25,
-            ]}
-            color={
-              COLORS.cream
-            }
-          />
-
-          <TinyFlower
-            position={[
-              0.24,
-              -0.18,
-              0.25,
-            ]}
-          />
-
-          <TinyFlower
-            position={[
-              -0.31,
-              -0.38,
-              0.25,
-            ]}
+          <SoftBox
+            args={[0.06, 0.48, 0.02]}
+            position={[0.31, 0.14, 0.24]}
+            color={COLORS.dupattaShadow}
+            radius={0.012}
           />
 
           {/* ===================================
-              ARMS — LONG KURTA SLEEVES
+              FULL SLEEVES + ARMS
           =================================== */}
 
           <group
@@ -2745,44 +3475,48 @@ const Avatar = forwardRef(
               0,
             ]}
           >
+            {/* upper sleeve */}
             <SoftBox
               args={[
-                0.27,
-                0.66,
-                0.27,
-              ]}
-              position={[
-                0,
-                -0.18,
-                0,
-              ]}
-              color={
-                COLORS.kurta
-              }
-              radius={0.035}
-            />
-
-            <Box
-              args={[
                 0.28,
-                0.08,
+                0.5,
                 0.28,
               ]}
               position={[
                 0,
-                -0.51,
+                -0.04,
                 0,
               ]}
               color={
-                COLORS.dupattaShadow
+                COLORS.kurtaLight
               }
+              radius={0.05}
             />
 
+            {/* lower sleeve */}
             <SoftBox
               args={[
-                0.2,
-                0.22,
-                0.2,
+                0.24,
+                0.34,
+                0.24,
+              ]}
+              position={[
+                0,
+                -0.47,
+                0,
+              ]}
+              color={
+                COLORS.dupatta
+              }
+              radius={0.04}
+            />
+
+            {/* cuff */}
+            <SoftBox
+              args={[
+                0.24,
+                0.075,
+                0.24,
               ]}
               position={[
                 0,
@@ -2790,9 +3524,44 @@ const Avatar = forwardRef(
                 0,
               ]}
               color={
+                COLORS.techNavy
+              }
+              radius={0.018}
+            />
+
+            {/* cuff accent */}
+            <Box
+              args={[
+                0.18,
+                0.02,
+                0.22,
+              ]}
+              position={[
+                0,
+                -0.66,
+                0.13,
+              ]}
+              color={
+                COLORS.cream
+              }
+            />
+
+            {/* hand */}
+            <SoftBox
+              args={[
+                0.18,
+                0.18,
+                0.18,
+              ]}
+              position={[
+                0,
+                -0.83,
+                0,
+              ]}
+              color={
                 COLORS.skin
               }
-              radius={0.03}
+              radius={0.04}
             />
           </group>
 
@@ -2804,44 +3573,48 @@ const Avatar = forwardRef(
               0,
             ]}
           >
+            {/* upper sleeve */}
             <SoftBox
               args={[
-                0.27,
-                0.66,
-                0.27,
-              ]}
-              position={[
-                0,
-                -0.18,
-                0,
-              ]}
-              color={
-                COLORS.kurta
-              }
-              radius={0.035}
-            />
-
-            <Box
-              args={[
                 0.28,
-                0.08,
+                0.5,
                 0.28,
               ]}
               position={[
                 0,
-                -0.51,
+                -0.04,
                 0,
               ]}
               color={
-                COLORS.dupattaShadow
+                COLORS.kurtaLight
               }
+              radius={0.05}
             />
 
+            {/* lower sleeve */}
             <SoftBox
               args={[
-                0.2,
-                0.22,
-                0.2,
+                0.24,
+                0.34,
+                0.24,
+              ]}
+              position={[
+                0,
+                -0.47,
+                0,
+              ]}
+              color={
+                COLORS.dupatta
+              }
+              radius={0.04}
+            />
+
+            {/* cuff */}
+            <SoftBox
+              args={[
+                0.24,
+                0.075,
+                0.24,
               ]}
               position={[
                 0,
@@ -2849,9 +3622,80 @@ const Avatar = forwardRef(
                 0,
               ]}
               color={
+                COLORS.techNavy
+              }
+              radius={0.018}
+            />
+
+            {/* subtle smartwatch band */}
+            <SoftBox
+              args={[
+                0.25,
+                0.08,
+                0.25,
+              ]}
+              position={[
+                0,
+                -0.56,
+                0,
+              ]}
+              color={
+                COLORS.kurtaDark
+              }
+              radius={0.018}
+            />
+
+            {/* smartwatch screen */}
+            <SoftBox
+              args={[
+                0.09,
+                0.05,
+                0.02,
+              ]}
+              position={[
+                0,
+                -0.56,
+                0.13,
+              ]}
+              color={
+                COLORS.lime
+              }
+              radius={0.008}
+            />
+
+            {/* cuff accent */}
+            <Box
+              args={[
+                0.18,
+                0.02,
+                0.22,
+              ]}
+              position={[
+                0,
+                -0.66,
+                0.13,
+              ]}
+              color={
+                COLORS.cream
+              }
+            />
+
+            {/* hand */}
+            <SoftBox
+              args={[
+                0.18,
+                0.18,
+                0.18,
+              ]}
+              position={[
+                0,
+                -0.83,
+                0,
+              ]}
+              color={
                 COLORS.skin
               }
-              radius={0.03}
+              radius={0.04}
             />
           </group>
 

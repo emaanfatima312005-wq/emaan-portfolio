@@ -16,11 +16,11 @@
 
 ## Update Summary
 **Changes Made**
-- Updated architecture overview to reflect modular component structure
-- Enhanced component analysis sections with detailed breakdown of individual files
-- Added new section on component composition and organization patterns
-- Updated dependency analysis to show clear separation of concerns
-- Enhanced troubleshooting guide with modular-specific considerations
+- Enhanced Avatar component description to reflect new sophisticated hair rendering system using CatmullRom curves and TubeGeometry
+- Updated visual details section to include comprehensive color palette and decorative elements
+- Improved animation system documentation with better frame-based updates
+- Added detailed breakdown of advanced hair components including Ringlet, BackCrownRinglet, and CrownSurfaceCurl
+- Enhanced technical implementation details for realistic spiral hair effects
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -71,7 +71,7 @@ The modular architecture consists of specialized components, each responsible fo
 
 - **ThreeWorkspace**: Central orchestrator that creates the Canvas, manages lighting, coordinates camera animation via GSAP ScrollTrigger, and composes all scene objects
 - **Room**: Static environment geometry including floor, walls, baseboards, window frame, shelf, and decorative plants
-- **Avatar**: Animated character with stateful behavior supporting waving and sitting animations, built from grouped primitives
+- **Avatar**: Sophisticated animated character with advanced hair rendering system using CatmullRom curves and TubeGeometry, featuring realistic spiral effects and comprehensive state management
 - **Desk**: Furniture piece with monitor, keyboard, books, mug with animated steam, and desk plant
 - **Chair**: Office chair with backrest, seat, pole, base, crochet blanket pattern, and decorative heart detail
 - **Cat**: Small animated companion with tail and head sway animations
@@ -220,28 +220,53 @@ Key features:
 **Section sources**
 - [Room.jsx:1-154](file://components/three/Room.jsx#L1-L154)
 
-### Avatar: Animated Character Module
-The Avatar component represents a sophisticated character built from grouped primitives, featuring complex animations and state management. It exposes an imperative handle allowing parent components to access its root group for positioning during scroll animations.
+### Avatar: Advanced Character Module with Sophisticated Hair Rendering
+The Avatar component represents a highly sophisticated character built from grouped primitives, featuring an advanced hair rendering system that replaces basic blocky curls with realistic spiral effects using CatmullRom curves and TubeGeometry. It exposes an imperative handle allowing parent components to access its root group for positioning during scroll animations.
 
-**Updated** Enhanced with more sophisticated animation logic and improved state management for waving and sitting behaviors.
+**Updated** Enhanced with a revolutionary hair rendering system utilizing CatmullRom curves and TubeGeometry for realistic spiral hair effects, comprehensive color palette system, and improved animation framework with better frame-based updates.
+
+#### Advanced Hair Rendering System
+The Avatar now features a sophisticated multi-layered hair system composed of several specialized components:
+
+- **Ringlet Component**: Creates realistic spiral curls using CatmullRomCurve3 paths with TubeGeometry, featuring smooth tapering and natural volume
+- **BackCrownRinglet Component**: Generates curls that follow the curved surface of the scalp cap, positioned tangent to the surface for natural growth appearance
+- **CrownSurfaceCurl Component**: Places curls directly on the crown surface, following the ellipsoid geometry for seamless integration
+- **Hair Component**: Orchestrates the complete hair system with proper layering and positioning
+
+#### Comprehensive Color Palette System
+The Avatar implements a detailed color system with carefully selected hues:
+
+- **Skin Tones**: Warm peach (#f4c5a5) with subtle shadow variations (#e8b492)
+- **Hair Colors**: Rich dark brown (#3c302d) with highlight variations (#4d3d39)
+- **Clothing**: Light blue kurta (#9fd8f5) with complementary shades and accents
+- **Decorative Elements**: Pink (#ff70a6), cream (#fff4e8), and accent colors throughout
+
+#### Enhanced Animation System
+The Avatar features improved frame-based animations with better performance:
+
+- **Wave Animation**: Sinusoidal arm movement during standing phase with smooth transitions
+- **Sitting Animation**: Complex leg rotation and arm positioning with progressive state changes
+- **Breathing Animation**: Continuous subtle body movement using clock-based timing
+- **Hair Physics**: Realistic curl movement and interaction with character poses
 
 Characteristics:
-- Built from grouped primitives representing legs, shoes, body, arms, head, face, and hair
+- Built from grouped primitives representing legs, shoes, body, arms, head, face, and sophisticated hair system
 - Exposes imperative handle for parent component positioning control
 - Animates arm rotations for waving or resting when sitting
 - Applies gentle breathing animation to body group
 - Supports props to toggle waving and sitting modes driven by scroll progress
-- Features curly hair with detailed curl structures and highlights
-- Includes pixel-art style heart decoration on shirt
+- Features advanced curly hair with realistic spiral structures using CatmullRom curves
+- Includes pixel-art style floral embroidery and decorative elements
 
 Animation behaviors:
 - Wave animation during initial standing phase with sinusoidal arm movement
 - Smooth transition to sitting pose with leg rotation and arm positioning
 - Continuous breathing animation using clock-based timing
 - Progressive state changes based on scroll progress values
+- Realistic hair physics with natural curl movement
 
 **Section sources**
-- [Avatar.jsx:1-223](file://components/three/Avatar.jsx#L1-L223)
+- [Avatar.jsx:1-3562](file://components/three/Avatar.jsx#L1-L3562)
 
 ### Desk: Furniture and Details Module
 The Desk component provides a complete furniture setup including monitor with emissive screen, stand, keyboard with key grid, stacked books, mug with animated steam, and desk plant.
@@ -369,6 +394,12 @@ The modular architecture provides several performance benefits through selective
 - Avoid excessive transparency unless specifically required
 - Use appropriate material properties for optimal rendering performance
 
+### Advanced Hair Rendering Optimization
+- CatmullRom curves and TubeGeometry geometries are memoized using useMemo for performance
+- Complex hair geometries are computed once and reused across renders
+- Efficient curve generation with optimized point calculations
+- Proper memory management for complex 3D geometries
+
 ## Troubleshooting Guide
 The modular architecture simplifies debugging and troubleshooting by isolating issues to specific components:
 
@@ -399,6 +430,12 @@ The modular architecture simplifies debugging and troubleshooting by isolating i
 - Check that imperative refs are properly exposed using useImperativeHandle
 - Ensure event handlers and callbacks are properly bound and scoped
 
+### Advanced Hair Rendering Issues
+- Verify CatmullRomCurve3 points are properly calculated and normalized
+- Check TubeGeometry parameters for appropriate segment counts
+- Ensure proper memoization of complex geometries to prevent performance issues
+- Validate curve continuity and smoothness for realistic hair appearance
+
 **Section sources**
 - [ThreeWorkspace.jsx:23-92](file://components/three/ThreeWorkspace.jsx#L23-L92)
 - [ThreeWorkspace.jsx:98-151](file://components/three/ThreeWorkspace.jsx#L98-L151)
@@ -408,6 +445,8 @@ The modular architecture simplifies debugging and troubleshooting by isolating i
 
 ## Conclusion
 The refactored 3D scene organization demonstrates how modular architecture improves code maintainability, performance, and developer experience. By separating concerns into focused components, each responsible for specific aspects of the 3D environment, the system becomes more scalable and easier to extend. The ThreeWorkspace component serves as an effective orchestrator, coordinating the interactions between modular components while maintaining clean separation of concerns.
+
+The enhanced Avatar component with its sophisticated hair rendering system showcases the power of modern 3D graphics techniques, using CatmullRom curves and TubeGeometry to create realistic spiral hair effects that replace basic blocky curls. This advancement significantly improves the visual quality and realism of the character while maintaining performance through efficient geometry optimization.
 
 This modular approach makes it straightforward to add new 3D objects, manage complex animations, and optimize performance through selective updates. The architecture supports future enhancements while maintaining the scroll-driven narrative experience that transitions from a realistic room environment into a whimsical world.
 
@@ -458,5 +497,14 @@ The refactoring establishes several useful patterns for component composition:
 - **Prop-driven behavior**: External state control through props for animation and visibility
 - **Ref-based interaction**: Imperative handles for direct component manipulation
 - **Scoped animations**: useFrame hooks within components for self-contained animation logic
+
+### Advanced Hair Rendering Implementation
+The Avatar's sophisticated hair system demonstrates advanced 3D graphics techniques:
+
+- **CatmullRom Curves**: Used for creating smooth, organic curves that form the basis of realistic hair strands
+- **TubeGeometry**: Applied along curve paths to create volumetric hair with proper thickness and surface detail
+- **Multi-layered Approach**: Combines different types of curls (ringlets, crown curls, surface curls) for natural appearance
+- **Performance Optimization**: Memoizes complex geometries and uses efficient curve calculations
+- **Realistic Physics**: Implements proper positioning and orientation relative to the character's head shape
 
 These patterns ensure consistency across the codebase while maintaining flexibility for future enhancements.
