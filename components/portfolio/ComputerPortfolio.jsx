@@ -1,0 +1,1802 @@
+"use client";
+
+import {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import {
+  Canvas,
+  useFrame,
+} from "@react-three/fiber";
+
+import {
+  Float,
+  Stars,
+} from "@react-three/drei";
+
+/* ======================================================
+   NAVIGATION
+====================================================== */
+
+const navItems = [
+  ["01", "intro", "Intro"],
+  ["02", "about", "About"],
+  ["03", "journey", "Journey"],
+  ["04", "experience", "Experience"],
+  ["05", "projects", "Projects"],
+  ["06", "skills", "Skills"],
+  ["07", "contact", "Contact"],
+];
+
+/* ======================================================
+   3D BACKGROUND OBJECTS
+====================================================== */
+
+function FloatingTechObjects() {
+  const groupRef = useRef();
+
+  useFrame((state) => {
+    if (!groupRef.current) return;
+
+    const time =
+      state.clock.elapsedTime;
+
+    groupRef.current.rotation.y =
+      Math.sin(time * 0.15) * 0.12;
+
+    groupRef.current.rotation.x =
+      Math.cos(time * 0.12) * 0.04;
+  });
+
+  return (
+    <>
+      <ambientLight
+        intensity={0.65}
+      />
+
+      {/* PINK GLOW */}
+      <pointLight
+        position={[-4, 2, 4]}
+        intensity={5}
+        color="#F78ECF"
+      />
+
+      {/* PURPLE GLOW */}
+      <pointLight
+        position={[4, -1, 3]}
+        intensity={5}
+        color="#A480F2"
+      />
+
+      {/* BLUE GLOW */}
+      <pointLight
+        position={[0, 4, -2]}
+        intensity={3}
+        color="#6D8CFF"
+      />
+
+      <Stars
+        radius={30}
+        depth={18}
+        count={700}
+        factor={2}
+        saturation={0.15}
+        fade
+        speed={0.25}
+      />
+
+      <group ref={groupRef}>
+        {/* LEFT WIREFRAME OBJECT */}
+
+        <Float
+          speed={1.2}
+          rotationIntensity={0.8}
+          floatIntensity={1.2}
+        >
+          <mesh
+            position={[
+              -3.8,
+              1.7,
+              -2,
+            ]}
+          >
+            <icosahedronGeometry
+              args={[0.7, 1]}
+            />
+
+            <meshStandardMaterial
+              color="#A480F2"
+              emissive="#A480F2"
+              emissiveIntensity={1.5}
+              wireframe
+              transparent
+              opacity={0.6}
+            />
+          </mesh>
+        </Float>
+
+        {/* RIGHT NEON RING */}
+
+        <Float
+          speed={1.5}
+          rotationIntensity={1.1}
+          floatIntensity={1.4}
+        >
+          <mesh
+            position={[
+              4,
+              1.2,
+              -3,
+            ]}
+            rotation={[
+              0.6,
+              0.3,
+              0.2,
+            ]}
+          >
+            <torusGeometry
+              args={[
+                0.65,
+                0.1,
+                16,
+                60,
+              ]}
+            />
+
+            <meshStandardMaterial
+              color="#F78ECF"
+              emissive="#F78ECF"
+              emissiveIntensity={2}
+              transparent
+              opacity={0.75}
+            />
+          </mesh>
+        </Float>
+
+        {/* LOWER PURPLE OBJECT */}
+
+        <Float
+          speed={1}
+          rotationIntensity={0.7}
+          floatIntensity={1}
+        >
+          <mesh
+            position={[
+              2.9,
+              -2,
+              -2,
+            ]}
+          >
+            <octahedronGeometry
+              args={[0.55, 0]}
+            />
+
+            <meshStandardMaterial
+              color="#D4B0F9"
+              emissive="#C580ED"
+              emissiveIntensity={1.4}
+              wireframe
+              transparent
+              opacity={0.7}
+            />
+          </mesh>
+        </Float>
+      </group>
+    </>
+  );
+}
+
+/* ======================================================
+   BACKGROUND
+====================================================== */
+
+function PortfolioBackground() {
+  return (
+    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+      {/* LIGHTER NAVY BASE */}
+
+      <div className="absolute inset-0 bg-[#0E1630]" />
+
+      {/* PINK NEON CLOUD */}
+
+      <div
+        className="absolute -left-40 -top-32 h-[650px] w-[650px] rounded-full blur-[110px]"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(247,142,207,0.38) 0%, rgba(247,142,207,0.12) 48%, transparent 72%)",
+        }}
+      />
+
+      {/* PURPLE NEON CLOUD */}
+
+      <div
+        className="absolute -right-40 top-[12%] h-[720px] w-[720px] rounded-full blur-[120px]"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(164,128,242,0.45) 0%, rgba(164,128,242,0.13) 48%, transparent 73%)",
+        }}
+      />
+
+      {/* CENTER PURPLE / BLUE */}
+
+      <div
+        className="absolute left-[20%] top-[55%] h-[600px] w-[600px] rounded-full blur-[130px]"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(197,128,237,0.28) 0%, rgba(109,140,255,0.10) 50%, transparent 74%)",
+        }}
+      />
+
+      {/* LOWER PINK */}
+
+      <div
+        className="absolute -bottom-52 right-[5%] h-[650px] w-[650px] rounded-full blur-[120px]"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(249,146,173,0.35) 0%, rgba(249,146,173,0.08) 52%, transparent 74%)",
+        }}
+      />
+
+      {/* TECH GRID */}
+
+      <div
+        className="absolute inset-0 opacity-[0.10]"
+        style={{
+          backgroundImage:
+            `
+              linear-gradient(
+                rgba(212,176,249,.28) 1px,
+                transparent 1px
+              ),
+              linear-gradient(
+                90deg,
+                rgba(212,176,249,.28) 1px,
+                transparent 1px
+              )
+            `,
+          backgroundSize:
+            "52px 52px",
+          maskImage:
+            "linear-gradient(to bottom, rgba(0,0,0,.8), transparent)",
+        }}
+      />
+
+      {/* REAL 3D LAYER */}
+
+      <Canvas
+        camera={{
+          position: [
+            0,
+            0,
+            8,
+          ],
+          fov: 45,
+        }}
+        gl={{
+          alpha: true,
+          antialias: true,
+        }}
+        onCreated={({ gl }) => {
+          gl.setClearColor(
+            0x000000,
+            0
+          );
+        }}
+      >
+        <FloatingTechObjects />
+      </Canvas>
+      {/* SOFT OVERLAY — CALMS THE WHOLE BACKGROUND */}
+
+<div
+  className="
+    absolute
+    inset-0
+    bg-[#0E1630]/35
+  "
+/>
+    </div>
+  );
+}
+
+/* ======================================================
+   SMALL REUSABLE UI
+====================================================== */
+
+function SectionLabel({
+  number,
+  children,
+}) {
+  return (
+    <div className="mb-6 flex items-center gap-3 font-mono text-xs uppercase tracking-[0.28em] text-[#D4B0F9]">
+      <span>{number}</span>
+
+      <span className="h-px w-8 bg-[#D4B0F9]/50" />
+
+      <span>{children}</span>
+    </div>
+  );
+}
+
+function GlassPanel({
+  children,
+  className = "",
+}) {
+  return (
+    <div
+      className={`
+        border
+        border-[#D4B0F9]/20
+        bg-[#111A36]/65
+        shadow-[0_25px_80px_rgba(0,0,0,.28)]
+        backdrop-blur-xl
+        ${className}
+      `}
+    >
+      {children}
+    </div>
+  );
+}
+
+/* ======================================================
+   MAIN PORTFOLIO
+====================================================== */
+const ABOUT_ROLES = [
+  {
+    id: "developer",
+    icon: "</>",
+    title: "Developer",
+    subtitle:
+      "Turning ideas into real digital experiences.",
+    tags: [
+      "Web Dev",
+      "React",
+      "Next.js",
+    ],
+    accent: "#F78ECF",
+    glow:
+      "rgba(247, 142, 207, .45)",
+  },
+
+  {
+    id: "problem-solver",
+    icon: "◇",
+    title: "Problem Solver",
+    subtitle:
+      "Breaking down complexity into practical solutions.",
+    tags: [
+      "Logic",
+      "Systems",
+      "Debugging",
+    ],
+    accent: "#F992AD",
+    glow:
+      "rgba(249, 146, 173, .42)",
+  },
+
+  {
+    id: "ai-explorer",
+    icon: "AI",
+    title: "AI Explorer",
+    subtitle:
+      "Exploring intelligent systems and what they can make possible.",
+    tags: [
+      "ML",
+      "NLP",
+      "Data",
+    ],
+    accent: "#A480F2",
+    glow:
+      "rgba(164, 128, 242, .48)",
+  },
+
+  {
+    id: "creative-tech",
+    icon: "✦",
+    title: "Creative Tech",
+    subtitle:
+      "Blending creativity, design and technology.",
+    tags: [
+      "Design",
+      "3D",
+      "Interactive",
+    ],
+    accent: "#C580ED",
+    glow:
+      "rgba(197, 128, 237, .45)",
+  },
+
+  {
+    id: "always-learning",
+    icon: "↗",
+    title: "Always Learning",
+    subtitle:
+      "Constantly exploring new tools, ideas and perspectives.",
+    tags: [
+      "Learn",
+      "Build",
+      "Repeat",
+    ],
+    accent: "#D4B0F9",
+    glow:
+      "rgba(212, 176, 249, .42)",
+  },
+];
+
+function RoleShuffleDeck() {
+  const [
+    activeIndex,
+    setActiveIndex,
+  ] = useState(0);
+
+  const [
+    paused,
+    setPaused,
+  ] = useState(false);
+
+  const total =
+    ABOUT_ROLES.length;
+
+  const nextCard = () => {
+    setActiveIndex(
+      (current) =>
+        (current + 1) %
+        total
+    );
+  };
+
+  const previousCard = () => {
+    setActiveIndex(
+      (current) =>
+        (current - 1 + total) %
+        total
+    );
+  };
+
+  useEffect(() => {
+    if (paused) return;
+
+    const timer =
+      setInterval(() => {
+        nextCard();
+      }, 3200);
+
+    return () =>
+      clearInterval(timer);
+  }, [paused]);
+
+  const getPosition = (
+    index
+  ) => {
+    let offset =
+      (index -
+        activeIndex +
+        total) %
+      total;
+
+    if (
+      offset >
+      total / 2
+    ) {
+      offset -= total;
+    }
+
+    return offset;
+  };
+
+  const getCardStyle = (
+    offset
+  ) => {
+    if (offset === 0) {
+      return {
+        transform:
+          "translate(-50%, -50%) translateX(0px) translateZ(100px) rotateY(0deg) scale(1)",
+        opacity: 1,
+        zIndex: 10,
+      };
+    }
+
+    if (offset === -1) {
+      return {
+        transform:
+          "translate(-50%, -50%) translateX(-190px) translateZ(10px) rotateY(13deg) rotateZ(-3deg) scale(.88)",
+        opacity: 0.8,
+        zIndex: 7,
+      };
+    }
+
+    if (offset === 1) {
+      return {
+        transform:
+          "translate(-50%, -50%) translateX(190px) translateZ(10px) rotateY(-13deg) rotateZ(3deg) scale(.88)",
+        opacity: 0.8,
+        zIndex: 7,
+      };
+    }
+
+    if (offset === -2) {
+      return {
+        transform:
+          "translate(-50%, -50%) translateX(-300px) translateZ(-80px) rotateY(18deg) rotateZ(-5deg) scale(.73)",
+        opacity: 0.34,
+        zIndex: 3,
+      };
+    }
+
+    return {
+      transform:
+        "translate(-50%, -50%) translateX(300px) translateZ(-80px) rotateY(-18deg) rotateZ(5deg) scale(.73)",
+      opacity: 0.34,
+      zIndex: 3,
+    };
+  };
+
+  return (
+    <div
+      className="
+        relative
+        min-h-[620px]
+        overflow-hidden
+        rounded-[36px]
+        border
+        border-[#D4B0F9]/20
+        bg-[#111A36]/35
+        shadow-[0_30px_100px_rgba(0,0,0,.28)]
+        backdrop-blur-xl
+      "
+      onMouseEnter={() =>
+        setPaused(true)
+      }
+      onMouseLeave={() =>
+        setPaused(false)
+      }
+    >
+      {/* ===============================
+          BACKGROUND GLOWS
+      ================================ */}
+
+      <div
+        className="
+          pointer-events-none
+          absolute
+          -left-24
+          top-12
+          h-80
+          w-80
+          rounded-full
+          bg-[#F78ECF]/20
+          blur-[100px]
+        "
+      />
+
+      <div
+        className="
+          pointer-events-none
+          absolute
+          -right-24
+          bottom-0
+          h-96
+          w-96
+          rounded-full
+          bg-[#A480F2]/25
+          blur-[110px]
+        "
+      />
+
+      {/* GRID */}
+
+      <div
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+          opacity-[0.08]
+        "
+        style={{
+          backgroundImage: `
+            linear-gradient(
+              rgba(212,176,249,.3) 1px,
+              transparent 1px
+            ),
+            linear-gradient(
+              90deg,
+              rgba(212,176,249,.3) 1px,
+              transparent 1px
+            )
+          `,
+          backgroundSize:
+            "40px 40px",
+        }}
+      />
+
+      {/* TOP TEXT */}
+
+      <div
+        className="
+          absolute
+          left-7
+          top-6
+          font-mono
+          text-[10px]
+          uppercase
+          tracking-[0.2em]
+          text-[#A480F2]
+        "
+      >
+        Different roles
+        <br />
+        same purpose
+        <span className="mt-2 block h-px w-7 bg-[#F78ECF]" />
+      </div>
+
+      <div
+        className="
+          absolute
+          right-7
+          top-6
+          text-right
+          font-mono
+          text-[10px]
+          uppercase
+          tracking-[0.18em]
+          text-[#8F98B8]
+        "
+      >
+        ideas
+        <br />
+        technology
+        <br />
+        impact
+      </div>
+
+      {/* ===============================
+          NEON ORBIT
+      ================================ */}
+
+      <div
+        className="
+          pointer-events-none
+          absolute
+          left-1/2
+          top-[48%]
+          h-[260px]
+          w-[82%]
+          -translate-x-1/2
+          -translate-y-1/2
+          rotate-[-8deg]
+          rounded-[50%]
+          border
+          border-[#F78ECF]/40
+          shadow-[0_0_45px_rgba(247,142,207,.16)]
+        "
+      />
+
+      <div
+        className="
+          pointer-events-none
+          absolute
+          left-1/2
+          top-[48%]
+          h-[210px]
+          w-[67%]
+          -translate-x-1/2
+          -translate-y-1/2
+          rotate-[9deg]
+          rounded-[50%]
+          border
+          border-[#A480F2]/30
+        "
+      />
+
+      {/* ===============================
+          SHUFFLING CARDS
+      ================================ */}
+
+      <div
+        className="
+          absolute
+          left-1/2
+          top-[47%]
+          h-[390px]
+          w-full
+          -translate-x-1/2
+          -translate-y-1/2
+        "
+        style={{
+          perspective:
+            "1300px",
+          transformStyle:
+            "preserve-3d",
+        }}
+      >
+        {ABOUT_ROLES.map(
+          (
+            role,
+            index
+          ) => {
+            const position =
+              getPosition(
+                index
+              );
+
+            const isActive =
+              position === 0;
+
+            return (
+              <button
+                key={
+                  role.id
+                }
+                type="button"
+                onClick={() =>
+                  setActiveIndex(
+                    index
+                  )
+                }
+                className="
+                  absolute
+                  left-1/2
+                  top-1/2
+                  h-[330px]
+                  w-[270px]
+                  rounded-[28px]
+                  border
+                  bg-[#111A36]/90
+                  p-7
+                  text-left
+                  backdrop-blur-2xl
+                  transition-all
+                  duration-700
+                  ease-[cubic-bezier(.22,1,.36,1)]
+                  md:w-[300px]
+                "
+                style={{
+                  ...getCardStyle(
+                    position
+                  ),
+
+                  borderColor:
+                    isActive
+                      ? `${role.accent}AA`
+                      : `${role.accent}45`,
+
+                  boxShadow:
+                    isActive
+                      ? `
+                        0 28px 70px rgba(0,0,0,.42),
+                        0 0 45px ${role.glow},
+                        inset 0 0 35px ${role.glow}
+                      `
+                      : `
+                        0 20px 50px rgba(0,0,0,.28),
+                        0 0 25px ${role.glow}
+                      `,
+
+                  transformStyle:
+                    "preserve-3d",
+                }}
+              >
+                {/* TOP ICON */}
+
+                <div
+                  className="
+                    mb-8
+                    flex
+                    h-14
+                    w-14
+                    items-center
+                    justify-center
+                    rounded-2xl
+                    border
+                    font-mono
+                    text-lg
+                    font-bold
+                  "
+                  style={{
+                    color:
+                      role.accent,
+
+                    borderColor:
+                      `${role.accent}55`,
+
+                    background:
+                      `${role.accent}12`,
+
+                    boxShadow:
+                      `0 0 30px ${role.glow}`,
+                  }}
+                >
+                  {
+                    role.icon
+                  }
+                </div>
+
+                {/* ACTIVE MICRO COPY */}
+
+                {isActive && (
+                  <div
+                    className="
+                      absolute
+                      right-6
+                      top-7
+                      font-mono
+                      text-[9px]
+                      uppercase
+                      leading-5
+                      tracking-[0.14em]
+                      text-[#7F89A9]
+                    "
+                  >
+                    Learn
+                    <br />
+                    Build
+                    <br />
+                    Iterate
+                  </div>
+                )}
+
+                <h3 className="text-2xl font-bold text-white">
+                  {
+                    role.title
+                  }
+                </h3>
+
+                <p className="mt-4 min-h-[72px] text-sm leading-6 text-[#AEB7D5]">
+                  {
+                    role.subtitle
+                  }
+                </p>
+
+                <div className="mt-7 flex flex-wrap gap-2">
+                  {role.tags.map(
+                    (
+                      tag
+                    ) => (
+                      <span
+                        key={
+                          tag
+                        }
+                        className="
+                          rounded-full
+                          border
+                          px-3
+                          py-1.5
+                          font-mono
+                          text-[9px]
+                        "
+                        style={{
+                          color:
+                            role.accent,
+
+                          borderColor:
+                            `${role.accent}55`,
+
+                          background:
+                            `${role.accent}10`,
+                        }}
+                      >
+                        {
+                          tag
+                        }
+                      </span>
+                    )
+                  )}
+                </div>
+
+                {isActive && (
+                  <span
+                    className="
+                      absolute
+                      bottom-6
+                      right-7
+                      text-xl
+                    "
+                    style={{
+                      color:
+                        role.accent,
+                    }}
+                  >
+                    →
+                  </span>
+                )}
+              </button>
+            );
+          }
+        )}
+      </div>
+
+      {/* ===============================
+          CONTROLS
+      ================================ */}
+
+      <button
+        type="button"
+        onClick={
+          previousCard
+        }
+        className="
+          absolute
+          bottom-[86px]
+          left-8
+          z-30
+          flex
+          h-12
+          w-12
+          items-center
+          justify-center
+          rounded-full
+          border
+          border-[#A480F2]/40
+          bg-[#0E1630]/75
+          text-xl
+          text-white
+          backdrop-blur-xl
+          transition
+          duration-300
+          hover:scale-110
+          hover:border-[#F78ECF]
+          hover:shadow-[0_0_30px_rgba(247,142,207,.25)]
+        "
+      >
+        ‹
+      </button>
+
+      <button
+        type="button"
+        onClick={
+          nextCard
+        }
+        className="
+          absolute
+          bottom-[86px]
+          right-8
+          z-30
+          flex
+          h-12
+          w-12
+          items-center
+          justify-center
+          rounded-full
+          border
+          border-[#A480F2]/40
+          bg-[#0E1630]/75
+          text-xl
+          text-white
+          backdrop-blur-xl
+          transition
+          duration-300
+          hover:scale-110
+          hover:border-[#F78ECF]
+          hover:shadow-[0_0_30px_rgba(247,142,207,.25)]
+        "
+      >
+        ›
+      </button>
+
+      {/* ===============================
+          DOTS + LABEL
+      ================================ */}
+
+      <div
+        className="
+          absolute
+          bottom-8
+          left-1/2
+          z-30
+          -translate-x-1/2
+          text-center
+        "
+      >
+        <p
+          className="
+            mb-4
+            whitespace-nowrap
+            font-mono
+            text-[9px]
+            uppercase
+            tracking-[0.18em]
+            text-[#8F98B8]
+          "
+        >
+          explore • switch
+          roles
+        </p>
+
+        <div className="flex items-center justify-center gap-2">
+          {ABOUT_ROLES.map(
+            (
+              role,
+              index
+            ) => (
+              <button
+                key={
+                  role.id
+                }
+                type="button"
+                onClick={() =>
+                  setActiveIndex(
+                    index
+                  )
+                }
+                className={`
+                  h-2
+                  rounded-full
+                  transition-all
+                  duration-500
+
+                  ${
+                    activeIndex ===
+                    index
+                      ? "w-8 bg-[#F78ECF] shadow-[0_0_15px_rgba(247,142,207,.7)]"
+                      : "w-2 bg-[#697394]"
+                  }
+                `}
+              />
+            )
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AnimatedLetters({
+  text,
+  className = "",
+  startDelay = 0,
+}) {
+  const ref = useRef(null);
+  const [visible, setVisible] =
+    useState(false);
+
+  useEffect(() => {
+    const element = ref.current;
+
+    if (!element) return;
+
+    const observer =
+      new IntersectionObserver(
+        ([entry]) => {
+          if (
+            entry.isIntersecting
+          ) {
+            setVisible(true);
+
+            observer.unobserve(
+              element
+            );
+          }
+        },
+        {
+          threshold: 0.35,
+          rootMargin:
+            "0px 0px -8% 0px",
+        }
+      );
+
+    observer.observe(element);
+
+    return () =>
+      observer.disconnect();
+  }, []);
+
+  return (
+    <span
+      ref={ref}
+      aria-label={text}
+      className={`inline-block ${className}`}
+      style={{
+        perspective: "700px",
+      }}
+    >
+      {text
+        .split("")
+        .map(
+          (
+            letter,
+            index
+          ) => (
+            <span
+              key={`${letter}-${index}`}
+              aria-hidden="true"
+              className="inline-block"
+              style={{
+                opacity:
+                  visible
+                    ? 1
+                    : 0,
+
+                transform:
+                  visible
+                    ? "translateY(0px) rotateX(0deg)"
+                    : "translateY(45px) rotateX(-70deg)",
+
+                filter:
+                  visible
+                    ? "blur(0px)"
+                    : "blur(7px)",
+
+                transition:
+                  `
+                    opacity .45s ease,
+                    transform .65s cubic-bezier(.22,1,.36,1),
+                    filter .5s ease
+                  `,
+
+                transitionDelay:
+                  `${
+                    startDelay +
+                    index *
+                      55
+                  }ms`,
+              }}
+            >
+              {letter === " "
+                ? "\u00A0"
+                : letter}
+            </span>
+          )
+        )}
+    </span>
+  );
+}
+
+export function ComputerPortfolio() {
+  const goTo = (id) => {
+    document
+      .getElementById(id)
+      ?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+  };
+
+  return (
+    <main className="relative min-h-screen overflow-x-hidden bg-[#0E1630] text-[#F8F7FF]">
+      <PortfolioBackground />
+
+      {/* =================================================
+          TOP TECH NAV
+      ================================================= */}
+
+      <header
+        className="
+          sticky
+          top-0
+          z-50
+          border-b
+          border-[#D4B0F9]/15
+          bg-[#0E1630]/75
+          backdrop-blur-2xl
+        "
+      >
+        <div className="mx-auto flex max-w-[1500px] items-center justify-between px-6 py-4 lg:px-12">
+          <button
+            onClick={() =>
+              goTo("intro")
+            }
+            className="font-mono text-sm font-semibold tracking-[0.16em]"
+          >
+            EMAAN.DEV
+            <span className="text-[#F78ECF]">
+              _
+            </span>
+          </button>
+
+          <nav className="hidden items-center gap-5 lg:flex">
+            {navItems.map(
+              ([
+                number,
+                id,
+                label,
+              ]) => (
+                <button
+                  key={id}
+                  onClick={() =>
+                    goTo(id)
+                  }
+                  className="
+                    flex
+                    items-center
+                    gap-1.5
+                    font-mono
+                    text-[10px]
+                    uppercase
+                    tracking-[0.12em]
+                    text-[#AEB7D5]
+                    transition
+                    hover:text-white
+                  "
+                >
+                  <span className="text-[#A480F2]">
+                    {number}
+                  </span>
+
+                  {label}
+                </button>
+              )
+            )}
+          </nav>
+
+          <span className="font-mono text-[10px] tracking-[0.16em] text-[#8F98B8]">
+            portfolio / 2026
+          </span>
+        </div>
+      </header>
+
+      {/* =================================================
+          INTRO
+      ================================================= */}
+
+      <section
+        id="intro"
+        className="
+          relative
+          z-10
+          mx-auto
+          flex
+          min-h-[calc(100vh-65px)]
+          max-w-[1500px]
+          scroll-mt-24
+          items-center
+          px-6
+          py-20
+          lg:px-12
+        "
+      >
+        <div className="grid w-full items-center gap-16 lg:grid-cols-[1.05fr_.95fr]">
+          {/* LEFT SIDE */}
+
+          <div>
+            <SectionLabel number="01">
+              Intro
+            </SectionLabel>
+
+            <p className="mb-7 font-mono text-sm text-[#A480F2]">
+              &gt; initializing
+              portfolio...
+            </p>
+
+            <p className="mb-3 text-xl font-medium text-[#DCE1F4] md:text-2xl">
+              Hi, I&apos;m
+            </p>
+
+            <h1
+              className="
+                text-[clamp(4.2rem,9vw,9rem)]
+                font-black
+                uppercase
+                leading-[0.80]
+                tracking-[-0.075em]
+              "
+            >
+              <span className="block text-white">
+                Emaan
+              </span>
+
+              <span
+                className="
+                  block
+                  bg-gradient-to-r
+                  from-[#F992AD]
+                  via-[#F78ECF]
+                  to-[#A480F2]
+                  bg-clip-text
+                  text-transparent
+                "
+              >
+                Fatima_
+              </span>
+            </h1>
+
+            <div
+              className="
+                mt-9
+                flex
+                flex-wrap
+                gap-3
+                font-mono
+                text-xs
+                uppercase
+                tracking-[0.16em]
+                text-[#C8CFE6]
+                md:text-sm
+              "
+            >
+              <span>
+                Software Engineering
+                Student
+              </span>
+
+              <span className="text-[#F78ECF]">
+                •
+              </span>
+
+              <span>AI</span>
+
+              <span className="text-[#F78ECF]">
+                •
+              </span>
+
+              <span>Web</span>
+
+              <span className="text-[#F78ECF]">
+                •
+              </span>
+
+              <span>
+                Creative Technology
+              </span>
+            </div>
+
+            <p className="mt-7 max-w-2xl text-base leading-8 text-[#B8C0DC] md:text-lg">
+              I build thoughtful
+              digital experiences where
+              code, creativity and
+              technology meet — with a
+              growing focus on software
+              development, AI and
+              interactive web
+              experiences.
+            </p>
+
+            <div className="mt-9 flex flex-wrap gap-4">
+              <button
+                onClick={() =>
+                  goTo("projects")
+                }
+                className="
+                  rounded-xl
+                  border
+                  border-[#F78ECF]/70
+                  bg-gradient-to-r
+                  from-[#F78ECF]
+                  to-[#A480F2]
+                  px-6
+                  py-3.5
+                  text-sm
+                  font-semibold
+                  text-[#0E1630]
+                  shadow-[0_0_35px_rgba(247,142,207,.28)]
+                  transition
+                  duration-300
+                  hover:-translate-y-1
+                  hover:shadow-[0_0_55px_rgba(247,142,207,.45)]
+                "
+              >
+                Explore My Work →
+              </button>
+
+              <a
+                href="/Emaan-Fatima-CV.pdf"
+                download
+                className="
+                  rounded-xl
+                  border
+                  border-[#D4B0F9]/35
+                  bg-[#111A36]/60
+                  px-6
+                  py-3.5
+                  text-sm
+                  font-semibold
+                  text-white
+                  backdrop-blur-xl
+                  transition
+                  duration-300
+                  hover:-translate-y-1
+                  hover:border-[#D4B0F9]/70
+                "
+              >
+                Download CV ↓
+              </a>
+            </div>
+          </div>
+
+          {/* RIGHT SIDE */}
+
+          <div className="relative min-h-[470px]">
+            {/* FLOATING BACK SHAPE */}
+
+            <div
+              className="
+                absolute
+                right-[4%]
+                top-[3%]
+                h-36
+                w-36
+                -rotate-12
+                rounded-full
+                border
+                border-[#A480F2]/30
+                bg-[#A480F2]/10
+                shadow-[0_0_90px_rgba(164,128,242,.22)]
+              "
+            />
+
+            {/* MAIN TERMINAL */}
+
+            <GlassPanel
+              className="
+                absolute
+                left-0
+                top-[20%]
+                w-[84%]
+                rotate-[-3deg]
+                rounded-3xl
+                p-7
+                transition
+                duration-500
+                hover:rotate-0
+                md:p-8
+              "
+            >
+              {/* WINDOW DOTS */}
+
+              <div className="mb-7 flex gap-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-[#F992AD]" />
+
+                <span className="h-2.5 w-2.5 rounded-full bg-[#D4B0F9]" />
+
+                <span className="h-2.5 w-2.5 rounded-full bg-[#A480F2]" />
+              </div>
+
+              <div className="space-y-3 font-mono text-sm leading-7 text-[#C8CFE6] md:text-base">
+                <p className="text-[#F78ECF]">
+                  &gt; whoami
+                </p>
+
+                <p className="text-white">
+                  Emaan Fatima
+                </p>
+
+                <p className="pt-3 text-[#A480F2]">
+                  &gt; current_focus
+                </p>
+
+                <p>
+                  AI + Web + interactive
+                  experiences
+                </p>
+
+                <p className="pt-3 text-[#F78ECF]">
+                  &gt; status
+                </p>
+
+                <p>
+                  always_learning
+                  <span className="animate-pulse">
+                    _
+                  </span>
+                </p>
+              </div>
+            </GlassPanel>
+
+            {/* SECOND SMALL WINDOW */}
+
+            <GlassPanel
+              className="
+                absolute
+                bottom-[2%]
+                right-0
+                w-[54%]
+                rotate-[4deg]
+                rounded-2xl
+                p-5
+                transition
+                duration-500
+                hover:rotate-0
+              "
+            >
+              <p className="font-mono text-xs leading-6 text-[#AEB7D5]">
+                // build
+                <br />
+                // learn
+                <br />
+                // create
+                <br />
+                // repeat_
+              </p>
+            </GlassPanel>
+
+            {/* NEON MINI OBJECT */}
+
+            <div
+              className="
+                absolute
+                bottom-[10%]
+                left-[4%]
+                h-20
+                w-20
+                rotate-45
+                border
+                border-[#F78ECF]/40
+                bg-[#F78ECF]/10
+                shadow-[0_0_60px_rgba(247,142,207,.30)]
+              "
+            />
+          </div>
+        </div>
+
+        {/* SCROLL INDICATOR */}
+
+        <button
+          onClick={() =>
+            goTo("about")
+          }
+          className="
+            absolute
+            bottom-7
+            left-1/2
+            -translate-x-1/2
+            font-mono
+            text-[10px]
+            uppercase
+            tracking-[0.22em]
+            text-[#AEB7D5]
+          "
+        >
+          ↓ scroll
+        </button>
+      </section>
+
+{/* =================================================
+    02 ABOUT
+================================================= */}
+
+<section
+  id="about"
+  className="
+    relative
+    z-10
+    mx-auto
+    min-h-screen
+    max-w-[1500px]
+    scroll-mt-20
+    border-t
+    border-[#D4B0F9]/10
+    px-6
+    py-28
+    lg:px-12
+  "
+>
+  <SectionLabel number="02">
+    About
+  </SectionLabel>
+
+  <div className="grid items-center gap-16 lg:grid-cols-[0.9fr_1.1fr]">
+    {/* ================= LEFT ================= */}
+
+    <div>
+      <p className="mb-5 font-mono text-sm text-[#A480F2]">
+        &gt; profile.load()
+      </p>
+
+      <h2
+  className="
+    text-5xl
+    font-black
+    uppercase
+    leading-[0.9]
+    tracking-[-0.055em]
+    md:text-7xl
+    xl:text-8xl
+  "
+>
+  <AnimatedLetters
+    text="CURIOUS"
+    className="block text-white"
+    startDelay={0}
+  />
+
+  <AnimatedLetters
+    text="MIND."
+    className="
+      block
+      bg-gradient-to-r
+      from-[#F992AD]
+      via-[#F78ECF]
+      to-[#A480F2]
+      bg-clip-text
+      text-transparent
+    "
+    startDelay={380}
+  />
+
+  <AnimatedLetters
+    text="THOUGHTFUL"
+    className="block text-white"
+    startDelay={680}
+  />
+
+  <AnimatedLetters
+    text="BUILDER."
+    className="
+      block
+      text-[#D4B0F9]
+    "
+    startDelay={1250}
+  />
+</h2>
+
+      <div className="mt-9 max-w-2xl space-y-5">
+        <p className="text-base leading-8 text-[#C4CAE0] md:text-lg">
+          I&apos;m a Software Engineering
+          student with a strong interest in
+          software development, artificial
+          intelligence and modern web
+          technologies.
+        </p>
+
+        <p className="text-base leading-8 text-[#AEB7D5]">
+          I enjoy solving practical problems
+          through technology, experimenting
+          with new tools and turning ideas
+          into functional, user-focused
+          digital experiences.
+        </p>
+
+        <p className="text-base leading-8 text-[#AEB7D5]">
+          Right now, I&apos;m continuing to
+          grow across web development, AI and
+          interactive technology while
+          building projects that help me turn
+          what I learn into something real.
+        </p>
+      </div>
+
+      {/* MINI PROFILE DETAILS */}
+
+      <div className="mt-10 grid gap-3 sm:grid-cols-2">
+        <div
+          className="
+            rounded-2xl
+            border
+            border-[#D4B0F9]/15
+            bg-[#111A36]/45
+            p-4
+            backdrop-blur-xl
+          "
+        >
+          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#F78ECF]">
+            Education
+          </p>
+
+          <p className="mt-2 text-sm font-medium text-white">
+            BS Software Engineering
+          </p>
+
+          <p className="mt-1 text-xs text-[#929BB9]">
+            IIUI Islamabad
+          </p>
+        </div>
+
+        <div
+          className="
+            rounded-2xl
+            border
+            border-[#D4B0F9]/15
+            bg-[#111A36]/45
+            p-4
+            backdrop-blur-xl
+          "
+        >
+          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#A480F2]">
+            Current Learning
+          </p>
+
+          <p className="mt-2 text-sm font-medium text-white">
+            Artificial Intelligence
+          </p>
+
+          <p className="mt-1 text-xs text-[#929BB9]">
+            NAVTTC Certification
+          </p>
+        </div>
+      </div>
+    </div>
+
+    {/* ================= RIGHT / ROLE SHUFFLE ================= */}
+
+<RoleShuffleDeck />
+  </div>
+</section>
+
+
+{/* =================================================
+    TEMPORARY MARKERS FOR THE REST
+================================================= */}
+
+{[
+  [
+    "journey",
+    "03",
+    "EDUCATION + JOURNEY",
+    "Small steps. Bigger ideas.",
+  ],
+
+  [
+    "experience",
+    "04",
+    "EXPERIENCE",
+    "Turning learning into impact.",
+  ],
+
+  [
+    "projects",
+    "05",
+    "PROJECTS",
+    "Ideas in action.",
+  ],
+
+  [
+    "skills",
+    "06",
+    "SKILLS",
+    "A growing toolbox.",
+  ],
+
+  [
+    "contact",
+    "07",
+    "CONTACT",
+    "Let's build something meaningful.",
+  ],
+].map(
+  ([
+    id,
+    number,
+    label,
+    heading,
+  ]) => (
+    <section
+      key={id}
+      id={id}
+      className="
+        relative
+        z-10
+        mx-auto
+        flex
+        min-h-[70vh]
+        max-w-[1500px]
+        scroll-mt-20
+        items-center
+        border-t
+        border-[#D4B0F9]/10
+        px-6
+        py-28
+        lg:px-12
+      "
+    >
+      <div>
+        <SectionLabel
+          number={number}
+        >
+          {label}
+        </SectionLabel>
+
+        <h2
+          className="
+            max-w-4xl
+            text-5xl
+            font-black
+            uppercase
+            leading-[0.92]
+            tracking-[-0.05em]
+            text-white
+            md:text-7xl
+          "
+        >
+          {heading}
+        </h2>
+
+        <p className="mt-6 font-mono text-sm text-[#8F98B8]">
+          &gt; section coming
+          next_
+        </p>
+      </div>
+    </section>
+  )
+)}
+    </main>
+  );
+}
