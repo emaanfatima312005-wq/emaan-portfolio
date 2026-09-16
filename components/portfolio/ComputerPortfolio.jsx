@@ -1044,100 +1044,428 @@ function AnimatedLetters({
   text,
   className = "",
   startDelay = 0,
+  gradientColors = null,
 }) {
   const ref = useRef(null);
-  const [visible, setVisible] =
-    useState(false);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const element = ref.current;
 
     if (!element) return;
 
-    const observer =
-      new IntersectionObserver(
-        ([entry]) => {
-          if (
-            entry.isIntersecting
-          ) {
-            setVisible(true);
-
-            observer.unobserve(
-              element
-            );
-          }
-        },
-        {
-          threshold: 0.35,
-          rootMargin:
-            "0px 0px -8% 0px",
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.unobserve(element);
         }
-      );
+      },
+      {
+        threshold: 0.3,
+        rootMargin: "0px 0px -5% 0px",
+      }
+    );
 
     observer.observe(element);
 
-    return () =>
-      observer.disconnect();
+    return () => observer.disconnect();
   }, []);
+
+  // Smoothly blend from one HEX color to another
+  const interpolateColor = (color1, color2, factor) => {
+    const hex = (color) =>
+      color.replace("#", "").match(/.{2}/g).map((x) => parseInt(x, 16));
+
+    const c1 = hex(color1);
+    const c2 = hex(color2);
+
+    const result = c1.map((value, index) =>
+      Math.round(value + (c2[index] - value) * factor)
+    );
+
+    return `rgb(${result[0]}, ${result[1]}, ${result[2]})`;
+  };
+
+  const getLetterColor = (index) => {
+    if (!gradientColors) return undefined;
+
+    const progress =
+      text.length === 1
+        ? 0
+        : index / (text.length - 1);
+
+    // Pink → soft pink/purple
+    if (progress <= 0.5) {
+      return interpolateColor(
+        gradientColors[0],
+        gradientColors[1],
+        progress * 2
+      );
+    }
+
+    // Soft pink/purple → lavender
+    return interpolateColor(
+      gradientColors[1],
+      gradientColors[2],
+      (progress - 0.5) * 2
+    );
+  };
 
   return (
     <span
       ref={ref}
       aria-label={text}
-      className={`inline-block ${className}`}
+      className={`block whitespace-nowrap ${className}`}
       style={{
         perspective: "700px",
       }}
     >
-      {text
-        .split("")
-        .map(
-          (
-            letter,
-            index
-          ) => (
-            <span
-              key={`${letter}-${index}`}
-              aria-hidden="true"
-              className="inline-block"
-              style={{
-                opacity:
-                  visible
-                    ? 1
-                    : 0,
+      {text.split("").map((letter, index) => (
+        <span
+          key={`${letter}-${index}`}
+          aria-hidden="true"
+          className="inline-block"
+          style={{
+            opacity: visible ? 1 : 0,
 
-                transform:
-                  visible
-                    ? "translateY(0px) rotateX(0deg)"
-                    : "translateY(45px) rotateX(-70deg)",
+            transform: visible
+              ? "translateY(0px) rotateX(0deg)"
+              : "translateY(45px) rotateX(-70deg)",
 
-                filter:
-                  visible
-                    ? "blur(0px)"
-                    : "blur(7px)",
+            filter: visible
+              ? "blur(0px)"
+              : "blur(7px)",
 
-                transition:
-                  `
-                    opacity .45s ease,
-                    transform .65s cubic-bezier(.22,1,.36,1),
-                    filter .5s ease
-                  `,
+            color: gradientColors
+              ? getLetterColor(index)
+              : undefined,
 
-                transitionDelay:
-                  `${
-                    startDelay +
-                    index *
-                      55
-                  }ms`,
-              }}
-            >
-              {letter === " "
-                ? "\u00A0"
-                : letter}
-            </span>
-          )
-        )}
+            transition: `
+              opacity .45s ease,
+              transform .65s cubic-bezier(.22,1,.36,1),
+              filter .5s ease
+            `,
+
+            transitionDelay: `${
+              startDelay + index * 55
+            }ms`,
+          }}
+        >
+          {letter === " "
+            ? "\u00A0"
+            : letter}
+        </span>
+      ))}
     </span>
+  );
+}
+
+function JourneySection() {
+  const sectionRef = useRef(null);
+  const [visible, setVisible] = useState(false);
+
+  const journey = [
+    {
+      year: "2023",
+      title: "BS Software Engineering",
+      subtitle:
+        "International Islamic University, Islamabad",
+      detail:
+        "Started building my foundation in software engineering.",
+    },
+    {
+      year: "2024",
+      title: "First Professional Experience",
+      subtitle:
+        "Virtual Assistant — Noble QS",
+      detail:
+        "Worked with digital operations, communication and business tools.",
+    },
+    {
+      year: "2026",
+      title: "AI Learning",
+      subtitle:
+        "NAVTTC Artificial Intelligence Certification",
+      detail:
+        "Machine Learning, NLP, Deep Learning and model training.",
+    },
+    {
+      year: "2026",
+      title: "Web Development",
+      subtitle:
+        "Corvit Systems",
+      detail:
+        "Built real web interfaces, worked with Next.js, APIs and team workflows.",
+    },
+    {
+      year: "NOW",
+      title: "Building Forward",
+      subtitle:
+        "Projects • AI • Web • 3D",
+      detail:
+        "Turning everything I learn into real, interactive projects.",
+    },
+  ];
+
+  useEffect(() => {
+    const section = sectionRef.current;
+
+    if (!section) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.unobserve(section);
+        }
+      },
+      {
+        threshold: 0.25,
+      }
+    );
+
+    observer.observe(section);
+
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <section
+      ref={sectionRef}
+      id="journey"
+      className="
+        relative
+        z-10
+        mx-auto
+        min-h-screen
+        max-w-[1500px]
+        scroll-mt-20
+        overflow-hidden
+        border-t
+        border-[#D4B0F9]/10
+        px-6
+        py-28
+        lg:px-12
+      "
+    >
+      <SectionLabel number="03">
+        Education + Journey
+      </SectionLabel>
+
+      {/* HEADER */}
+
+      <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <p className="mb-5 font-mono text-sm text-[#A480F2]">
+            &gt; journey.trace()
+          </p>
+
+          <h2
+            className="
+              text-5xl
+              font-black
+              uppercase
+              leading-[0.9]
+              tracking-[-0.055em]
+              text-white
+              md:text-7xl
+              xl:text-8xl
+            "
+          >
+            Small steps.
+            <br />
+
+            <span
+              className="
+                bg-gradient-to-r
+                from-[#F992AD]
+                via-[#F78ECF]
+                to-[#A480F2]
+                bg-clip-text
+                text-transparent
+              "
+            >
+              Bigger ideas.
+            </span>
+          </h2>
+        </div>
+
+        <p className="max-w-md text-sm leading-7 text-[#AEB7D5] md:text-base">
+          A journey shaped by learning,
+          experimentation and turning ideas
+          into something real.
+        </p>
+      </div>
+
+      {/* TIMELINE */}
+
+      <div className="relative mt-24">
+        {/* BACK LINE */}
+
+        <div
+          className="
+            absolute
+            left-0
+            top-[29px]
+            hidden
+            h-[2px]
+            w-full
+            bg-[#D4B0F9]/10
+            md:block
+          "
+        />
+
+        {/* ANIMATED LINE */}
+
+        <div
+          className="
+            absolute
+            left-0
+            top-[29px]
+            hidden
+            h-[2px]
+            bg-gradient-to-r
+            from-[#F78ECF]
+            via-[#A480F2]
+            to-[#6D8CFF]
+            shadow-[0_0_25px_rgba(164,128,242,.7)]
+            transition-all
+            duration-[2200ms]
+            ease-out
+            md:block
+          "
+          style={{
+            width: visible
+              ? "100%"
+              : "0%",
+          }}
+        />
+
+        {/* ITEMS */}
+
+        <div className="grid gap-10 md:grid-cols-5">
+          {journey.map(
+            (
+              item,
+              index
+            ) => (
+              <div
+                key={`${item.year}-${item.title}`}
+                className="
+                  relative
+                  transition-all
+                  duration-700
+                "
+                style={{
+                  opacity:
+                    visible
+                      ? 1
+                      : 0,
+
+                  transform:
+                    visible
+                      ? "translateY(0px)"
+                      : "translateY(45px)",
+
+                  transitionDelay:
+                    `${350 + index * 220}ms`,
+                }}
+              >
+                {/* DOT */}
+
+                <div
+                  className="
+                    relative
+                    z-10
+                    mb-7
+                    flex
+                    h-[60px]
+                    w-[60px]
+                    items-center
+                    justify-center
+                    rounded-full
+                    border
+                    border-[#D4B0F9]/40
+                    bg-[#111A36]
+                    shadow-[0_0_30px_rgba(164,128,242,.25)]
+                  "
+                >
+                  <div
+                    className="
+                      h-3
+                      w-3
+                      rounded-full
+                      bg-[#F78ECF]
+                      shadow-[0_0_22px_rgba(247,142,207,.95)]
+                    "
+                  />
+                </div>
+
+                {/* YEAR */}
+
+                <p
+                  className="
+                    font-mono
+                    text-[10px]
+                    uppercase
+                    tracking-[0.2em]
+                    text-[#F78ECF]
+                  "
+                >
+                  {item.year}
+                </p>
+
+                {/* TITLE */}
+
+                <h3 className="mt-3 text-lg font-bold text-white">
+                  {item.title}
+                </h3>
+
+                {/* SUBTITLE */}
+
+                <p className="mt-2 text-sm font-medium text-[#D4B0F9]">
+                  {item.subtitle}
+                </p>
+
+                {/* DESCRIPTION */}
+
+                <p className="mt-4 text-sm leading-6 text-[#8F98B8]">
+                  {item.detail}
+                </p>
+              </div>
+            )
+          )}
+        </div>
+      </div>
+
+      {/* BOTTOM TECH DETAIL */}
+
+      <div
+        className="
+          mt-20
+          flex
+          items-center
+          gap-4
+          font-mono
+          text-[10px]
+          uppercase
+          tracking-[0.2em]
+          text-[#697394]
+        "
+      >
+        <span className="h-px flex-1 bg-gradient-to-r from-transparent via-[#A480F2]/35 to-transparent" />
+
+        <span>
+          still_learning
+          <span className="animate-pulse text-[#F78ECF]">
+            _
+          </span>
+        </span>
+
+        <span className="h-px flex-1 bg-gradient-to-r from-transparent via-[#A480F2]/35 to-transparent" />
+      </div>
+    </section>
   );
 }
 
@@ -1584,37 +1912,30 @@ export function ComputerPortfolio() {
 >
   <AnimatedLetters
     text="CURIOUS"
-    className="block text-white"
+    className="text-white"
     startDelay={0}
   />
 
   <AnimatedLetters
-    text="MIND."
-    className="
-      block
-      bg-gradient-to-r
-      from-[#F992AD]
-      via-[#F78ECF]
-      to-[#A480F2]
-      bg-clip-text
-      text-transparent
-    "
-    startDelay={380}
-  />
+  text="MIND."
+  gradientColors={[
+    "#F992AD",
+    "#F78ECF",
+    "#A480F2",
+  ]}
+  startDelay={350}
+/>
 
   <AnimatedLetters
     text="THOUGHTFUL"
-    className="block text-white"
-    startDelay={680}
+    className="text-white"
+    startDelay={650}
   />
 
   <AnimatedLetters
     text="BUILDER."
-    className="
-      block
-      text-[#D4B0F9]
-    "
-    startDelay={1250}
+    className="text-[#D4B0F9]"
+    startDelay={1200}
   />
 </h2>
 
@@ -1701,6 +2022,7 @@ export function ComputerPortfolio() {
   </div>
 </section>
 
+<JourneySection />
 
 {/* =================================================
     TEMPORARY MARKERS FOR THE REST
