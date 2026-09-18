@@ -15,6 +15,8 @@ import {
   Stars,
 } from "@react-three/drei";
 
+import { useEffect, useRef, useState } from "react";
+
 /* ======================================================
    NAVIGATION
 ====================================================== */
@@ -292,7 +294,7 @@ function PortfolioBackground() {
   className="
     absolute
     inset-0
-    bg-[#0E1630]/35
+    bg-[#0E1630]/65
   "
 />
     </div>
@@ -1163,7 +1165,9 @@ function AnimatedLetters({
 
 function JourneySection() {
   const sectionRef = useRef(null);
+
   const [visible, setVisible] = useState(false);
+  const [activePoint, setActivePoint] = useState(-1);
 
   const journey = [
     {
@@ -1208,6 +1212,12 @@ function JourneySection() {
     },
   ];
 
+  const journeyCount = journey.length;
+
+  /* ======================================================
+     DETECT WHEN SECTION ENTERS VIEW
+  ====================================================== */
+
   useEffect(() => {
     const section = sectionRef.current;
 
@@ -1217,18 +1227,48 @@ function JourneySection() {
       ([entry]) => {
         if (entry.isIntersecting) {
           setVisible(true);
+
+          // Only play the sequence once
           observer.unobserve(section);
         }
       },
       {
         threshold: 0.25,
+        rootMargin: "0px 0px -8% 0px",
       }
     );
 
     observer.observe(section);
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+    };
   }, []);
+
+  /* ======================================================
+     ACTIVATE EACH JOURNEY POINT ONE BY ONE
+  ====================================================== */
+
+  useEffect(() => {
+    if (!visible) return;
+
+    // Start completely inactive
+    setActivePoint(-1);
+
+    const timers = Array.from(
+      { length: journeyCount },
+      (_, index) =>
+        setTimeout(() => {
+          setActivePoint(index);
+        }, 700 + index * 1500)
+    );
+
+    return () => {
+      timers.forEach((timer) => {
+        clearTimeout(timer);
+      });
+    };
+  }, [visible, journeyCount]);
 
   return (
     <section
@@ -1249,13 +1289,28 @@ function JourneySection() {
         lg:px-12
       "
     >
+      {/* =================================================
+          SECTION LABEL
+      ================================================= */}
+
       <SectionLabel number="03">
         Education + Journey
       </SectionLabel>
 
-      {/* HEADER */}
+      {/* =================================================
+          HEADER
+      ================================================= */}
 
-      <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+      <div
+        className="
+          flex
+          flex-col
+          gap-8
+          lg:flex-row
+          lg:items-end
+          lg:justify-between
+        "
+      >
         <div>
           <p className="mb-5 font-mono text-sm text-[#A480F2]">
             &gt; journey.trace()
@@ -1274,6 +1329,7 @@ function JourneySection() {
             "
           >
             Small steps.
+
             <br />
 
             <span
@@ -1291,17 +1347,29 @@ function JourneySection() {
           </h2>
         </div>
 
-        <p className="max-w-md text-sm leading-7 text-[#AEB7D5] md:text-base">
+        <p
+          className="
+            max-w-md
+            text-sm
+            leading-7
+            text-[#AEB7D5]
+            md:text-base
+          "
+        >
           A journey shaped by learning,
           experimentation and turning ideas
           into something real.
         </p>
       </div>
 
-      {/* TIMELINE */}
+      {/* =================================================
+          JOURNEY TIMELINE
+      ================================================= */}
 
       <div className="relative mt-24">
-        {/* BACK LINE */}
+        {/* ---------------------------------------------
+            DIM BACKGROUND LINE
+        --------------------------------------------- */}
 
         <div
           className="
@@ -1316,7 +1384,9 @@ function JourneySection() {
           "
         />
 
-        {/* ANIMATED LINE */}
+        {/* ---------------------------------------------
+            GLOWING PROGRESS LINE
+        --------------------------------------------- */}
 
         <div
           className="
@@ -1329,53 +1399,71 @@ function JourneySection() {
             from-[#F78ECF]
             via-[#A480F2]
             to-[#6D8CFF]
-            shadow-[0_0_25px_rgba(164,128,242,.7)]
+            shadow-[0_0_18px_rgba(164,128,242,.8)]
             transition-all
-            duration-[2200ms]
+            duration-700
             ease-out
             md:block
           "
           style={{
-            width: visible
-              ? "100%"
-              : "0%",
+            width:
+              activePoint < 0
+                ? "0%"
+                : `${
+                    (activePoint /
+                      (journeyCount - 1)) *
+                    100
+                  }%`,
           }}
         />
 
-        {/* ITEMS */}
+        {/* =================================================
+            JOURNEY POINTS
+        ================================================= */}
 
-        <div className="grid gap-10 md:grid-cols-5">
-          {journey.map(
-            (
-              item,
-              index
-            ) => (
+        <div
+          className="
+            grid
+            gap-10
+            md:grid-cols-5
+          "
+        >
+          {journey.map((item, index) => {
+            const isActive =
+              index <= activePoint;
+
+            const isCurrent =
+              index === activePoint;
+
+            return (
               <div
                 key={`${item.year}-${item.title}`}
                 className="
                   relative
                   transition-all
                   duration-700
+                  ease-out
                 "
                 style={{
-                  opacity:
-                    visible
-                      ? 1
-                      : 0,
+                  opacity: isActive
+                    ? 1
+                    : 0.3,
 
-                  transform:
-                    visible
-                      ? "translateY(0px)"
-                      : "translateY(45px)",
+                  transform: isActive
+                    ? "translateY(0px)"
+                    : "translateY(20px)",
 
-                  transitionDelay:
-                    `${350 + index * 220}ms`,
+                  filter: isActive
+                    ? "blur(0px)"
+                    : "blur(1px)",
                 }}
               >
-                {/* DOT */}
+                {/* =====================================
+                    TIMELINE NODE
+                ====================================== */}
 
                 <div
-                  className="
+                  className={`
                     relative
                     z-10
                     mb-7
@@ -1386,60 +1474,220 @@ function JourneySection() {
                     justify-center
                     rounded-full
                     border
-                    border-[#D4B0F9]/40
                     bg-[#111A36]
-                    shadow-[0_0_30px_rgba(164,128,242,.25)]
-                  "
+                    transition-all
+                    duration-700
+
+                    ${
+                      isActive
+                        ? `
+                          border-[#F78ECF]/80
+                          shadow-[
+                            0_0_18px_rgba(247,142,207,.55),
+                            0_0_40px_rgba(164,128,242,.25)
+                          ]
+                        `
+                        : `
+                          border-[#D4B0F9]/20
+                          shadow-none
+                        `
+                    }
+
+                    ${
+                      isCurrent
+                        ? "scale-110"
+                        : "scale-100"
+                    }
+                  `}
                 >
+                  {/* CURRENT POINT PULSE */}
+
+                  {isCurrent && (
+                    <>
+                      <span
+                        className="
+                          absolute
+                          inset-[-6px]
+                          animate-ping
+                          rounded-full
+                          border
+                          border-[#F78ECF]/40
+                        "
+                      />
+
+                      <span
+                        className="
+                          absolute
+                          inset-[-12px]
+                          rounded-full
+                          border
+                          border-[#A480F2]/15
+                        "
+                      />
+                    </>
+                  )}
+
+                  {/* INNER DOT */}
+
                   <div
-                    className="
+                    className={`
                       h-3
                       w-3
                       rounded-full
-                      bg-[#F78ECF]
-                      shadow-[0_0_22px_rgba(247,142,207,.95)]
-                    "
+                      transition-all
+                      duration-700
+
+                      ${
+                        isActive
+                          ? `
+                            scale-125
+                            bg-[#F78ECF]
+                            shadow-[0_0_25px_rgba(247,142,207,1)]
+                          `
+                          : `
+                            scale-100
+                            bg-[#697394]
+                            shadow-none
+                          `
+                      }
+                    `}
                   />
                 </div>
 
-                {/* YEAR */}
+                {/* =====================================
+                    YEAR
+                ====================================== */}
 
                 <p
-                  className="
+                  className={`
                     font-mono
                     text-[10px]
                     uppercase
                     tracking-[0.2em]
-                    text-[#F78ECF]
-                  "
+                    transition-all
+                    duration-700
+
+                    ${
+                      isActive
+                        ? "text-[#F78ECF]"
+                        : "text-[#697394]"
+                    }
+                  `}
                 >
                   {item.year}
                 </p>
 
-                {/* TITLE */}
+                {/* =====================================
+                    TITLE
+                ====================================== */}
 
-                <h3 className="mt-3 text-lg font-bold text-white">
+                <h3
+                  className={`
+                    mt-3
+                    text-lg
+                    font-bold
+                    transition-all
+                    duration-700
+
+                    ${
+                      isActive
+                        ? "text-white"
+                        : "text-[#7F89A9]"
+                    }
+                  `}
+                >
                   {item.title}
                 </h3>
 
-                {/* SUBTITLE */}
+                {/* =====================================
+                    SUBTITLE
+                ====================================== */}
 
-                <p className="mt-2 text-sm font-medium text-[#D4B0F9]">
+                <p
+                  className={`
+                    mt-2
+                    text-sm
+                    font-medium
+                    transition-all
+                    duration-700
+
+                    ${
+                      isActive
+                        ? "text-[#D4B0F9]"
+                        : "text-[#697394]"
+                    }
+                  `}
+                >
                   {item.subtitle}
                 </p>
 
-                {/* DESCRIPTION */}
+                {/* =====================================
+                    DESCRIPTION
+                ====================================== */}
 
-                <p className="mt-4 text-sm leading-6 text-[#8F98B8]">
+                <p
+                  className={`
+                    mt-4
+                    text-sm
+                    leading-6
+                    transition-all
+                    duration-700
+
+                    ${
+                      isActive
+                        ? "text-[#8F98B8]"
+                        : "text-[#59627E]"
+                    }
+                  `}
+                >
                   {item.detail}
                 </p>
+
+                {/* CURRENT POINT LABEL */}
+
+                {isCurrent && (
+                  <div
+                    className="
+                      mt-5
+                      inline-flex
+                      items-center
+                      gap-2
+                      rounded-full
+                      border
+                      border-[#F78ECF]/20
+                      bg-[#F78ECF]/5
+                      px-3
+                      py-1.5
+                      font-mono
+                      text-[9px]
+                      uppercase
+                      tracking-[0.15em]
+                      text-[#F78ECF]
+                    "
+                  >
+                    <span
+                      className="
+                        h-1.5
+                        w-1.5
+                        animate-pulse
+                        rounded-full
+                        bg-[#F78ECF]
+                        shadow-[0_0_10px_rgba(247,142,207,1)]
+                      "
+                    />
+
+                    tracing
+                  </div>
+                )}
               </div>
-            )
-          )}
+            );
+          })}
         </div>
       </div>
 
-      {/* BOTTOM TECH DETAIL */}
+      {/* =================================================
+          BOTTOM DETAIL
+      ================================================= */}
 
       <div
         className="
@@ -1454,18 +1702,883 @@ function JourneySection() {
           text-[#697394]
         "
       >
-        <span className="h-px flex-1 bg-gradient-to-r from-transparent via-[#A480F2]/35 to-transparent" />
+        <span
+          className="
+            h-px
+            flex-1
+            bg-gradient-to-r
+            from-transparent
+            via-[#A480F2]/35
+            to-transparent
+          "
+        />
 
         <span>
-          still_learning
+          {activePoint === journeyCount - 1
+            ? "journey_loaded"
+            : "tracing_journey"}
+
           <span className="animate-pulse text-[#F78ECF]">
             _
           </span>
         </span>
 
-        <span className="h-px flex-1 bg-gradient-to-r from-transparent via-[#A480F2]/35 to-transparent" />
+        <span
+          className="
+            h-px
+            flex-1
+            bg-gradient-to-r
+            from-transparent
+            via-[#A480F2]/35
+            to-transparent
+          "
+        />
       </div>
     </section>
+  );
+}
+
+function ExperienceSection() {
+  const [activeExperience, setActiveExperience] =
+    useState(0);
+
+  const experiences = [
+    {
+      id: "corvit",
+      company: "Corvit Systems",
+      role: "Web Developer Intern",
+      period: "JUN — AUG 2026",
+      location: "Islamabad, Pakistan",
+      code: "01",
+      accent: "#F78ECF",
+      glow: "rgba(247,142,207,.35)",
+
+      summary:
+        "Worked on real-world web development projects while strengthening my frontend, debugging and collaboration skills.",
+
+      points: [
+        "Developed COTSLE using Next.js.",
+        "Built responsive and user-friendly interfaces.",
+        "Created reusable frontend components.",
+        "Worked with APIs and backend functionality.",
+        "Debugged, tested and maintained application features.",
+        "Collaborated within a development team.",
+      ],
+
+      stack: [
+        "Next.js",
+        "React",
+        "Tailwind",
+        "APIs",
+        "Git",
+      ],
+    },
+
+    {
+      id: "signature",
+      company: "Signature Trips",
+      role: "Web Developer & Co-Founder",
+      period: "JUN — JUL 2026",
+      location: "Islamabad, Pakistan",
+      code: "02",
+      accent: "#A480F2",
+      glow: "rgba(164,128,242,.38)",
+
+      summary:
+        "Combined development and entrepreneurship while helping shape the company's digital presence and technical direction.",
+
+      points: [
+        "Designed and developed the company website.",
+        "Focused on responsiveness and usability.",
+        "Managed website features and content.",
+        "Handled maintenance and troubleshooting.",
+        "Contributed to digital strategy.",
+        "Participated in business and technical decisions.",
+      ],
+
+      stack: [
+        "Web Development",
+        "UI/UX",
+        "Strategy",
+        "Maintenance",
+      ],
+    },
+
+    {
+      id: "noble",
+      company: "Noble QS",
+      role: "Virtual Assistant",
+      period: "MAR — JUN 2024",
+      location: "Dublin, Ireland",
+      code: "03",
+      accent: "#D4B0F9",
+      glow: "rgba(212,176,249,.32)",
+
+      summary:
+        "My first professional experience helped me develop communication, organisation and digital operations skills.",
+
+      points: [
+        "Handled administrative tasks.",
+        "Supported email communication.",
+        "Managed records and digital information.",
+        "Worked with administrative dashboards.",
+        "Assisted with social media activities.",
+        "Supported digital marketing and online operations.",
+      ],
+
+      stack: [
+        "Communication",
+        "Operations",
+        "Content",
+        "Organisation",
+      ],
+    },
+  ];
+
+  const active =
+    experiences[activeExperience];
+
+  return (
+    <section
+      id="experience"
+      className="
+        relative
+        z-10
+        mx-auto
+        min-h-screen
+        max-w-[1500px]
+        scroll-mt-20
+        overflow-hidden
+        border-t
+        border-[#D4B0F9]/10
+        px-6
+        py-28
+        lg:px-12
+      "
+    >
+      {/* ============================================
+          SECTION LABEL
+      ============================================ */}
+
+      <SectionLabel number="04">
+        Experience
+      </SectionLabel>
+
+      {/* ============================================
+          HEADER
+      ============================================ */}
+
+      <div
+        className="
+          flex
+          flex-col
+          gap-8
+          lg:flex-row
+          lg:items-end
+          lg:justify-between
+        "
+      >
+        <div>
+          <p className="mb-5 font-mono text-sm text-[#A480F2]">
+            &gt; experience.log()
+          </p>
+
+          <h2
+            className="
+              text-5xl
+              font-black
+              uppercase
+              leading-[0.9]
+              tracking-[-0.055em]
+              text-white
+              md:text-7xl
+              xl:text-8xl
+            "
+          >
+            Turning learning
+            <br />
+
+            <span
+              className="
+                bg-gradient-to-r
+                from-[#F992AD]
+                via-[#F78ECF]
+                to-[#A480F2]
+                bg-clip-text
+                text-transparent
+              "
+            >
+              into impact.
+            </span>
+          </h2>
+        </div>
+
+        <p
+          className="
+            max-w-md
+            text-sm
+            leading-7
+            text-[#AEB7D5]
+            md:text-base
+          "
+        >
+          Every role taught me something different —
+          from development and collaboration to
+          communication, strategy and problem solving.
+        </p>
+      </div>
+
+      {/* ============================================
+          EXPERIENCE SYSTEM
+      ============================================ */}
+
+      <div
+        className="
+          mt-20
+          grid
+          gap-8
+          lg:grid-cols-[0.78fr_1.22fr]
+        "
+      >
+        {/* ========================================
+            LEFT — EXPERIENCE SELECTOR
+        ======================================== */}
+
+        <div className="space-y-4">
+          <p
+            className="
+              mb-5
+              font-mono
+              text-[10px]
+              uppercase
+              tracking-[0.22em]
+              text-[#697394]
+            "
+          >
+            // select experience
+          </p>
+
+          {experiences.map(
+            (experience, index) => {
+              const isActive =
+                activeExperience === index;
+
+              return (
+                <button
+                  key={experience.id}
+                  type="button"
+                  onClick={() =>
+                    setActiveExperience(index)
+                  }
+                  onMouseEnter={() =>
+                    setActiveExperience(index)
+                  }
+                  className={`
+                    group
+                    relative
+                    w-full
+                    overflow-hidden
+                    rounded-2xl
+                    border
+                    p-5
+                    text-left
+                    backdrop-blur-xl
+                    transition-all
+                    duration-500
+
+                    ${
+                      isActive
+                        ? `
+                          translate-x-2
+                          bg-[#111A36]/85
+                        `
+                        : `
+                          bg-[#111A36]/35
+                          hover:translate-x-1
+                        `
+                    }
+                  `}
+                  style={{
+                    borderColor: isActive
+                      ? `${experience.accent}90`
+                      : "rgba(212,176,249,.14)",
+
+                    boxShadow: isActive
+                      ? `
+                        0 20px 55px rgba(0,0,0,.22),
+                        0 0 35px ${experience.glow}
+                      `
+                      : "none",
+                  }}
+                >
+                  {/* ACTIVE SIDE LINE */}
+
+                  <span
+                    className="
+                      absolute
+                      bottom-0
+                      left-0
+                      top-0
+                      w-[3px]
+                      transition-all
+                      duration-500
+                    "
+                    style={{
+                      background:
+                        isActive
+                          ? experience.accent
+                          : "transparent",
+
+                      boxShadow:
+                        isActive
+                          ? `0 0 18px ${experience.accent}`
+                          : "none",
+                    }}
+                  />
+
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p
+                        className="
+                          font-mono
+                          text-[9px]
+                          uppercase
+                          tracking-[0.18em]
+                        "
+                        style={{
+                          color:
+                            experience.accent,
+                        }}
+                      >
+                        EXP_{experience.code}
+                      </p>
+
+                      <h3
+                        className="
+                          mt-3
+                          text-xl
+                          font-bold
+                          text-white
+                        "
+                      >
+                        {experience.company}
+                      </h3>
+
+                      <p className="mt-1 text-sm text-[#AEB7D5]">
+                        {experience.role}
+                      </p>
+                    </div>
+
+                    <span
+                      className={`
+                        text-xl
+                        transition-all
+                        duration-500
+
+                        ${
+                          isActive
+                            ? "translate-x-1 opacity-100"
+                            : "opacity-30"
+                        }
+                      `}
+                      style={{
+                        color:
+                          experience.accent,
+                      }}
+                    >
+                      →
+                    </span>
+                  </div>
+
+                  <div
+                    className="
+                      mt-5
+                      flex
+                      flex-wrap
+                      items-center
+                      gap-2
+                      font-mono
+                      text-[9px]
+                      uppercase
+                      tracking-[0.14em]
+                      text-[#697394]
+                    "
+                  >
+                    <span>
+                      {experience.period}
+                    </span>
+
+                    <span
+                      style={{
+                        color:
+                          experience.accent,
+                      }}
+                    >
+                      •
+                    </span>
+
+                    <span>
+                      {experience.location}
+                    </span>
+                  </div>
+                </button>
+              );
+            }
+          )}
+        </div>
+
+        {/* ========================================
+            RIGHT — ACTIVE EXPERIENCE PANEL
+        ======================================== */}
+
+        <div
+          className="
+            relative
+            min-h-[590px]
+            overflow-hidden
+            rounded-[30px]
+            border
+            border-[#D4B0F9]/20
+            bg-[#111A36]/55
+            p-7
+            shadow-[0_30px_90px_rgba(0,0,0,.28)]
+            backdrop-blur-2xl
+            md:p-9
+            lg:p-10
+          "
+        >
+          {/* BACKGROUND GRID */}
+
+          <div
+            className="
+              pointer-events-none
+              absolute
+              inset-0
+              opacity-[0.06]
+            "
+            style={{
+              backgroundImage: `
+                linear-gradient(
+                  rgba(212,176,249,.3) 1px,
+                  transparent 1px
+                ),
+                linear-gradient(
+                  90deg,
+                  rgba(212,176,249,.3) 1px,
+                  transparent 1px
+                )
+              `,
+
+              backgroundSize:
+                "38px 38px",
+            }}
+          />
+
+          {/* GLOW */}
+
+          <div
+  key={`glow-${active.id}`}
+  className="
+    pointer-events-none
+    absolute
+              -right-24
+              -top-24
+              h-80
+              w-80
+              rounded-full
+              blur-[100px]
+              transition-all
+              duration-700
+            "
+            style={{
+              background:
+                active.glow,
+            }}
+          />
+
+          {/* TOP BAR */}
+
+          <div
+            className="
+              relative
+              z-10
+              flex
+              items-center
+              justify-between
+              border-b
+              border-[#D4B0F9]/10
+              pb-6
+            "
+          >
+            <div className="flex gap-2">
+              <span className="h-2.5 w-2.5 rounded-full bg-[#F992AD]" />
+
+              <span className="h-2.5 w-2.5 rounded-full bg-[#D4B0F9]" />
+
+              <span className="h-2.5 w-2.5 rounded-full bg-[#A480F2]" />
+            </div>
+
+            <p
+              className="
+                font-mono
+                text-[9px]
+                uppercase
+                tracking-[0.18em]
+                text-[#697394]
+              "
+            >
+              professional_history.log
+            </p>
+          </div>
+
+          {/* ACTIVE CONTENT */}
+
+          <div
+  key={`content-${active.id}`}
+  className="
+    relative
+    z-10
+    transition-all
+    duration-500
+  "
+>
+            <div className="mt-8">
+              <div
+                className="
+                  flex
+                  flex-wrap
+                  items-center
+                  gap-3
+                  font-mono
+                  text-[10px]
+                  uppercase
+                  tracking-[0.18em]
+                "
+                style={{
+                  color: active.accent,
+                }}
+              >
+                <span>
+                  {active.period}
+                </span>
+
+                <span>•</span>
+
+                <span>
+                  {active.location}
+                </span>
+              </div>
+
+              <h3
+                className="
+                  mt-5
+                  text-3xl
+                  font-black
+                  uppercase
+                  tracking-[-0.035em]
+                  text-white
+                  md:text-5xl
+                "
+              >
+                {active.role}
+              </h3>
+
+              <p
+                className="
+                  mt-3
+                  text-lg
+                  font-semibold
+                "
+                style={{
+                  color:
+                    active.accent,
+                }}
+              >
+                {active.company}
+              </p>
+
+              <p
+                className="
+                  mt-6
+                  max-w-2xl
+                  text-sm
+                  leading-7
+                  text-[#AEB7D5]
+                  md:text-base
+                "
+              >
+                {active.summary}
+              </p>
+            </div>
+
+            {/* WHAT I DID */}
+
+            <div className="mt-9">
+              <p
+                className="
+                  mb-5
+                  font-mono
+                  text-[10px]
+                  uppercase
+                  tracking-[0.18em]
+                  text-[#697394]
+                "
+              >
+                // what_i_did
+              </p>
+
+              <div
+                className="
+                  grid
+                  gap-3
+                  md:grid-cols-2
+                "
+              >
+                {active.points.map(
+                  (point, index) => (
+                    <div
+                      key={point}
+                      className="
+                        flex
+                        items-start
+                        gap-3
+                        rounded-xl
+                        border
+                        border-[#D4B0F9]/10
+                        bg-[#0E1630]/35
+                        p-4
+                        transition
+                        duration-300
+                        hover:border-[#D4B0F9]/25
+                      "
+                    >
+                      <span
+                        className="
+                          mt-[7px]
+                          h-1.5
+                          w-1.5
+                          shrink-0
+                          rounded-full
+                        "
+                        style={{
+                          background:
+                            active.accent,
+
+                          boxShadow:
+                            `0 0 10px ${active.accent}`,
+                        }}
+                      />
+
+                      <p className="text-sm leading-6 text-[#B8C0DC]">
+                        {point}
+                      </p>
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+
+            {/* STACK */}
+
+            <div className="mt-9">
+              <p
+                className="
+                  mb-4
+                  font-mono
+                  text-[10px]
+                  uppercase
+                  tracking-[0.18em]
+                  text-[#697394]
+                "
+              >
+                // tools + skills
+              </p>
+
+              <div className="flex flex-wrap gap-2">
+                {active.stack.map(
+                  (item) => (
+                    <span
+                      key={item}
+                      className="
+                        rounded-full
+                        border
+                        px-4
+                        py-2
+                        font-mono
+                        text-[10px]
+                      "
+                      style={{
+                        color:
+                          active.accent,
+
+                        borderColor:
+                          `${active.accent}55`,
+
+                        background:
+                          `${active.accent}10`,
+                      }}
+                    >
+                      {item}
+                    </span>
+                  )
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* DECORATIVE CODE */}
+
+          <div
+            className="
+              pointer-events-none
+              absolute
+              bottom-6
+              right-7
+              font-mono
+              text-[9px]
+              uppercase
+              tracking-[0.16em]
+              text-[#697394]/50
+            "
+          >
+            0{activeExperience + 1}
+            /0{experiences.length}
+          </div>
+        </div>
+      </div>
+
+      {/* ============================================
+          SMALL BOTTOM STATUS
+      ============================================ */}
+
+      <div
+        className="
+          mt-16
+          flex
+          items-center
+          gap-4
+          font-mono
+          text-[10px]
+          uppercase
+          tracking-[0.2em]
+          text-[#697394]
+        "
+      >
+        <span
+          className="
+            h-px
+            flex-1
+            bg-gradient-to-r
+            from-transparent
+            via-[#A480F2]/30
+            to-transparent
+          "
+        />
+
+        <span>
+          experience_loaded
+          <span className="animate-pulse text-[#F78ECF]">
+            _
+          </span>
+        </span>
+
+        <span
+          className="
+            h-px
+            flex-1
+            bg-gradient-to-r
+            from-transparent
+            via-[#A480F2]/30
+            to-transparent
+          "
+        />
+      </div>
+
+      
+    </section>
+  );
+}
+ 
+function ScrollBlobBubble({ progress = 0 }) {
+  const moveX = 120 - progress * 170;
+  const moveY = -20 + progress * 120;
+  const scale = 1 + progress * 0.22;
+  const rotate = -18 + progress * 24;
+
+  const huePink = 330 - progress * 12;
+  const huePurple = 280 + progress * 10;
+  const hueBlue = 235 + progress * 18;
+
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {/* Main moving orb */}
+      <div
+        className="absolute right-[-180px] top-[-130px] h-[560px] w-[560px] rounded-full opacity-80"
+        style={{
+          transform: `translate3d(${moveX}px, ${moveY}px, 0) scale(${scale}) rotate(${rotate}deg)`,
+          background: `
+            radial-gradient(
+              circle at 30% 28%,
+              hsla(${huePink}, 100%, 84%, 0.95) 0%,
+              hsla(${huePurple}, 92%, 74%, 0.78) 34%,
+              hsla(${hueBlue}, 90%, 62%, 0.45) 60%,
+              transparent 76%
+            )
+          `,
+          boxShadow: `
+            0 0 80px hsla(${huePurple}, 90%, 70%, 0.18),
+            0 0 160px hsla(${hueBlue}, 90%, 60%, 0.12)
+          `,
+          filter: "blur(2px)",
+          transition:
+            "transform 120ms linear, background 180ms linear, box-shadow 180ms linear",
+        }}
+      />
+
+      {/* Inner glow bubble */}
+      <div
+        className="absolute right-[120px] top-[70px] h-[150px] w-[150px] rounded-full blur-2xl opacity-60"
+        style={{
+          transform: `translate3d(${moveX * 0.35}px, ${moveY * 0.3}px, 0)`,
+          background: `
+            radial-gradient(
+              circle,
+              hsla(${huePink}, 100%, 92%, 0.95) 0%,
+              hsla(${huePurple}, 95%, 80%, 0.45) 52%,
+              transparent 74%
+            )
+          `,
+          transition: "transform 120ms linear, background 180ms linear",
+        }}
+      />
+
+      {/* Glass ring */}
+      <div
+        className="absolute right-[70px] top-[28px] h-[480px] w-[480px] rounded-full border border-white/10"
+        style={{
+          transform: `translate3d(${moveX * 0.65}px, ${moveY * 0.5}px, 0) scale(${0.96 + progress * 0.05})`,
+          boxShadow: "inset 0 0 80px rgba(255,255,255,0.04)",
+          transition: "transform 120ms linear",
+        }}
+      />
+
+      {/* Soft color mist */}
+      <div
+        className="absolute right-[0px] top-[140px] h-[260px] w-[260px] rounded-full blur-3xl opacity-30"
+        style={{
+          transform: `translate3d(${moveX * 0.5}px, ${moveY * 0.4}px, 0)`,
+          background: `
+            radial-gradient(
+              circle,
+              hsla(${hueBlue}, 100%, 70%, 0.45) 0%,
+              hsla(${huePurple}, 100%, 72%, 0.25) 45%,
+              transparent 75%
+            )
+          `,
+          transition: "transform 120ms linear, background 180ms linear",
+        }}
+      />
+    </div>
   );
 }
 
@@ -2023,26 +3136,14 @@ export function ComputerPortfolio() {
 </section>
 
 <JourneySection />
+<ExperienceSection />
 
 {/* =================================================
     TEMPORARY MARKERS FOR THE REST
 ================================================= */}
 
 {[
-  [
-    "journey",
-    "03",
-    "EDUCATION + JOURNEY",
-    "Small steps. Bigger ideas.",
-  ],
-
-  [
-    "experience",
-    "04",
-    "EXPERIENCE",
-    "Turning learning into impact.",
-  ],
-
+   
   [
     "projects",
     "05",
