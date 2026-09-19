@@ -1,10 +1,11 @@
 "use client";
-
+import { Vector2 } from "three";
 import {
   useEffect,
   useRef,
   useState,
 } from "react";
+
 import {
   Canvas,
   useFrame,
@@ -15,7 +16,7 @@ import {
   Stars,
 } from "@react-three/drei";
 
-import { useEffect, useRef, useState } from "react";
+
 
 /* ======================================================
    NAVIGATION
@@ -1738,30 +1739,949 @@ function JourneySection() {
   );
 }
 
+/* ======================================================
+   IRIDESCENT OIL / WATER EFFECT
+====================================================== */
+
+function IridescentOilPlane({
+  mouse,
+}) {
+  const materialRef =
+    useRef(null);
+
+  const uniformsRef =
+    useRef({
+      uTime: {
+        value: 0,
+      },
+
+      uMouse: {
+        value: new Vector2(
+          0.72,
+          0.78
+        ),
+      },
+
+      uMouseStrength: {
+        value: 0,
+      },
+
+      uAspect: {
+        value: 1,
+      },
+    });
+
+  useFrame(
+    (
+      state,
+      delta
+    ) => {
+      const material =
+        materialRef.current;
+
+      if (!material) return;
+
+      const uniforms =
+        material.uniforms;
+
+      /*
+        Continuous slow liquid motion
+      */
+
+      uniforms.uTime.value +=
+        delta;
+
+      /*
+        Mouse position.
+
+        DOM coordinates have Y going
+        downward, shader UV coordinates
+        go upward, so we flip Y.
+      */
+
+      const targetX =
+        mouse?.x ?? 0.72;
+
+      const targetY =
+        1 -
+        (mouse?.y ?? 0.22);
+
+      uniforms.uMouse.value.lerp(
+        new Vector2(
+          targetX,
+          targetY
+        ),
+        0.075
+      );
+
+      /*
+        Stronger reaction while mouse
+        is actually inside the box.
+      */
+
+      const targetStrength =
+        mouse?.active
+          ? 1
+          : 0.22;
+
+      uniforms.uMouseStrength.value +=
+        (
+          targetStrength -
+          uniforms.uMouseStrength.value
+        ) *
+        0.055;
+
+      /*
+        Keep distortion proportional
+        to the Experience panel.
+      */
+
+      const width =
+        state.size.width;
+
+      const height =
+        state.size.height;
+
+      uniforms.uAspect.value =
+        height > 0
+          ? width / height
+          : 1;
+    }
+  );
+
+  const vertexShader = `
+    varying vec2 vUv;
+
+    void main() {
+      vUv = uv;
+
+      gl_Position =
+        vec4(
+          position.xy,
+          0.0,
+          1.0
+        );
+    }
+  `;
+
+  const fragmentShader = `
+    precision highp float;
+
+    varying vec2 vUv;
+
+    uniform float uTime;
+    uniform vec2 uMouse;
+    uniform float uMouseStrength;
+    uniform float uAspect;
+
+
+    /* ============================
+       RANDOM
+    ============================ */
+
+    float hash(vec2 p) {
+      p =
+        fract(
+          p *
+          vec2(
+            123.34,
+            456.21
+          )
+        );
+
+      p +=
+        dot(
+          p,
+          p + 45.32
+        );
+
+      return
+        fract(
+          p.x *
+          p.y
+        );
+    }
+
+
+    /* ============================
+       SMOOTH NOISE
+    ============================ */
+
+    float noise(vec2 p) {
+      vec2 i =
+        floor(p);
+
+      vec2 f =
+        fract(p);
+
+      float a =
+        hash(i);
+
+      float b =
+        hash(
+          i +
+          vec2(
+            1.0,
+            0.0
+          )
+        );
+
+      float c =
+        hash(
+          i +
+          vec2(
+            0.0,
+            1.0
+          )
+        );
+
+      float d =
+        hash(
+          i +
+          vec2(
+            1.0,
+            1.0
+          )
+        );
+
+      vec2 u =
+        f *
+        f *
+        (
+          3.0 -
+          2.0 * f
+        );
+
+      return
+        mix(
+          a,
+          b,
+          u.x
+        ) +
+
+        (
+          c - a
+        ) *
+        u.y *
+        (
+          1.0 -
+          u.x
+        ) +
+
+        (
+          d - b
+        ) *
+        u.x *
+        u.y;
+    }
+
+
+    /* ============================
+       FRACTAL LIQUID NOISE
+    ============================ */
+
+    float fbm(vec2 p) {
+      float value =
+        0.0;
+
+      float amplitude =
+        0.5;
+
+      mat2 rotation =
+        mat2(
+          0.80,
+          0.60,
+          -0.60,
+          0.80
+        );
+
+      for (
+        int i = 0;
+        i < 5;
+        i++
+      ) {
+        value +=
+          amplitude *
+          noise(p);
+
+        p =
+          rotation *
+          p *
+          2.02;
+
+        amplitude *=
+          0.5;
+      }
+
+      return value;
+    }
+
+
+    void main() {
+      vec2 uv =
+        vUv;
+
+      vec2 p =
+        uv;
+
+      /*
+        =================================
+        BASE LIQUID FLOW
+        =================================
+      */
+
+      float slowTime =
+        uTime *
+        0.16;
+
+      float flowOne =
+        fbm(
+          p *
+          2.7 +
+          vec2(
+            slowTime,
+            -slowTime * 0.65
+          )
+        );
+
+      float flowTwo =
+        fbm(
+          p *
+          4.1 +
+          vec2(
+            -slowTime * 0.48,
+            slowTime * 0.75
+          ) +
+          flowOne
+        );
+
+      /*
+        Distort coordinates before
+        drawing the colors.
+      */
+
+      p.x +=
+        (
+          flowOne -
+          0.5
+        ) *
+        0.16;
+
+      p.y +=
+        (
+          flowTwo -
+          0.5
+        ) *
+        0.14;
+
+
+      /*
+        =================================
+        MOUSE DISTURBANCE
+        =================================
+      */
+
+      vec2 mouseSpace =
+        p -
+        uMouse;
+
+      mouseSpace.x *=
+        uAspect;
+
+      float mouseDistance =
+        length(
+          mouseSpace
+        );
+
+      float mouseField =
+        exp(
+          -mouseDistance *
+          3.4
+        );
+
+      /*
+        Gentle circular ripple,
+        similar to liquid being pushed.
+      */
+
+      float ripple =
+        sin(
+          mouseDistance *
+          25.0 -
+          uTime *
+          3.0
+        );
+
+      ripple *=
+        exp(
+          -mouseDistance *
+          5.2
+        );
+
+      ripple *=
+        uMouseStrength;
+
+      /*
+        Warp UVs around cursor.
+      */
+
+      vec2 direction =
+        normalize(
+          mouseSpace +
+          vec2(
+            0.0001
+          )
+        );
+
+      p +=
+        direction *
+        ripple *
+        0.022;
+
+      p.x +=
+        mouseField *
+        sin(
+          uTime * 0.65
+        ) *
+        0.018 *
+        uMouseStrength;
+
+      p.y +=
+        mouseField *
+        cos(
+          uTime * 0.55
+        ) *
+        0.018 *
+        uMouseStrength;
+
+
+      /*
+        =================================
+        OIL INTERFERENCE BANDS
+        =================================
+      */
+
+      float liquidNoise =
+        fbm(
+          p *
+          3.5 +
+          flowOne *
+          1.8
+        );
+
+      float liquidNoiseTwo =
+        fbm(
+          p *
+          6.0 -
+          flowTwo *
+          1.5
+        );
+
+      float bands =
+        sin(
+          (
+            p.x *
+            2.4 +
+
+            p.y *
+            2.0 +
+
+            liquidNoise *
+            2.8 +
+
+            liquidNoiseTwo *
+            0.8
+          ) *
+          6.0 +
+
+          uTime *
+          0.34 +
+
+          ripple *
+          3.5
+        );
+
+      bands =
+        bands *
+        0.5 +
+        0.5;
+
+
+      /*
+        =================================
+        YOUR PORTFOLIO COLORS
+        =================================
+      */
+
+      vec3 pink =
+        vec3(
+          0.969,
+          0.557,
+          0.812
+        );
+
+      vec3 rose =
+        vec3(
+          0.976,
+          0.573,
+          0.678
+        );
+
+      vec3 lavender =
+        vec3(
+          0.831,
+          0.690,
+          0.976
+        );
+
+      vec3 purple =
+        vec3(
+          0.643,
+          0.502,
+          0.949
+        );
+
+      vec3 violet =
+        vec3(
+          0.773,
+          0.502,
+          0.929
+        );
+
+      vec3 blue =
+        vec3(
+          0.427,
+          0.549,
+          1.0
+        );
+
+
+      /*
+        Build the shifting iridescence.
+      */
+
+      float phase =
+        bands;
+
+      vec3 color =
+        mix(
+          pink,
+          lavender,
+          smoothstep(
+            0.00,
+            0.28,
+            phase
+          )
+        );
+
+      color =
+        mix(
+          color,
+          purple,
+          smoothstep(
+            0.25,
+            0.52,
+            phase
+          )
+        );
+
+      color =
+        mix(
+          color,
+          blue,
+          smoothstep(
+            0.50,
+            0.76,
+            phase
+          )
+        );
+
+      color =
+        mix(
+          color,
+          violet,
+          smoothstep(
+            0.74,
+            1.0,
+            phase
+          )
+        );
+
+
+      /*
+        Add smaller pearlescent colors
+        between the main bands.
+      */
+
+      float shimmer =
+        sin(
+          liquidNoiseTwo *
+          12.0 +
+          uTime *
+          0.25
+        ) *
+        0.5 +
+        0.5;
+
+      color +=
+        rose *
+        shimmer *
+        0.10;
+
+      color +=
+        lavender *
+        (
+          1.0 -
+          shimmer
+        ) *
+        0.10;
+
+
+      /*
+        =================================
+        CURSOR LIGHT / LIQUID RESPONSE
+        =================================
+      */
+
+      color +=
+        pink *
+        mouseField *
+        0.16 *
+        uMouseStrength;
+
+      color +=
+        lavender *
+        mouseField *
+        0.12 *
+        uMouseStrength;
+
+
+      /*
+        =================================
+        KEEP EDGES DARK
+        =================================
+      */
+
+      float edge =
+        smoothstep(
+          0.95,
+          0.18,
+          distance(
+            uv,
+            vec2(
+              0.5
+            )
+          )
+        );
+
+      float textureStrength =
+        0.56 +
+
+        liquidNoise *
+        0.20 +
+
+        mouseField *
+        0.10;
+
+
+      /*
+        Keep it visible, but still
+        transparent enough for text.
+      */
+
+      float alpha =
+        (
+          0.34 +
+          textureStrength *
+          0.28
+        ) *
+        (
+          0.75 +
+          edge *
+          0.25
+        );
+
+      gl_FragColor =
+        vec4(
+          color,
+          alpha
+        );
+    }
+  `;
+
+  return (
+    <mesh>
+      <planeGeometry
+        args={[
+          2,
+          2,
+        ]}
+      />
+
+      <shaderMaterial
+        ref={materialRef}
+        uniforms={
+          uniformsRef.current
+        }
+        vertexShader={
+          vertexShader
+        }
+        fragmentShader={
+          fragmentShader
+        }
+        transparent
+        depthWrite={false}
+      />
+    </mesh>
+  );
+}
+
+
+/* ======================================================
+   MOUSE REACTIVE OIL SURFACE
+====================================================== */
+
+function MouseReactiveBlob({
+  mouse,
+}) {
+  return (
+    <div
+      className="
+        pointer-events-none
+
+        absolute
+        inset-0
+
+        z-[2]
+
+        overflow-hidden
+      "
+      aria-hidden="true"
+    >
+      {/* BASE COLOR GLOW */}
+
+      <div
+        className="
+          absolute
+          inset-0
+
+          opacity-40
+        "
+        style={{
+          background: `
+            radial-gradient(
+              ellipse at 78% 18%,
+              rgba(
+                247,
+                142,
+                207,
+                .28
+              ),
+              transparent 46%
+            ),
+
+            radial-gradient(
+              ellipse at 65% 68%,
+              rgba(
+                164,
+                128,
+                242,
+                .23
+              ),
+              transparent 48%
+            ),
+
+            radial-gradient(
+              ellipse at 92% 55%,
+              rgba(
+                109,
+                140,
+                255,
+                .18
+              ),
+              transparent 42%
+            )
+          `,
+        }}
+      />
+
+      {/* REAL LIQUID / OIL LAYER */}
+
+      <Canvas
+        orthographic
+
+        camera={{
+          position: [
+            0,
+            0,
+            1,
+          ],
+
+          zoom: 1,
+        }}
+
+        gl={{
+          alpha: true,
+          antialias: true,
+        }}
+
+        dpr={[
+          1,
+          1.5,
+        ]}
+
+        className="
+          absolute
+          inset-0
+        "
+
+        style={{
+          width:
+            "100%",
+
+          height:
+            "100%",
+        }}
+      >
+        <IridescentOilPlane
+          mouse={mouse}
+        />
+      </Canvas>
+
+      {/* VERY LIGHT DARK WASH FOR READABILITY */}
+
+      <div
+        className="
+          absolute
+          inset-0
+        "
+
+        style={{
+          background: `
+            linear-gradient(
+              90deg,
+
+              rgba(
+                17,
+                26,
+                54,
+                .34
+              ) 0%,
+
+              rgba(
+                17,
+                26,
+                54,
+                .15
+              ) 43%,
+
+              rgba(
+                17,
+                26,
+                54,
+                .05
+              ) 100%
+            )
+          `,
+        }}
+      />
+    </div>
+  );
+}
+
+/* ======================================================
+   EXPERIENCE
+====================================================== */
+
 function ExperienceSection() {
-  const [activeExperience, setActiveExperience] =
-    useState(0);
+  const [
+    activeExperience,
+    setActiveExperience,
+  ] = useState(0);
+
+  const [
+    blobMouse,
+    setBlobMouse,
+  ] = useState({
+    x: 0.78,
+    y: 0.18,
+    active: false,
+  });
+
+  const handleBlobMouseMove = (event) => {
+    const rect =
+      event.currentTarget.getBoundingClientRect();
+
+    const x =
+      (event.clientX - rect.left) /
+      rect.width;
+
+    const y =
+      (event.clientY - rect.top) /
+      rect.height;
+
+    setBlobMouse({
+      x: Math.max(
+        0,
+        Math.min(1, x)
+      ),
+
+      y: Math.max(
+        0,
+        Math.min(1, y)
+      ),
+
+      active: true,
+    });
+  };
+
+  const handleBlobMouseLeave = () => {
+    setBlobMouse({
+      x: 0.78,
+      y: 0.18,
+      active: false,
+    });
+  };
 
   const experiences = [
     {
       id: "corvit",
-      company: "Corvit Systems",
-      role: "Web Developer Intern",
-      period: "JUN — AUG 2026",
-      location: "Islamabad, Pakistan",
-      code: "01",
-      accent: "#F78ECF",
-      glow: "rgba(247,142,207,.35)",
+
+      company:
+        "Corvit Systems",
+
+      role:
+        "Web Developer Intern",
+
+      period:
+        "JUN — AUG 2026",
+
+      location:
+        "Islamabad, Pakistan",
+
+      code:
+        "01",
+
+      accent:
+        "#F78ECF",
+
+      glow:
+        "rgba(247,142,207,.35)",
 
       summary:
         "Worked on real-world web development projects while strengthening my frontend, debugging and collaboration skills.",
 
       points: [
         "Developed COTSLE using Next.js.",
+
         "Built responsive and user-friendly interfaces.",
+
         "Created reusable frontend components.",
+
         "Worked with APIs and backend functionality.",
+
         "Debugged, tested and maintained application features.",
+
         "Collaborated within a development team.",
       ],
 
@@ -1775,24 +2695,44 @@ function ExperienceSection() {
     },
 
     {
-      id: "signature",
-      company: "Signature Trips",
-      role: "Web Developer & Co-Founder",
-      period: "JUN — JUL 2026",
-      location: "Islamabad, Pakistan",
-      code: "02",
-      accent: "#A480F2",
-      glow: "rgba(164,128,242,.38)",
+      id:
+        "signature",
+
+      company:
+        "Signature Trips",
+
+      role:
+        "Web Developer & Co-Founder",
+
+      period:
+        "JUN — JUL 2026",
+
+      location:
+        "Islamabad, Pakistan",
+
+      code:
+        "02",
+
+      accent:
+        "#A480F2",
+
+      glow:
+        "rgba(164,128,242,.38)",
 
       summary:
         "Combined development and entrepreneurship while helping shape the company's digital presence and technical direction.",
 
       points: [
         "Designed and developed the company website.",
+
         "Focused on responsiveness and usability.",
+
         "Managed website features and content.",
+
         "Handled maintenance and troubleshooting.",
+
         "Contributed to digital strategy.",
+
         "Participated in business and technical decisions.",
       ],
 
@@ -1805,24 +2745,44 @@ function ExperienceSection() {
     },
 
     {
-      id: "noble",
-      company: "Noble QS",
-      role: "Virtual Assistant",
-      period: "MAR — JUN 2024",
-      location: "Dublin, Ireland",
-      code: "03",
-      accent: "#D4B0F9",
-      glow: "rgba(212,176,249,.32)",
+      id:
+        "noble",
+
+      company:
+        "Noble QS",
+
+      role:
+        "Virtual Assistant",
+
+      period:
+        "MAR — JUN 2024",
+
+      location:
+        "Dublin, Ireland",
+
+      code:
+        "03",
+
+      accent:
+        "#D4B0F9",
+
+      glow:
+        "rgba(212,176,249,.32)",
 
       summary:
         "My first professional experience helped me develop communication, organisation and digital operations skills.",
 
       points: [
         "Handled administrative tasks.",
+
         "Supported email communication.",
+
         "Managed records and digital information.",
+
         "Worked with administrative dashboards.",
+
         "Assisted with social media activities.",
+
         "Supported digital marketing and online operations.",
       ],
 
@@ -1836,23 +2796,32 @@ function ExperienceSection() {
   ];
 
   const active =
-    experiences[activeExperience];
+    experiences[
+      activeExperience
+    ];
 
+  
   return (
     <section
       id="experience"
       className="
         relative
         z-10
+
         mx-auto
+
         min-h-screen
         max-w-[1500px]
+
         scroll-mt-20
         overflow-hidden
+
         border-t
         border-[#D4B0F9]/10
+
         px-6
         py-28
+
         lg:px-12
       "
     >
@@ -1873,13 +2842,23 @@ function ExperienceSection() {
           flex
           flex-col
           gap-8
+
           lg:flex-row
           lg:items-end
           lg:justify-between
         "
       >
         <div>
-          <p className="mb-5 font-mono text-sm text-[#A480F2]">
+          <p
+            className="
+              mb-5
+
+              font-mono
+              text-sm
+
+              text-[#A480F2]
+            "
+          >
             &gt; experience.log()
           </p>
 
@@ -1887,24 +2866,32 @@ function ExperienceSection() {
             className="
               text-5xl
               font-black
+
               uppercase
+
               leading-[0.9]
               tracking-[-0.055em]
+
               text-white
+
               md:text-7xl
               xl:text-8xl
             "
           >
             Turning learning
+
             <br />
 
             <span
               className="
                 bg-gradient-to-r
+
                 from-[#F992AD]
                 via-[#F78ECF]
                 to-[#A480F2]
+
                 bg-clip-text
+
                 text-transparent
               "
             >
@@ -1916,15 +2903,19 @@ function ExperienceSection() {
         <p
           className="
             max-w-md
+
             text-sm
             leading-7
+
             text-[#AEB7D5]
+
             md:text-base
           "
         >
-          Every role taught me something different —
-          from development and collaboration to
-          communication, strategy and problem solving.
+          Every role taught me something
+          different — from development and
+          collaboration to communication,
+          strategy and problem solving.
         </p>
       </div>
 
@@ -1935,8 +2926,10 @@ function ExperienceSection() {
       <div
         className="
           mt-20
+
           grid
           gap-8
+
           lg:grid-cols-[0.78fr_1.22fr]
         "
       >
@@ -1948,10 +2941,13 @@ function ExperienceSection() {
           <p
             className="
               mb-5
+
               font-mono
               text-[10px]
+
               uppercase
               tracking-[0.22em]
+
               text-[#697394]
             "
           >
@@ -1959,30 +2955,52 @@ function ExperienceSection() {
           </p>
 
           {experiences.map(
-            (experience, index) => {
+            (
+              experience,
+              index
+            ) => {
               const isActive =
-                activeExperience === index;
+                activeExperience ===
+                index;
 
               return (
                 <button
-                  key={experience.id}
+                  key={
+                    experience.id
+                  }
                   type="button"
+
                   onClick={() =>
-                    setActiveExperience(index)
+                    setActiveExperience(
+                      index
+                    )
                   }
+
                   onMouseEnter={() =>
-                    setActiveExperience(index)
+                    setActiveExperience(
+                      index
+                    )
                   }
+
                   className={`
                     group
+
                     relative
+
                     w-full
+
                     overflow-hidden
+
                     rounded-2xl
+
                     border
+
                     p-5
+
                     text-left
+
                     backdrop-blur-xl
+
                     transition-all
                     duration-500
 
@@ -1998,17 +3016,20 @@ function ExperienceSection() {
                         `
                     }
                   `}
-                  style={{
-                    borderColor: isActive
-                      ? `${experience.accent}90`
-                      : "rgba(212,176,249,.14)",
 
-                    boxShadow: isActive
-                      ? `
-                        0 20px 55px rgba(0,0,0,.22),
-                        0 0 35px ${experience.glow}
-                      `
-                      : "none",
+                  style={{
+                    borderColor:
+                      isActive
+                        ? `${experience.accent}90`
+                        : "rgba(212,176,249,.14)",
+
+                    boxShadow:
+                      isActive
+                        ? `
+                          0 20px 55px rgba(0,0,0,.22),
+                          0 0 35px ${experience.glow}
+                        `
+                        : "none",
                   }}
                 >
                   {/* ACTIVE SIDE LINE */}
@@ -2016,13 +3037,17 @@ function ExperienceSection() {
                   <span
                     className="
                       absolute
+
                       bottom-0
                       left-0
                       top-0
+
                       w-[3px]
+
                       transition-all
                       duration-500
                     "
+
                     style={{
                       background:
                         isActive
@@ -2036,42 +3061,70 @@ function ExperienceSection() {
                     }}
                   />
 
-                  <div className="flex items-start justify-between gap-4">
+                  <div
+                    className="
+                      flex
+                      items-start
+                      justify-between
+                      gap-4
+                    "
+                  >
                     <div>
                       <p
                         className="
                           font-mono
+
                           text-[9px]
+
                           uppercase
                           tracking-[0.18em]
                         "
+
                         style={{
                           color:
                             experience.accent,
                         }}
                       >
-                        EXP_{experience.code}
+                        EXP_
+                        {
+                          experience.code
+                        }
                       </p>
 
                       <h3
                         className="
                           mt-3
+
                           text-xl
                           font-bold
+
                           text-white
                         "
                       >
-                        {experience.company}
+                        {
+                          experience.company
+                        }
                       </h3>
 
-                      <p className="mt-1 text-sm text-[#AEB7D5]">
-                        {experience.role}
+                      <p
+                        className="
+                          mt-1
+
+                          text-sm
+
+                          text-[#AEB7D5]
+                        "
+                      >
+                        {
+                          experience.role
+                        }
                       </p>
                     </div>
 
                     <span
                       className={`
                         text-xl
+
                         transition-all
                         duration-500
 
@@ -2081,6 +3134,7 @@ function ExperienceSection() {
                             : "opacity-30"
                         }
                       `}
+
                       style={{
                         color:
                           experience.accent,
@@ -2093,19 +3147,25 @@ function ExperienceSection() {
                   <div
                     className="
                       mt-5
+
                       flex
                       flex-wrap
                       items-center
                       gap-2
+
                       font-mono
                       text-[9px]
+
                       uppercase
                       tracking-[0.14em]
+
                       text-[#697394]
                     "
                   >
                     <span>
-                      {experience.period}
+                      {
+                        experience.period
+                      }
                     </span>
 
                     <span
@@ -2118,7 +3178,9 @@ function ExperienceSection() {
                     </span>
 
                     <span>
-                      {experience.location}
+                      {
+                        experience.location
+                      }
                     </span>
                   </div>
                 </button>
@@ -2132,39 +3194,75 @@ function ExperienceSection() {
         ======================================== */}
 
         <div
-          className="
-            relative
-            min-h-[590px]
-            overflow-hidden
+  onMouseMove={
+    handleBlobMouseMove
+  }
+
+  onMouseLeave={
+    handleBlobMouseLeave
+  }
+
+  className="
+    relative
+    min-h-[590px]
+    overflow-hidden
+
             rounded-[30px]
+
             border
             border-[#D4B0F9]/20
+
             bg-[#111A36]/55
+
             p-7
+
             shadow-[0_30px_90px_rgba(0,0,0,.28)]
+
             backdrop-blur-2xl
+
             md:p-9
             lg:p-10
           "
         >
-          {/* BACKGROUND GRID */}
+          {/* ======================================
+              BACKGROUND GRID
+          ====================================== */}
 
           <div
             className="
               pointer-events-none
+
               absolute
               inset-0
+
+              z-0
+
               opacity-[0.06]
             "
+
             style={{
               backgroundImage: `
                 linear-gradient(
-                  rgba(212,176,249,.3) 1px,
+                  rgba(
+                    212,
+                    176,
+                    249,
+                    .3
+                  ) 1px,
+
                   transparent 1px
                 ),
+
                 linear-gradient(
                   90deg,
-                  rgba(212,176,249,.3) 1px,
+
+                  rgba(
+                    212,
+                    176,
+                    249,
+                    .3
+                  ) 1px,
+
                   transparent 1px
                 )
               `,
@@ -2174,56 +3272,113 @@ function ExperienceSection() {
             }}
           />
 
-          {/* GLOW */}
+          {/* ======================================
+              ORIGINAL EXPERIENCE GLOW
+              KEPT EXACTLY AS PART OF DESIGN
+          ====================================== */}
 
           <div
-  key={`glow-${active.id}`}
-  className="
-    pointer-events-none
-    absolute
+            key={`glow-${active.id}`}
+
+            className="
+              pointer-events-none
+
+              absolute
+
               -right-24
               -top-24
+
+              z-[1]
+
               h-80
               w-80
+
               rounded-full
+
               blur-[100px]
+
               transition-all
               duration-700
             "
+
             style={{
               background:
                 active.glow,
             }}
           />
 
-          {/* TOP BAR */}
+          {/* ======================================
+              NEW MOVING BUBBLE
+          ====================================== */}
+
+          <MouseReactiveBlob
+  mouse={blobMouse}
+/>
+
+          {/* ======================================
+              TOP BAR
+          ====================================== */}
 
           <div
             className="
               relative
+
               z-10
+
               flex
               items-center
               justify-between
+
               border-b
               border-[#D4B0F9]/10
+
               pb-6
             "
           >
             <div className="flex gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#F992AD]" />
+              <span
+                className="
+                  h-2.5
+                  w-2.5
 
-              <span className="h-2.5 w-2.5 rounded-full bg-[#D4B0F9]" />
+                  rounded-full
 
-              <span className="h-2.5 w-2.5 rounded-full bg-[#A480F2]" />
+                  bg-[#F992AD]
+                "
+              />
+
+              <span
+                className="
+                  h-2.5
+                  w-2.5
+
+                  rounded-full
+
+                  bg-[#D4B0F9]
+                "
+              />
+
+              <span
+                className="
+                  h-2.5
+                  w-2.5
+
+                  rounded-full
+
+                  bg-[#A480F2]
+                "
+              />
             </div>
 
             <p
               className="
                 font-mono
+
                 text-[9px]
+
                 uppercase
                 tracking-[0.18em]
+
                 text-[#697394]
               "
             >
@@ -2231,17 +3386,22 @@ function ExperienceSection() {
             </p>
           </div>
 
-          {/* ACTIVE CONTENT */}
+          {/* ======================================
+              ACTIVE CONTENT
+          ====================================== */}
 
           <div
-  key={`content-${active.id}`}
-  className="
-    relative
-    z-10
-    transition-all
-    duration-500
-  "
->
+            key={`content-${active.id}`}
+
+            className="
+              relative
+
+              z-10
+
+              transition-all
+              duration-500
+            "
+          >
             <div className="mt-8">
               <div
                 className="
@@ -2249,34 +3409,48 @@ function ExperienceSection() {
                   flex-wrap
                   items-center
                   gap-3
+
                   font-mono
+
                   text-[10px]
+
                   uppercase
                   tracking-[0.18em]
                 "
+
                 style={{
-                  color: active.accent,
+                  color:
+                    active.accent,
                 }}
               >
                 <span>
                   {active.period}
                 </span>
 
-                <span>•</span>
+                <span>
+                  •
+                </span>
 
                 <span>
-                  {active.location}
+                  {
+                    active.location
+                  }
                 </span>
               </div>
 
               <h3
                 className="
                   mt-5
+
                   text-3xl
                   font-black
+
                   uppercase
+
                   tracking-[-0.035em]
+
                   text-white
+
                   md:text-5xl
                 "
               >
@@ -2286,9 +3460,11 @@ function ExperienceSection() {
               <p
                 className="
                   mt-3
+
                   text-lg
                   font-semibold
                 "
+
                 style={{
                   color:
                     active.accent,
@@ -2300,10 +3476,14 @@ function ExperienceSection() {
               <p
                 className="
                   mt-6
+
                   max-w-2xl
+
                   text-sm
                   leading-7
+
                   text-[#AEB7D5]
+
                   md:text-base
                 "
               >
@@ -2311,16 +3491,22 @@ function ExperienceSection() {
               </p>
             </div>
 
-            {/* WHAT I DID */}
+            {/* ====================================
+                WHAT I DID
+            ==================================== */}
 
             <div className="mt-9">
               <p
                 className="
                   mb-5
+
                   font-mono
+
                   text-[10px]
+
                   uppercase
                   tracking-[0.18em]
+
                   text-[#697394]
                 "
               >
@@ -2331,35 +3517,49 @@ function ExperienceSection() {
                 className="
                   grid
                   gap-3
+
                   md:grid-cols-2
                 "
               >
                 {active.points.map(
-                  (point, index) => (
+                  (
+                    point
+                  ) => (
                     <div
                       key={point}
+
                       className="
                         flex
                         items-start
                         gap-3
+
                         rounded-xl
+
                         border
                         border-[#D4B0F9]/10
+
                         bg-[#0E1630]/35
+
                         p-4
+
                         transition
                         duration-300
+
                         hover:border-[#D4B0F9]/25
                       "
                     >
                       <span
                         className="
                           mt-[7px]
+
                           h-1.5
                           w-1.5
+
                           shrink-0
+
                           rounded-full
                         "
+
                         style={{
                           background:
                             active.accent,
@@ -2369,7 +3569,14 @@ function ExperienceSection() {
                         }}
                       />
 
-                      <p className="text-sm leading-6 text-[#B8C0DC]">
+                      <p
+                        className="
+                          text-sm
+                          leading-6
+
+                          text-[#B8C0DC]
+                        "
+                      >
                         {point}
                       </p>
                     </div>
@@ -2378,35 +3585,54 @@ function ExperienceSection() {
               </div>
             </div>
 
-            {/* STACK */}
+            {/* ====================================
+                STACK
+            ==================================== */}
 
             <div className="mt-9">
               <p
                 className="
                   mb-4
+
                   font-mono
+
                   text-[10px]
+
                   uppercase
                   tracking-[0.18em]
+
                   text-[#697394]
                 "
               >
                 // tools + skills
               </p>
 
-              <div className="flex flex-wrap gap-2">
+              <div
+                className="
+                  flex
+                  flex-wrap
+                  gap-2
+                "
+              >
                 {active.stack.map(
-                  (item) => (
+                  (
+                    item
+                  ) => (
                     <span
                       key={item}
+
                       className="
                         rounded-full
+
                         border
+
                         px-4
                         py-2
+
                         font-mono
                         text-[10px]
                       "
+
                       style={{
                         color:
                           active.accent,
@@ -2426,23 +3652,39 @@ function ExperienceSection() {
             </div>
           </div>
 
-          {/* DECORATIVE CODE */}
+          {/* ======================================
+              DECORATIVE CODE
+          ====================================== */}
 
           <div
             className="
               pointer-events-none
+
               absolute
               bottom-6
               right-7
+
+              z-10
+
               font-mono
+
               text-[9px]
+
               uppercase
               tracking-[0.16em]
+
               text-[#697394]/50
             "
           >
-            0{activeExperience + 1}
-            /0{experiences.length}
+            0
+            {
+              activeExperience +
+              1
+            }
+            /0
+            {
+              experiences.length
+            }
           </div>
         </div>
       </div>
@@ -2454,13 +3696,18 @@ function ExperienceSection() {
       <div
         className="
           mt-16
+
           flex
           items-center
           gap-4
+
           font-mono
+
           text-[10px]
+
           uppercase
           tracking-[0.2em]
+
           text-[#697394]
         "
       >
@@ -2468,7 +3715,9 @@ function ExperienceSection() {
           className="
             h-px
             flex-1
+
             bg-gradient-to-r
+
             from-transparent
             via-[#A480F2]/30
             to-transparent
@@ -2477,7 +3726,14 @@ function ExperienceSection() {
 
         <span>
           experience_loaded
-          <span className="animate-pulse text-[#F78ECF]">
+
+          <span
+            className="
+              animate-pulse
+
+              text-[#F78ECF]
+            "
+          >
             _
           </span>
         </span>
@@ -2486,102 +3742,18 @@ function ExperienceSection() {
           className="
             h-px
             flex-1
+
             bg-gradient-to-r
+
             from-transparent
             via-[#A480F2]/30
             to-transparent
           "
         />
       </div>
-
-      
     </section>
   );
 }
- 
-function ScrollBlobBubble({ progress = 0 }) {
-  const moveX = 120 - progress * 170;
-  const moveY = -20 + progress * 120;
-  const scale = 1 + progress * 0.22;
-  const rotate = -18 + progress * 24;
-
-  const huePink = 330 - progress * 12;
-  const huePurple = 280 + progress * 10;
-  const hueBlue = 235 + progress * 18;
-
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {/* Main moving orb */}
-      <div
-        className="absolute right-[-180px] top-[-130px] h-[560px] w-[560px] rounded-full opacity-80"
-        style={{
-          transform: `translate3d(${moveX}px, ${moveY}px, 0) scale(${scale}) rotate(${rotate}deg)`,
-          background: `
-            radial-gradient(
-              circle at 30% 28%,
-              hsla(${huePink}, 100%, 84%, 0.95) 0%,
-              hsla(${huePurple}, 92%, 74%, 0.78) 34%,
-              hsla(${hueBlue}, 90%, 62%, 0.45) 60%,
-              transparent 76%
-            )
-          `,
-          boxShadow: `
-            0 0 80px hsla(${huePurple}, 90%, 70%, 0.18),
-            0 0 160px hsla(${hueBlue}, 90%, 60%, 0.12)
-          `,
-          filter: "blur(2px)",
-          transition:
-            "transform 120ms linear, background 180ms linear, box-shadow 180ms linear",
-        }}
-      />
-
-      {/* Inner glow bubble */}
-      <div
-        className="absolute right-[120px] top-[70px] h-[150px] w-[150px] rounded-full blur-2xl opacity-60"
-        style={{
-          transform: `translate3d(${moveX * 0.35}px, ${moveY * 0.3}px, 0)`,
-          background: `
-            radial-gradient(
-              circle,
-              hsla(${huePink}, 100%, 92%, 0.95) 0%,
-              hsla(${huePurple}, 95%, 80%, 0.45) 52%,
-              transparent 74%
-            )
-          `,
-          transition: "transform 120ms linear, background 180ms linear",
-        }}
-      />
-
-      {/* Glass ring */}
-      <div
-        className="absolute right-[70px] top-[28px] h-[480px] w-[480px] rounded-full border border-white/10"
-        style={{
-          transform: `translate3d(${moveX * 0.65}px, ${moveY * 0.5}px, 0) scale(${0.96 + progress * 0.05})`,
-          boxShadow: "inset 0 0 80px rgba(255,255,255,0.04)",
-          transition: "transform 120ms linear",
-        }}
-      />
-
-      {/* Soft color mist */}
-      <div
-        className="absolute right-[0px] top-[140px] h-[260px] w-[260px] rounded-full blur-3xl opacity-30"
-        style={{
-          transform: `translate3d(${moveX * 0.5}px, ${moveY * 0.4}px, 0)`,
-          background: `
-            radial-gradient(
-              circle,
-              hsla(${hueBlue}, 100%, 70%, 0.45) 0%,
-              hsla(${huePurple}, 100%, 72%, 0.25) 45%,
-              transparent 75%
-            )
-          `,
-          transition: "transform 120ms linear, background 180ms linear",
-        }}
-      />
-    </div>
-  );
-}
-
 export function ComputerPortfolio() {
   const goTo = (id) => {
     document
