@@ -1261,7 +1261,7 @@ function JourneySection() {
       (_, index) =>
         setTimeout(() => {
           setActivePoint(index);
-        }, 700 + index * 1500)
+        }, 700 + index * 1200)
     );
 
     return () => {
@@ -1318,34 +1318,32 @@ function JourneySection() {
           </p>
 
           <h2
-            className="
-              text-5xl
-              font-black
-              uppercase
-              leading-[0.9]
-              tracking-[-0.055em]
-              text-white
-              md:text-7xl
-              xl:text-8xl
-            "
-          >
-            Small steps.
+  className="
+    text-5xl
+    font-black
+    uppercase
+    leading-[0.9]
+    tracking-[-0.055em]
+    md:text-7xl
+    xl:text-8xl
+  "
+>
+  <AnimatedLetters
+    text="SMALL STEPS."
+    className="text-white"
+    startDelay={100}
+  />
 
-            <br />
-
-            <span
-              className="
-                bg-gradient-to-r
-                from-[#F992AD]
-                via-[#F78ECF]
-                to-[#A480F2]
-                bg-clip-text
-                text-transparent
-              "
-            >
-              Bigger ideas.
-            </span>
-          </h2>
+  <AnimatedLetters
+    text="BIGGER IDEAS."
+    gradientColors={[
+      "#F992AD",
+      "#F78ECF",
+      "#A480F2",
+    ]}
+    startDelay={800}
+  />
+</h2>
         </div>
 
         <p
@@ -2548,43 +2546,81 @@ function MouseReactiveBlob({
         />
       </Canvas>
 
-      {/* VERY LIGHT DARK WASH FOR READABILITY */}
+      {/* ==========================================
+    GLASS OVERLAY
+========================================== */}
 
-      <div
-        className="
-          absolute
-          inset-0
-        "
+<div
+  className="
+    absolute
+    inset-0
+    z-[3]
 
-        style={{
-          background: `
-            linear-gradient(
-              90deg,
+    bg-[#0E1630]/76
 
-              rgba(
-                17,
-                26,
-                54,
-                .34
-              ) 0%,
+    backdrop-blur-[3px]
+  "
+/>
 
-              rgba(
-                17,
-                26,
-                54,
-                .15
-              ) 43%,
+{/* ==========================================
+    SOFT DEPTH OVERLAY
+========================================== */}
 
-              rgba(
-                17,
-                26,
-                54,
-                .05
-              ) 100%
-            )
-          `,
-        }}
-      />
+<div
+  className="
+    absolute
+    inset-0
+    z-[4]
+  "
+  style={{
+    background: `
+      radial-gradient(
+        ellipse at 78% 18%,
+
+        rgba(
+          247,
+          142,
+          207,
+          .05
+        ) 0%,
+
+        transparent 45%
+      ),
+
+      linear-gradient(
+        105deg,
+
+        rgba(
+          14,
+          22,
+          48,
+          .58
+        ) 0%,
+
+        rgba(
+          14,
+          22,
+          48,
+          .36
+        ) 38%,
+
+        rgba(
+          14,
+          22,
+          48,
+          .20
+        ) 68%,
+
+        rgba(
+          14,
+          22,
+          48,
+          .12
+        ) 100%
+      )
+    `,
+  }}
+/>
     </div>
   );
 }
@@ -2863,41 +2899,32 @@ function ExperienceSection() {
           </p>
 
           <h2
-            className="
-              text-5xl
-              font-black
+  className="
+    text-5xl
+    font-black
+    uppercase
+    leading-[0.9]
+    tracking-[-0.055em]
+    md:text-7xl
+    xl:text-8xl
+  "
+>
+  <AnimatedLetters
+    text="TURNING LEARNING"
+    className="text-white"
+    startDelay={100}
+  />
 
-              uppercase
-
-              leading-[0.9]
-              tracking-[-0.055em]
-
-              text-white
-
-              md:text-7xl
-              xl:text-8xl
-            "
-          >
-            Turning learning
-
-            <br />
-
-            <span
-              className="
-                bg-gradient-to-r
-
-                from-[#F992AD]
-                via-[#F78ECF]
-                to-[#A480F2]
-
-                bg-clip-text
-
-                text-transparent
-              "
-            >
-              into impact.
-            </span>
-          </h2>
+  <AnimatedLetters
+    text="INTO IMPACT."
+    gradientColors={[
+      "#F992AD",
+      "#F78ECF",
+      "#A480F2",
+    ]}
+    startDelay={850}
+  />
+</h2>
         </div>
 
         <p
