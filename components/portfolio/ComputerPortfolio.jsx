@@ -2556,7 +2556,7 @@ function MouseReactiveBlob({
     inset-0
     z-[3]
 
-    bg-[#0E1630]/76
+    bg-[#0E1630]/75
 
     backdrop-blur-[3px]
   "
@@ -3781,6 +3781,3156 @@ function ExperienceSection() {
     </section>
   );
 }
+
+/* ======================================================
+   PROJECTS
+====================================================== */
+
+/* ======================================================
+   05 PROJECTS
+====================================================== */
+
+/* ======================================================
+   05 PROJECTS
+====================================================== */
+
+function ProjectsSection() {
+  const [
+    activeProject,
+    setActiveProject,
+  ] = useState(0);
+
+  const projects = [
+    {
+      id: "nishaan",
+      number: "01",
+      title: "NISHAAN",
+      subtitle:
+        "AI-Powered Location Discovery",
+      category:
+        "AI + GEOSPATIAL",
+
+      description:
+        "Nishaan helps users identify a location from partial memories using text, voice and images.",
+
+      detail:
+        "The platform analyses remembered clues and uses geospatial search to surface potential location matches.",
+
+      accent:
+        "#F78ECF",
+
+      glow:
+        "rgba(247,142,207,.25)",
+
+      stack: [
+        "Next.js",
+        "FastAPI",
+        "AI",
+        "PostGIS",
+        "Leaflet",
+      ],
+
+      preview:
+        "nishaan",
+
+      page:
+        "/projects/nishaan",  
+    },
+
+    {
+  id: "cotsle",
+  number: "02",
+  title: "COTSLE",
+
+  subtitle:
+    "Modern Technology & Training Platform",
+
+  category:
+    "NEXT.JS + WEB",
+
+  description:
+    "A modern responsive website developed during my internship at Corvit Systems, focused on presenting technology services and training through a polished digital experience.",
+
+  detail:
+    "The project strengthened my practical experience with Next.js, reusable frontend components, responsive interfaces, APIs, debugging and real development workflows.",
+
+  accent:
+    "#A480F2",
+
+  glow:
+    "rgba(164,128,242,.25)",
+
+  stack: [
+    "Next.js",
+    "React",
+    "Tailwind CSS",
+    "APIs",
+    "JavaScript",
+  ],
+
+  preview:
+    "cotsle",
+
+  page:
+    "/projects/cotsle",
+},
+    {
+      id: "donation",
+      number: "03",
+      title:
+        "DONATION TRACKER",
+
+      subtitle:
+        "Transparent Donation Tracking",
+
+      category:
+        "BLOCKCHAIN + WEB",
+
+      description:
+        "A donation tracking system designed around blockchain principles to improve transparency and accountability.",
+
+      detail:
+        "Anonymous identifiers and hashes create a verifiable history of charitable transactions.",
+
+      accent:
+        "#C580ED",
+
+      glow:
+        "rgba(197,128,237,.25)",
+
+      stack: [
+        "React",
+        "Python",
+        "Flask",
+        "SQLite",
+        "SHA256",
+      ],
+
+      preview:
+        "donation",
+      
+      page:
+        "/projects/donation-tracker",  
+    },
+
+    {
+      id: "lost-found",
+      number: "04",
+      title:
+        "LOST & FOUND",
+
+      subtitle:
+        "Search • Match • Recover",
+
+      category:
+        "JAVA + MYSQL",
+
+      description:
+        "A desktop management system for reporting, searching and recovering lost and found items.",
+
+      detail:
+        "The system manages item records, potential matches, verification and claiming through structured database operations.",
+
+      accent:
+        "#D4B0F9",
+
+      glow:
+        "rgba(212,176,249,.22)",
+
+      stack: [
+        "Java",
+        "MySQL",
+        "OOP",
+        "CRUD",
+      ],
+
+      preview:
+        "lostfound",
+
+      page:
+        "/projects/lost-found",  
+    },
+  ];
+
+  const active =
+    projects[
+      activeProject
+    ];
+
+  return (
+    <section
+      id="projects"
+      className="
+        relative
+        z-10
+
+        mx-auto
+
+        min-h-screen
+        max-w-[1500px]
+
+        scroll-mt-20
+
+        overflow-hidden
+
+        border-t
+        border-[#D4B0F9]/10
+
+        px-6
+        py-28
+
+        lg:px-12
+      "
+    >
+      {/* ==========================================
+          SECTION LABEL
+      ========================================== */}
+
+      <SectionLabel number="05">
+        Projects
+      </SectionLabel>
+
+      {/* ==========================================
+          HEADING
+      ========================================== */}
+
+      <div
+        className="
+          flex
+          flex-col
+          gap-8
+
+          lg:flex-row
+          lg:items-end
+          lg:justify-between
+        "
+      >
+        <div>
+          <p
+            className="
+              mb-5
+
+              font-mono
+              text-sm
+
+              text-[#A480F2]
+            "
+          >
+            &gt; selected_work.load()
+          </p>
+
+          <h2
+            className="
+              text-5xl
+              font-black
+
+              uppercase
+
+              leading-[0.9]
+              tracking-[-0.055em]
+
+              md:text-7xl
+              xl:text-8xl
+            "
+          >
+            <AnimatedLetters
+              text="SELECTED"
+              className="text-white"
+              startDelay={100}
+            />
+
+            <AnimatedLetters
+              text="WORK."
+              gradientColors={[
+                "#F992AD",
+                "#F78ECF",
+                "#A480F2",
+              ]}
+              startDelay={600}
+            />
+          </h2>
+        </div>
+
+        <p
+          className="
+            max-w-md
+
+            text-sm
+            leading-7
+
+            text-[#AEB7D5]
+
+            md:text-base
+          "
+        >
+          A few projects where ideas,
+          experiments and learning became
+          real working products.
+        </p>
+      </div>
+
+      {/* =================================================
+          PROJECT SELECTOR — NOW AT THE TOP
+      ================================================= */}
+
+      <div
+        className="
+          relative
+
+          mt-16
+
+          border-y
+          border-[#D4B0F9]/10
+
+          py-5
+        "
+      >
+        <div
+          className="
+            grid
+            gap-3
+
+            sm:grid-cols-2
+            lg:grid-cols-4
+          "
+        >
+          {projects.map(
+            (
+              project,
+              index
+            ) => {
+              const isActive =
+                index ===
+                activeProject;
+
+              return (
+                <button
+                  key={
+                    project.id
+                  }
+
+                  type="button"
+
+                  onClick={() =>
+                    setActiveProject(
+                      index
+                    )
+                  }
+
+                  className="
+                    group
+                    relative
+
+                    min-w-0
+
+                    py-4
+                    pr-4
+
+                    text-left
+                  "
+                >
+                  {/* TOP ACTIVE LINE */}
+
+                  <span
+                    className="
+                      absolute
+
+                      -top-[21px]
+
+                      left-0
+
+                      h-[2px]
+
+                      transition-all
+                      duration-500
+                    "
+                    style={{
+                      width:
+                        isActive
+                          ? "100%"
+                          : "0%",
+
+                      background:
+                        project.accent,
+
+                      boxShadow:
+                        isActive
+                          ? `0 0 16px ${project.accent}`
+                          : "none",
+                    }}
+                  />
+
+                  <div
+                    className="
+                      flex
+                      items-start
+                      gap-4
+                    "
+                  >
+                    {/* NUMBER */}
+
+                    <div
+                      className="
+                        flex
+                        items-center
+                        gap-2
+                      "
+                    >
+                      <span
+                        className="
+                          h-2.5
+                          w-2.5
+
+                          rounded-full
+
+                          border
+
+                          transition-all
+                          duration-500
+                        "
+                        style={{
+                          borderColor:
+                            isActive
+                              ? project.accent
+                              : "#697394",
+
+                          background:
+                            isActive
+                              ? project.accent
+                              : "transparent",
+
+                          boxShadow:
+                            isActive
+                              ? `0 0 18px ${project.accent}`
+                              : "none",
+                        }}
+                      />
+
+                      <span
+                        className="
+                          font-mono
+                          text-[10px]
+
+                          tracking-[0.16em]
+                        "
+                        style={{
+                          color:
+                            isActive
+                              ? project.accent
+                              : "#697394",
+                        }}
+                      >
+                        {
+                          project.number
+                        }
+                      </span>
+                    </div>
+
+                    {/* NAME */}
+
+                    <div className="min-w-0">
+                      <p
+                        className={`
+                          truncate
+
+                          text-sm
+                          font-bold
+
+                          uppercase
+
+                          transition-colors
+                          duration-300
+
+                          ${
+                            isActive
+                              ? "text-white"
+                              : "text-[#7F89A9] group-hover:text-[#DCE1F4]"
+                          }
+                        `}
+                      >
+                        {
+                          project.title
+                        }
+                      </p>
+
+                      <p
+                        className="
+                          mt-1
+
+                          font-mono
+
+                          text-[8px]
+
+                          uppercase
+                          tracking-[0.14em]
+
+                          text-[#59627E]
+                        "
+                      >
+                        {
+                          project.category
+                        }
+                      </p>
+                    </div>
+                  </div>
+                </button>
+              );
+            }
+          )}
+        </div>
+      </div>
+
+      {/* =================================================
+          SELECTED PROJECT
+      ================================================= */}
+
+      <div
+        className="
+          relative
+
+          mt-14
+
+          overflow-hidden
+
+          rounded-[34px]
+
+          border
+          border-[#D4B0F9]/15
+
+          bg-[#101831]/55
+
+          shadow-[0_35px_100px_rgba(0,0,0,.24)]
+
+          backdrop-blur-xl
+        "
+      >
+        {/* BACKGROUND GRID */}
+
+        <div
+          className="
+            pointer-events-none
+
+            absolute
+            inset-0
+
+            opacity-[0.05]
+          "
+          style={{
+            backgroundImage: `
+              linear-gradient(
+                rgba(212,176,249,.35) 1px,
+                transparent 1px
+              ),
+
+              linear-gradient(
+                90deg,
+                rgba(212,176,249,.35) 1px,
+                transparent 1px
+              )
+            `,
+
+            backgroundSize:
+              "44px 44px",
+          }}
+        />
+
+        {/* ACTIVE COLOR GLOW */}
+
+        <div
+          className="
+            pointer-events-none
+
+            absolute
+
+            -right-40
+            -top-48
+
+            h-[700px]
+            w-[700px]
+
+            rounded-full
+
+            blur-[150px]
+
+            transition-all
+            duration-700
+          "
+          style={{
+            background:
+              active.glow,
+          }}
+        />
+
+        {/* ==========================================
+            CONTENT
+        ========================================== */}
+
+        <div
+          className="
+            relative
+            z-10
+
+            grid
+
+            lg:grid-cols-[0.75fr_1.25fr]
+          "
+        >
+          {/* ======================================
+              LEFT — PROJECT COPY
+          ====================================== */}
+
+          <div
+            className="
+              flex
+              min-h-[620px]
+
+              flex-col
+              justify-center
+
+              p-7
+
+              md:p-10
+              lg:p-12
+            "
+          >
+            {/* NUMBER */}
+
+            <div
+              className="
+                flex
+                items-center
+                gap-3
+
+                font-mono
+
+                text-[10px]
+
+                uppercase
+                tracking-[0.2em]
+              "
+            >
+              <span
+                style={{
+                  color:
+                    active.accent,
+                }}
+              >
+                {
+                  active.number
+                }
+              </span>
+
+              <span className="text-[#697394]">
+                /
+              </span>
+
+              <span className="text-[#697394]">
+                04
+              </span>
+            </div>
+
+            {/* PROJECT NAME */}
+
+            <h3
+              className="
+                mt-8
+
+                text-5xl
+                font-black
+
+                uppercase
+
+                leading-[0.88]
+                tracking-[-0.055em]
+
+                text-white
+
+                md:text-6xl
+                xl:text-7xl
+              "
+            >
+              {
+                active.title
+              }
+            </h3>
+
+            {/* SUBTITLE */}
+
+            <p
+              className="
+                mt-4
+
+                text-xl
+                font-semibold
+
+                md:text-2xl
+              "
+              style={{
+                color:
+                  active.accent,
+              }}
+            >
+              {
+                active.subtitle
+              }
+            </p>
+
+            {/* DESCRIPTION */}
+
+            <p
+              className="
+                mt-7
+
+                max-w-lg
+
+                text-sm
+                leading-7
+
+                text-[#B8C0DC]
+
+                md:text-base
+              "
+            >
+              {
+                active.description
+              }
+            </p>
+
+            <p
+              className="
+                mt-4
+
+                max-w-lg
+
+                text-sm
+                leading-7
+
+                text-[#7F89A9]
+              "
+            >
+              {
+                active.detail
+              }
+            </p>
+
+            {/* STACK */}
+
+            <div
+  className="
+    mt-10
+    flex
+    flex-wrap
+    gap-3
+  "
+>
+              {active.stack.map(
+                (
+                  technology
+                ) => (
+                  <span
+                    key={
+                      technology
+                    }
+
+                 className="
+  rounded-full
+  border
+
+  px-5
+  py-2.5
+
+  font-mono
+  text-[11px]
+  font-medium
+  tracking-[0.04em]
+
+  transition-all
+  duration-300
+
+  hover:-translate-y-0.5
+"
+
+                    style={{
+                      color:
+                        active.accent,
+
+                      borderColor:
+                        `${active.accent}45`,
+
+                      background:
+                        `${active.accent}0D`,
+                    }}
+                  >
+                    {
+                      technology
+                    }
+                  </span>
+                )
+              )}
+            </div>
+
+            {/* BUTTON */}
+
+           <div className="mt-11">
+  <a
+    href={active.page}
+    className="
+      group
+
+      inline-flex
+      items-center
+      gap-5
+
+      rounded-2xl
+
+      border
+
+      px-7
+      py-4
+
+      font-mono
+      text-[11px]
+      font-semibold
+
+      uppercase
+      tracking-[0.18em]
+
+      transition-all
+      duration-300
+
+      hover:-translate-y-1
+    "
+    style={{
+      color:
+        active.accent,
+
+      borderColor:
+        `${active.accent}70`,
+
+      background:
+        `${active.accent}08`,
+
+      boxShadow:
+        `0 0 30px ${active.glow}`,
+    }}
+  >
+    Explore Project
+
+    <span
+      className="
+        text-base
+        transition-transform
+        duration-300
+        group-hover:translate-x-1
+        group-hover:-translate-y-1
+      "
+    >
+      ↗
+    </span>
+  </a>
+</div>
+          </div>
+
+          {/* ======================================
+              RIGHT — BROWSER MOCKUP
+          ====================================== */}
+
+          <div
+            className="
+              flex
+
+              min-h-[620px]
+
+              items-center
+              justify-center
+
+              border-t
+              border-[#D4B0F9]/10
+
+              p-5
+
+              md:p-8
+
+              lg:border-l
+              lg:border-t-0
+              lg:p-10
+            "
+          >
+            <ProjectBrowserPreview
+              project={
+                active
+              }
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* =================================================
+          BOTTOM STATUS
+      ================================================= */}
+
+      <div
+        className="
+          mt-14
+
+          flex
+          items-center
+          gap-4
+
+          font-mono
+
+          text-[10px]
+
+          uppercase
+          tracking-[0.2em]
+
+          text-[#697394]
+        "
+      >
+        <span
+          className="
+            h-px
+            flex-1
+
+            bg-gradient-to-r
+
+            from-transparent
+            via-[#A480F2]/30
+            to-transparent
+          "
+        />
+
+        <span>
+          selected_work_loaded
+
+          <span
+            className="
+              animate-pulse
+
+              text-[#F78ECF]
+            "
+          >
+            _
+          </span>
+        </span>
+
+        <span
+          className="
+            h-px
+            flex-1
+
+            bg-gradient-to-r
+
+            from-transparent
+            via-[#A480F2]/30
+            to-transparent
+          "
+        />
+      </div>
+    </section>
+  );
+}
+
+
+/* ======================================================
+   PROJECT BROWSER WINDOW
+====================================================== */
+
+function ProjectBrowserPreview({
+  project,
+}) {
+  return (
+    <div
+      className="
+        relative
+
+        w-full
+        max-w-[850px]
+
+        overflow-hidden
+
+        rounded-[24px]
+
+        border
+        border-[#D4B0F9]/25
+
+        bg-[#0D142B]
+
+        shadow-[0_30px_90px_rgba(0,0,0,.4)]
+      "
+      style={{
+        boxShadow: `
+          0 30px 90px rgba(0,0,0,.4),
+          0 0 35px ${project.glow}
+        `,
+      }}
+    >
+      {/* ==========================================
+          BROWSER BAR
+      ========================================== */}
+
+      <div
+        className="
+          flex
+
+          items-center
+          justify-between
+
+          border-b
+          border-[#D4B0F9]/10
+
+          bg-[#131C38]
+
+          px-5
+          py-4
+        "
+      >
+        <div className="flex gap-2">
+          <span
+            className="
+              h-2.5
+              w-2.5
+
+              rounded-full
+
+              bg-[#F992AD]
+            "
+          />
+
+          <span
+            className="
+              h-2.5
+              w-2.5
+
+              rounded-full
+
+              bg-[#D4B0F9]
+            "
+          />
+
+          <span
+            className="
+              h-2.5
+              w-2.5
+
+              rounded-full
+
+              bg-[#A480F2]
+            "
+          />
+        </div>
+
+        <p
+          className="
+            font-mono
+
+            text-[8px]
+
+            uppercase
+            tracking-[0.18em]
+
+            text-[#697394]
+          "
+        >
+          {
+            project.id
+          }
+          .project
+        </p>
+      </div>
+
+      {/* ==========================================
+          PREVIEW BODY
+      ========================================== */}
+
+      <div
+        className="
+          relative
+
+          min-h-[470px]
+        "
+      >
+        {project.preview ===
+          "nishaan" && (
+          <NishaanPreview />
+        )}
+
+        {project.preview ===
+  "cotsle" && (
+  <CotslePreview />
+)}
+
+        {project.preview ===
+          "donation" && (
+          <DonationPreview />
+        )}
+
+        {project.preview ===
+          "lostfound" && (
+          <LostFoundPreview />
+        )}
+      </div>
+    </div>
+  );
+}
+
+
+/* ======================================================
+   NISHAAN PREVIEW
+====================================================== */
+
+function NishaanPreview() {
+  return (
+    <div
+      className="
+        grid
+
+        min-h-[470px]
+
+        md:grid-cols-[0.85fr_1.15fr]
+      "
+    >
+      {/* LEFT */}
+
+      <div
+        className="
+          border-b
+          border-[#D4B0F9]/10
+
+          p-6
+
+          md:border-b-0
+          md:border-r
+          md:p-8
+        "
+      >
+        <div
+          className="
+            flex
+            items-center
+            gap-2
+
+            font-mono
+
+            text-[10px]
+
+            uppercase
+            tracking-[0.18em]
+
+            text-white
+          "
+        >
+          <span
+            className="
+              flex
+              h-7
+              w-7
+
+              items-center
+              justify-center
+
+              rounded-full
+
+              bg-[#F78ECF]/15
+
+              text-[#F78ECF]
+            "
+          >
+            ●
+          </span>
+
+          Nishaan
+        </div>
+
+        <h4
+          className="
+            mt-10
+
+            max-w-sm
+
+            text-3xl
+            font-semibold
+
+            leading-[1.02]
+
+            text-white
+          "
+        >
+          Find places from your{" "}
+
+          <span className="text-[#F78ECF]">
+            memories
+          </span>
+        </h4>
+
+        <p
+          className="
+            mt-4
+
+            max-w-sm
+
+            text-xs
+            leading-6
+
+            text-[#8F98B8]
+          "
+        >
+          Describe what you remember,
+          speak a clue or upload an image
+          to start searching.
+        </p>
+
+        {/* INPUT TYPE */}
+
+        <div
+          className="
+            mt-7
+
+            grid
+            grid-cols-3
+
+            overflow-hidden
+
+            rounded-xl
+
+            border
+            border-[#D4B0F9]/15
+          "
+        >
+          {[
+            "Text",
+            "Voice",
+            "Image",
+          ].map(
+            (
+              option,
+              index
+            ) => (
+              <div
+                key={
+                  option
+                }
+
+                className={`
+                  px-3
+                  py-3
+
+                  text-center
+
+                  font-mono
+                  text-[8px]
+
+                  ${
+                    index ===
+                    0
+                      ? "bg-[#F78ECF]/12 text-[#F78ECF]"
+                      : "text-[#697394]"
+                  }
+                `}
+              >
+                {
+                  option
+                }
+              </div>
+            )
+          )}
+        </div>
+
+        {/* SEARCH */}
+
+        <div
+          className="
+            mt-4
+
+            flex
+            items-center
+            gap-3
+
+            rounded-xl
+
+            border
+            border-[#D4B0F9]/15
+
+            bg-[#111A36]
+
+            px-4
+            py-3
+          "
+        >
+          <span className="text-[#697394]">
+            ○
+          </span>
+
+          <span
+            className="
+              flex-1
+
+              text-[9px]
+
+              text-[#697394]
+            "
+          >
+            Describe what you
+            remember...
+          </span>
+
+          <span
+            className="
+              flex
+              h-8
+              w-8
+
+              items-center
+              justify-center
+
+              rounded-full
+
+              bg-[#F78ECF]
+
+              text-[#0E1630]
+            "
+          >
+            →
+          </span>
+        </div>
+
+        {/* EXAMPLES */}
+
+        <div className="mt-6 space-y-2">
+          {[
+            "A tall white tower",
+            "A street near water",
+            "Yellow buildings",
+          ].map(
+            (
+              clue
+            ) => (
+              <div
+                key={
+                  clue
+                }
+
+                className="
+                  rounded-lg
+
+                  border
+                  border-[#D4B0F9]/10
+
+                  bg-[#111A36]/60
+
+                  px-3
+                  py-2.5
+
+                  text-[9px]
+
+                  text-[#8F98B8]
+                "
+              >
+                {clue}
+              </div>
+            )
+          )}
+        </div>
+      </div>
+
+      {/* MAP */}
+
+      <div
+        className="
+          relative
+
+          min-h-[390px]
+
+          overflow-hidden
+
+          bg-[#111A36]
+        "
+      >
+        {/* MAP GRID */}
+
+        <div
+          className="
+            absolute
+            inset-0
+
+            opacity-[0.15]
+          "
+          style={{
+            backgroundImage: `
+              linear-gradient(
+                32deg,
+                transparent 46%,
+                rgba(164,128,242,.4) 47%,
+                transparent 48%
+              ),
+
+              linear-gradient(
+                -28deg,
+                transparent 46%,
+                rgba(212,176,249,.25) 47%,
+                transparent 48%
+              ),
+
+              linear-gradient(
+                rgba(109,140,255,.18) 1px,
+                transparent 1px
+              ),
+
+              linear-gradient(
+                90deg,
+                rgba(109,140,255,.18) 1px,
+                transparent 1px
+              )
+            `,
+
+            backgroundSize:
+              "95px 95px, 120px 120px, 42px 42px, 42px 42px",
+          }}
+        />
+
+        {/* WATER */}
+
+        <div
+          className="
+            absolute
+
+            bottom-[10%]
+            right-[12%]
+
+            h-[44%]
+            w-[48%]
+
+            rotate-[-9deg]
+
+            rounded-[45%]
+
+            bg-[#20396D]/35
+
+            blur-[2px]
+          "
+        />
+
+        {/* CENTER PIN */}
+
+        <div
+          className="
+            absolute
+
+            left-[57%]
+            top-[51%]
+
+            -translate-x-1/2
+            -translate-y-1/2
+          "
+        >
+          <span
+            className="
+              absolute
+
+              left-1/2
+              top-1/2
+
+              h-24
+              w-24
+
+              -translate-x-1/2
+              -translate-y-1/2
+
+              animate-ping
+
+              rounded-full
+
+              border
+              border-[#F78ECF]/20
+            "
+          />
+
+          <div
+            className="
+              flex
+
+              h-12
+              w-12
+
+              items-center
+              justify-center
+
+              rounded-full
+
+              border
+              border-[#F78ECF]/50
+
+              bg-[#F78ECF]/20
+
+              text-xl
+              text-[#F78ECF]
+
+              shadow-[0_0_40px_rgba(247,142,207,.45)]
+            "
+          >
+            ●
+          </div>
+        </div>
+
+        {/* OTHER POINTS */}
+
+        <span
+          className="
+            absolute
+
+            left-[26%]
+            top-[33%]
+
+            h-2.5
+            w-2.5
+
+            rounded-full
+
+            bg-[#A480F2]
+          "
+        />
+
+        <span
+          className="
+            absolute
+
+            bottom-[21%]
+            left-[31%]
+
+            h-2
+            w-2
+
+            rounded-full
+
+            bg-[#D4B0F9]
+          "
+        />
+
+        <span
+          className="
+            absolute
+
+            right-[18%]
+            top-[35%]
+
+            h-2
+            w-2
+
+            rounded-full
+
+            bg-[#A480F2]
+          "
+        />
+
+        {/* MATCH RESULT */}
+
+        <div
+          className="
+            absolute
+
+            right-5
+            top-6
+
+            w-[210px]
+
+            rounded-xl
+
+            border
+            border-[#F78ECF]/25
+
+            bg-[#0E1630]/85
+
+            p-4
+
+            backdrop-blur-xl
+          "
+        >
+          <p
+            className="
+              font-mono
+
+              text-[8px]
+
+              uppercase
+              tracking-[0.16em]
+
+              text-[#F78ECF]
+            "
+          >
+            Possible match
+          </p>
+
+          <p
+            className="
+              mt-2
+
+              text-sm
+              font-semibold
+
+              text-white
+            "
+          >
+            Location result
+          </p>
+
+          <div
+            className="
+              mt-3
+
+              flex
+              items-center
+              gap-3
+            "
+          >
+            <p
+              className="
+                font-mono
+                text-[8px]
+
+                text-[#F78ECF]
+              "
+            >
+              92% MATCH
+            </p>
+
+            <span
+              className="
+                h-1
+                flex-1
+
+                overflow-hidden
+
+                rounded-full
+
+                bg-[#D4B0F9]/10
+              "
+            >
+              <span
+                className="
+                  block
+
+                  h-full
+                  w-[92%]
+
+                  bg-gradient-to-r
+
+                  from-[#F78ECF]
+                  to-[#A480F2]
+                "
+              />
+            </span>
+          </div>
+        </div>
+
+        {/* LABEL */}
+
+        <p
+          className="
+            absolute
+
+            bottom-6
+            right-7
+
+            max-w-[180px]
+
+            text-right
+
+            font-mono
+
+            text-[9px]
+
+            italic
+
+            leading-5
+
+            text-[#D4B0F9]
+          "
+        >
+          memories become clues.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+
+/* ======================================================
+   COTSLE PREVIEW
+====================================================== */
+
+function CotslePreview() {
+  return (
+    <div
+      className="
+        relative
+        min-h-[470px]
+        overflow-hidden
+        bg-[#0B1730]
+      "
+    >
+      {/* BACKGROUND GLOW */}
+
+      <div
+        className="
+          pointer-events-none
+          absolute
+          -right-24
+          -top-20
+          h-72
+          w-72
+          rounded-full
+          bg-[#A480F2]/20
+          blur-[90px]
+        "
+      />
+
+      {/* NAV */}
+
+      <div
+        className="
+          relative
+          z-10
+
+          flex
+          items-center
+          justify-between
+
+          border-b
+          border-white/10
+
+          px-6
+          py-5
+        "
+      >
+        <div>
+          <p
+            className="
+              text-lg
+              font-black
+              tracking-[-0.03em]
+              text-white
+            "
+          >
+            COTSLE
+          </p>
+
+          <p
+            className="
+              mt-0.5
+              font-mono
+              text-[7px]
+              uppercase
+              tracking-[0.2em]
+              text-[#A480F2]
+            "
+          >
+            technology
+          </p>
+        </div>
+
+        <div
+          className="
+            hidden
+            gap-5
+
+            font-mono
+            text-[8px]
+            text-[#8F98B8]
+
+            sm:flex
+          "
+        >
+          <span>Home</span>
+          <span>About</span>
+          <span>Services</span>
+          <span>Training</span>
+        </div>
+
+        <div
+          className="
+            rounded-lg
+            bg-[#A480F2]
+            px-3
+            py-2
+            text-[8px]
+            font-semibold
+            text-[#0E1630]
+          "
+        >
+          Contact
+        </div>
+      </div>
+
+      {/* HERO */}
+
+      <div
+        className="
+          relative
+          z-10
+
+          grid
+          min-h-[395px]
+          items-center
+          gap-8
+
+          px-7
+          py-10
+
+          md:grid-cols-[1.05fr_.95fr]
+          md:px-9
+        "
+      >
+        {/* LEFT */}
+
+        <div>
+          <p
+            className="
+              font-mono
+              text-[8px]
+              uppercase
+              tracking-[0.2em]
+              text-[#A480F2]
+            "
+          >
+            Technology • Training • Innovation
+          </p>
+
+          <h4
+            className="
+              mt-5
+
+              max-w-md
+
+              text-3xl
+              font-black
+
+              leading-[0.95]
+              tracking-[-0.04em]
+
+              text-white
+
+              md:text-4xl
+            "
+          >
+            Empowering Businesses Through{" "}
+
+            <span
+              className="
+                bg-gradient-to-r
+                from-[#D4B0F9]
+                to-[#A480F2]
+                bg-clip-text
+                text-transparent
+              "
+            >
+              Technology
+            </span>
+          </h4>
+
+          <p
+            className="
+              mt-5
+
+              max-w-sm
+
+              text-[10px]
+              leading-5
+
+              text-[#8F98B8]
+            "
+          >
+            Modern digital solutions,
+            technology services and
+            professional training presented
+            through a responsive web
+            experience.
+          </p>
+
+          <div
+            className="
+              mt-7
+              flex
+              gap-3
+            "
+          >
+            <span
+              className="
+                rounded-lg
+                bg-[#A480F2]
+                px-4
+                py-2.5
+                text-[8px]
+                font-semibold
+                text-[#0E1630]
+              "
+            >
+              Explore Services
+            </span>
+
+            <span
+              className="
+                rounded-lg
+                border
+                border-white/10
+                px-4
+                py-2.5
+                text-[8px]
+                text-white
+              "
+            >
+              Learn More
+            </span>
+          </div>
+        </div>
+
+        {/* RIGHT */}
+
+        <div
+          className="
+            relative
+            min-h-[260px]
+          "
+        >
+          <div
+            className="
+              absolute
+              inset-[8%]
+
+              rotate-[5deg]
+
+              rounded-[26px]
+
+              border
+              border-[#A480F2]/25
+
+              bg-[#A480F2]/10
+            "
+          />
+
+          <div
+            className="
+              absolute
+              inset-[14%]
+
+              -rotate-[4deg]
+
+              rounded-[24px]
+
+              border
+              border-[#D4B0F9]/20
+
+              bg-[#111A36]
+              p-5
+
+              shadow-[0_25px_60px_rgba(0,0,0,.3)]
+            "
+          >
+            <p
+              className="
+                font-mono
+                text-[7px]
+                uppercase
+                tracking-[0.16em]
+                text-[#697394]
+              "
+            >
+              digital_services
+            </p>
+
+            <div
+              className="
+                mt-5
+                grid
+                grid-cols-2
+                gap-3
+              "
+            >
+              {[
+                "Web Development",
+                "AI Solutions",
+                "Cloud",
+                "Cyber Security",
+              ].map(
+                (service) => (
+                  <div
+                    key={service}
+                    className="
+                      rounded-xl
+                      border
+                      border-[#D4B0F9]/10
+                      bg-[#0E1630]/65
+                      p-3
+                    "
+                  >
+                    <span
+                      className="
+                        block
+                        h-1.5
+                        w-1.5
+                        rounded-full
+                        bg-[#A480F2]
+                        shadow-[0_0_10px_rgba(164,128,242,.8)]
+                      "
+                    />
+
+                    <p
+                      className="
+                        mt-3
+                        text-[8px]
+                        font-semibold
+                        text-white
+                      "
+                    >
+                      {service}
+                    </p>
+                  </div>
+                )
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+/* ======================================================
+   DONATION TRACKER PREVIEW
+====================================================== */
+
+function DonationPreview() {
+  return (
+    <div
+      className="
+        min-h-[470px]
+
+        p-7
+
+        md:p-9
+      "
+    >
+      <div
+        className="
+          flex
+          items-end
+          justify-between
+        "
+      >
+        <div>
+          <p
+            className="
+              font-mono
+
+              text-[9px]
+
+              uppercase
+              tracking-[0.16em]
+
+              text-[#C580ED]
+            "
+          >
+            Donation Tracker
+          </p>
+
+          <h4
+            className="
+              mt-2
+
+              text-2xl
+              font-bold
+
+              text-white
+            "
+          >
+            Transparent records.
+          </h4>
+        </div>
+
+        <span
+          className="
+            rounded-full
+
+            border
+            border-[#C580ED]/30
+
+            bg-[#C580ED]/10
+
+            px-4
+            py-2
+
+            font-mono
+
+            text-[8px]
+
+            uppercase
+
+            text-[#C580ED]
+          "
+        >
+          verified
+        </span>
+      </div>
+
+      <div
+        className="
+          mt-10
+
+          overflow-hidden
+
+          rounded-2xl
+
+          border
+          border-[#D4B0F9]/10
+        "
+      >
+        {[
+          [
+            "#A81F",
+            "Donation received",
+            "Verified",
+          ],
+
+          [
+            "#C35B",
+            "Transaction hash",
+            "Confirmed",
+          ],
+
+          [
+            "#D492",
+            "Organisation record",
+            "Verified",
+          ],
+
+          [
+            "#F219",
+            "History updated",
+            "Complete",
+          ],
+        ].map(
+          (
+            [
+              hash,
+              action,
+              status,
+            ],
+            index
+          ) => (
+            <div
+              key={
+                hash
+              }
+
+              className={`
+                grid
+                grid-cols-[.6fr_1.5fr_.8fr]
+
+                gap-4
+
+                px-5
+                py-5
+
+                ${
+                  index !==
+                  3
+                    ? "border-b border-[#D4B0F9]/10"
+                    : ""
+                }
+              `}
+            >
+              <span
+                className="
+                  font-mono
+
+                  text-[9px]
+
+                  text-[#C580ED]
+                "
+              >
+                {hash}
+              </span>
+
+              <span
+                className="
+                  text-xs
+
+                  text-[#B8C0DC]
+                "
+              >
+                {action}
+              </span>
+
+              <span
+                className="
+                  text-right
+
+                  font-mono
+
+                  text-[8px]
+
+                  uppercase
+
+                  text-[#697394]
+                "
+              >
+                {status}
+              </span>
+            </div>
+          )
+        )}
+      </div>
+    </div>
+  );
+}
+
+
+/* ======================================================
+   LOST & FOUND PREVIEW
+====================================================== */
+
+function LostFoundPreview() {
+  return (
+    <div
+      className="
+        min-h-[470px]
+
+        p-7
+
+        md:p-9
+      "
+    >
+      <p
+        className="
+          font-mono
+
+          text-[9px]
+
+          uppercase
+          tracking-[0.16em]
+
+          text-[#D4B0F9]
+        "
+      >
+        Lost + Found
+      </p>
+
+      <h4
+        className="
+          mt-2
+
+          text-2xl
+          font-bold
+
+          text-white
+        "
+      >
+        Find what&apos;s missing.
+      </h4>
+
+      {/* SEARCH */}
+
+      <div
+        className="
+          mt-8
+
+          flex
+          items-center
+
+          rounded-xl
+
+          border
+          border-[#D4B0F9]/15
+
+          bg-[#111A36]
+
+          px-4
+          py-4
+        "
+      >
+        <span
+          className="
+            flex-1
+
+            text-[10px]
+
+            text-[#697394]
+          "
+        >
+          Search reported items...
+        </span>
+
+        <span className="text-[#D4B0F9]">
+          →
+        </span>
+      </div>
+
+      <div
+        className="
+          mt-6
+          space-y-3
+        "
+      >
+        {[
+          [
+            "Black Backpack",
+            "Reported lost",
+            "Potential match",
+          ],
+
+          [
+            "Student ID Card",
+            "Reported found",
+            "Awaiting claim",
+          ],
+
+          [
+            "Wireless Earbuds",
+            "Reported found",
+            "Verified",
+          ],
+        ].map(
+          (
+            [
+              item,
+              status,
+              match,
+            ]
+          ) => (
+            <div
+              key={
+                item
+              }
+
+              className="
+                flex
+
+                items-center
+                justify-between
+
+                gap-5
+
+                rounded-xl
+
+                border
+                border-[#D4B0F9]/10
+
+                bg-[#111A36]/65
+
+                p-4
+              "
+            >
+              <div>
+                <p
+                  className="
+                    text-sm
+                    font-semibold
+
+                    text-white
+                  "
+                >
+                  {item}
+                </p>
+
+                <p
+                  className="
+                    mt-1
+
+                    font-mono
+
+                    text-[8px]
+
+                    uppercase
+
+                    text-[#697394]
+                  "
+                >
+                  {status}
+                </p>
+              </div>
+
+              <span
+                className="
+                  rounded-full
+
+                  border
+                  border-[#D4B0F9]/20
+
+                  bg-[#D4B0F9]/5
+
+                  px-3
+                  py-2
+
+                  font-mono
+
+                  text-[8px]
+
+                  text-[#D4B0F9]
+                "
+              >
+                {match}
+              </span>
+            </div>
+          )
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ======================================================
+   PROJECT VISUAL SYSTEM
+====================================================== */
+
+function ProjectVisual({
+  project,
+  mouse,
+}) {
+  const x =
+    (mouse?.x ?? 0.5) -
+    0.5;
+
+  const y =
+    (mouse?.y ?? 0.5) -
+    0.5;
+
+  const moveX =
+    x * 26;
+
+  const moveY =
+    y * 20;
+
+  if (
+    project.visual ===
+    "nishaan"
+  ) {
+    return (
+      <div className="absolute inset-0">
+        {/* MAP-LIKE BACKGROUND */}
+
+        <div
+          className="
+            absolute
+            inset-0
+            opacity-[0.12]
+          "
+          style={{
+            backgroundImage: `
+              linear-gradient(
+                rgba(164,128,242,.35) 1px,
+                transparent 1px
+              ),
+              linear-gradient(
+                90deg,
+                rgba(164,128,242,.35) 1px,
+                transparent 1px
+              )
+            `,
+            backgroundSize:
+              "34px 34px",
+          }}
+        />
+
+        {/* COORDINATES */}
+
+        <p
+          className="
+            absolute
+            right-7
+            top-7
+            font-mono
+            text-[9px]
+            uppercase
+            tracking-[0.18em]
+            text-[#697394]
+          "
+        >
+          geo_search.active
+        </p>
+
+        {/* CENTRAL GEO SYSTEM */}
+
+        <div
+          className="
+            absolute
+            left-1/2
+            top-[43%]
+            h-[330px]
+            w-[330px]
+            -translate-x-1/2
+            -translate-y-1/2
+            transition-transform
+            duration-500
+            ease-out
+          "
+          style={{
+            transform: `
+              translate(
+                calc(-50% + ${moveX}px),
+                calc(-50% + ${moveY}px)
+              )
+            `,
+          }}
+        >
+          <div
+            className="
+              absolute
+              inset-0
+              rounded-full
+              border
+              border-[#A480F2]/20
+            "
+          />
+
+          <div
+            className="
+              absolute
+              inset-[45px]
+              rounded-full
+              border
+              border-[#F78ECF]/30
+            "
+          />
+
+          <div
+            className="
+              absolute
+              inset-[90px]
+              rounded-full
+              border
+              border-[#D4B0F9]/35
+            "
+          />
+
+          <div
+            className="
+              absolute
+              left-1/2
+              top-1/2
+              h-[110px]
+              w-[110px]
+              -translate-x-1/2
+              -translate-y-1/2
+              rounded-full
+              border
+              border-[#F78ECF]/50
+              bg-[#F78ECF]/10
+              shadow-[0_0_70px_rgba(247,142,207,.25)]
+            "
+          >
+            <span
+              className="
+                absolute
+                left-1/2
+                top-1/2
+                h-4
+                w-4
+                -translate-x-1/2
+                -translate-y-1/2
+                rounded-full
+                bg-[#F78ECF]
+                shadow-[0_0_30px_rgba(247,142,207,1)]
+              "
+            />
+
+            <span
+              className="
+                absolute
+                inset-[23px]
+                animate-ping
+                rounded-full
+                border
+                border-[#F78ECF]/35
+              "
+            />
+          </div>
+
+          {/* NODES */}
+
+          <span
+            className="
+              absolute
+              left-[5%]
+              top-[30%]
+              h-3
+              w-3
+              rounded-full
+              bg-[#A480F2]
+              shadow-[0_0_18px_rgba(164,128,242,.8)]
+            "
+          />
+
+          <span
+            className="
+              absolute
+              right-[8%]
+              top-[21%]
+              h-2.5
+              w-2.5
+              rounded-full
+              bg-[#F78ECF]
+              shadow-[0_0_18px_rgba(247,142,207,.8)]
+            "
+          />
+
+          <span
+            className="
+              absolute
+              bottom-[9%]
+              right-[24%]
+              h-3
+              w-3
+              rounded-full
+              bg-[#6D8CFF]
+              shadow-[0_0_18px_rgba(109,140,255,.8)]
+            "
+          />
+        </div>
+
+        {/* PROCESS */}
+
+        <div
+          className="
+            absolute
+            bottom-8
+            left-7
+            right-7
+            flex
+            items-center
+            justify-between
+            gap-2
+            font-mono
+            text-[8px]
+            uppercase
+            tracking-[0.12em]
+            text-[#8F98B8]
+          "
+        >
+          <span>input</span>
+          <span className="text-[#F78ECF]">
+            →
+          </span>
+          <span>AI analysis</span>
+          <span className="text-[#A480F2]">
+            →
+          </span>
+          <span>clues</span>
+          <span className="text-[#A480F2]">
+            →
+          </span>
+          <span>geo search</span>
+          <span className="text-[#F78ECF]">
+            →
+          </span>
+          <span>result</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (
+    project.visual ===
+    "timebank"
+  ) {
+    return (
+      <div className="absolute inset-0">
+        <p
+          className="
+            absolute
+            right-7
+            top-7
+            font-mono
+            text-[9px]
+            uppercase
+            tracking-[0.18em]
+            text-[#697394]
+          "
+        >
+          exchange.protocol
+        </p>
+
+        {/* LEFT USER */}
+
+        <div
+          className="
+            absolute
+            left-[16%]
+            top-1/2
+            h-36
+            w-36
+            -translate-y-1/2
+            rounded-full
+            border
+            border-[#A480F2]/40
+            bg-[#A480F2]/10
+            transition-transform
+            duration-500
+          "
+          style={{
+            transform: `
+              translate(
+                ${moveX * 0.5}px,
+                calc(-50% + ${moveY * 0.4}px)
+              )
+            `,
+          }}
+        >
+          <div
+            className="
+              absolute
+              left-1/2
+              top-1/2
+              h-16
+              w-16
+              -translate-x-1/2
+              -translate-y-1/2
+              rounded-full
+              border
+              border-[#D4B0F9]/35
+            "
+          />
+
+          <p
+            className="
+              absolute
+              -bottom-10
+              left-1/2
+              -translate-x-1/2
+              whitespace-nowrap
+              font-mono
+              text-[9px]
+              uppercase
+              tracking-[0.15em]
+              text-[#A480F2]
+            "
+          >
+            share skill
+          </p>
+        </div>
+
+        {/* RIGHT USER */}
+
+        <div
+          className="
+            absolute
+            right-[16%]
+            top-1/2
+            h-36
+            w-36
+            -translate-y-1/2
+            rounded-full
+            border
+            border-[#F78ECF]/40
+            bg-[#F78ECF]/10
+            transition-transform
+            duration-500
+          "
+          style={{
+            transform: `
+              translate(
+                ${-moveX * 0.5}px,
+                calc(-50% + ${-moveY * 0.4}px)
+              )
+            `,
+          }}
+        >
+          <div
+            className="
+              absolute
+              left-1/2
+              top-1/2
+              h-16
+              w-16
+              -translate-x-1/2
+              -translate-y-1/2
+              rounded-full
+              border
+              border-[#F992AD]/35
+            "
+          />
+
+          <p
+            className="
+              absolute
+              -bottom-10
+              left-1/2
+              -translate-x-1/2
+              whitespace-nowrap
+              font-mono
+              text-[9px]
+              uppercase
+              tracking-[0.15em]
+              text-[#F78ECF]
+            "
+          >
+            receive skill
+          </p>
+        </div>
+
+        {/* CONNECTION */}
+
+        <div
+          className="
+            absolute
+            left-[31%]
+            right-[31%]
+            top-1/2
+            h-px
+            bg-gradient-to-r
+            from-[#A480F2]
+            via-[#D4B0F9]
+            to-[#F78ECF]
+          "
+        />
+
+        <div
+          className="
+            absolute
+            left-1/2
+            top-1/2
+            flex
+            h-20
+            w-20
+            -translate-x-1/2
+            -translate-y-1/2
+            items-center
+            justify-center
+            rounded-full
+            border
+            border-[#D4B0F9]/40
+            bg-[#111A36]
+            font-mono
+            text-lg
+            font-black
+            text-[#D4B0F9]
+            shadow-[0_0_50px_rgba(164,128,242,.25)]
+          "
+        >
+          +1H
+        </div>
+      </div>
+    );
+  }
+
+  if (
+    project.visual ===
+    "blockchain"
+  ) {
+    return (
+      <div className="absolute inset-0">
+        <p
+          className="
+            absolute
+            right-7
+            top-7
+            font-mono
+            text-[9px]
+            uppercase
+            tracking-[0.18em]
+            text-[#697394]
+          "
+        >
+          verification_chain
+        </p>
+
+        <div
+          className="
+            absolute
+            left-[10%]
+            right-[10%]
+            top-1/2
+            h-px
+            bg-gradient-to-r
+            from-[#F78ECF]/20
+            via-[#C580ED]
+            to-[#A480F2]/20
+          "
+        />
+
+        {[
+          "DONATION",
+          "HASH",
+          "VERIFY",
+          "RECORD",
+        ].map(
+          (
+            label,
+            index
+          ) => (
+            <div
+              key={label}
+              className="
+                absolute
+                top-1/2
+                flex
+                h-[92px]
+                w-[92px]
+                -translate-x-1/2
+                -translate-y-1/2
+                items-center
+                justify-center
+                rounded-2xl
+                border
+                bg-[#111A36]/85
+                font-mono
+                text-[8px]
+                uppercase
+                tracking-[0.12em]
+                text-white
+                shadow-[0_20px_50px_rgba(0,0,0,.25)]
+                transition-transform
+                duration-500
+              "
+              style={{
+                left:
+                  `${18 + index * 21}%`,
+
+                borderColor:
+                  index % 2 === 0
+                    ? "#F78ECF55"
+                    : "#A480F255",
+
+                transform: `
+                  translate(
+                    calc(-50% + ${
+                      moveX *
+                      (
+                        0.15 +
+                        index *
+                          0.08
+                      )
+                    }px),
+
+                    calc(-50% + ${
+                      moveY *
+                      (
+                        index %
+                          2 ===
+                        0
+                          ? 0.25
+                          : -0.25
+                      )
+                    }px)
+                  )
+                `,
+              }}
+            >
+              {label}
+            </div>
+          )
+        )}
+
+        <p
+          className="
+            absolute
+            bottom-10
+            left-1/2
+            -translate-x-1/2
+            font-mono
+            text-[9px]
+            uppercase
+            tracking-[0.17em]
+            text-[#697394]
+          "
+        >
+          transparent • verifiable • traceable
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="absolute inset-0">
+      <p
+        className="
+          absolute
+          right-7
+          top-7
+          font-mono
+          text-[9px]
+          uppercase
+          tracking-[0.18em]
+          text-[#697394]
+        "
+      >
+        matching_system
+      </p>
+
+      {/* LOST */}
+
+      <div
+        className="
+          absolute
+          left-[15%]
+          top-[30%]
+          h-[190px]
+          w-[190px]
+          rounded-full
+          border
+          border-[#D4B0F9]/25
+          transition-transform
+          duration-500
+        "
+        style={{
+          transform: `
+            translate(
+              ${moveX * 0.5}px,
+              ${moveY * 0.5}px
+            )
+          `,
+        }}
+      >
+        <div
+          className="
+            absolute
+            inset-[35px]
+            rounded-full
+            border
+            border-[#D4B0F9]/40
+          "
+        />
+
+        <span
+          className="
+            absolute
+            left-1/2
+            top-1/2
+            h-3
+            w-3
+            -translate-x-1/2
+            -translate-y-1/2
+            rounded-full
+            bg-[#D4B0F9]
+            shadow-[0_0_25px_rgba(212,176,249,1)]
+          "
+        />
+
+        <p
+          className="
+            absolute
+            bottom-[-34px]
+            left-1/2
+            -translate-x-1/2
+            font-mono
+            text-[9px]
+            uppercase
+            tracking-[0.15em]
+            text-[#D4B0F9]
+          "
+        >
+          LOST
+        </p>
+      </div>
+
+      {/* FOUND */}
+
+      <div
+        className="
+          absolute
+          bottom-[22%]
+          right-[14%]
+          h-[190px]
+          w-[190px]
+          rounded-full
+          border
+          border-[#6D8CFF]/25
+          transition-transform
+          duration-500
+        "
+        style={{
+          transform: `
+            translate(
+              ${-moveX * 0.5}px,
+              ${-moveY * 0.5}px
+            )
+          `,
+        }}
+      >
+        <div
+          className="
+            absolute
+            inset-[35px]
+            rounded-full
+            border
+            border-[#6D8CFF]/40
+          "
+        />
+
+        <span
+          className="
+            absolute
+            left-1/2
+            top-1/2
+            h-3
+            w-3
+            -translate-x-1/2
+            -translate-y-1/2
+            rounded-full
+            bg-[#6D8CFF]
+            shadow-[0_0_25px_rgba(109,140,255,1)]
+          "
+        />
+
+        <p
+          className="
+            absolute
+            bottom-[-34px]
+            left-1/2
+            -translate-x-1/2
+            font-mono
+            text-[9px]
+            uppercase
+            tracking-[0.15em]
+            text-[#6D8CFF]
+          "
+        >
+          FOUND
+        </p>
+      </div>
+
+      {/* MATCH LINE */}
+
+      <div
+        className="
+          absolute
+          left-[39%]
+          top-[51%]
+          h-px
+          w-[28%]
+          rotate-[19deg]
+          bg-gradient-to-r
+          from-[#D4B0F9]
+          via-[#F78ECF]
+          to-[#6D8CFF]
+          shadow-[0_0_18px_rgba(164,128,242,.5)]
+        "
+      />
+
+      <div
+        className="
+          absolute
+          left-1/2
+          top-1/2
+          rounded-full
+          border
+          border-[#F78ECF]/30
+          bg-[#F78ECF]/10
+          px-4
+          py-2
+          font-mono
+          text-[8px]
+          uppercase
+          tracking-[0.15em]
+          text-[#F78ECF]
+          backdrop-blur-xl
+        "
+      >
+        potential match
+      </div>
+    </div>
+  );
+}
+
 export function ComputerPortfolio() {
   const goTo = (id) => {
     document
@@ -4336,6 +7486,7 @@ export function ComputerPortfolio() {
 
 <JourneySection />
 <ExperienceSection />
+<ProjectsSection />
 
 {/* =================================================
     TEMPORARY MARKERS FOR THE REST
@@ -4343,14 +7494,7 @@ export function ComputerPortfolio() {
 
 {[
    
-  [
-    "projects",
-    "05",
-    "PROJECTS",
-    "Ideas in action.",
-  ],
-
-  [
+   [
     "skills",
     "06",
     "SKILLS",
