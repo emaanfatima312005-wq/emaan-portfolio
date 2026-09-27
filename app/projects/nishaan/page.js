@@ -1,4 +1,6 @@
 import Link from "next/link";
+import HaloBackground from "./HaloBackground";
+
 
 /* ======================================================
    SMALL UI
@@ -63,550 +65,38 @@ function SectionNumber({
    HERO VISUAL
 ====================================================== */
 
+
 function NishaanHeroVisual() {
   return (
-    <div
-      className="
-        relative
-        overflow-hidden
-        rounded-[30px]
-        border
-        border-[#D4B0F9]/25
-        bg-[#0B142D]
-        shadow-[0_35px_100px_rgba(0,0,0,.38)]
-      "
-    >
+    <div className="overflow-hidden rounded-[30px] border border-[#D4B0F9]/25 bg-[#0B142D] shadow-[0_35px_100px_rgba(0,0,0,.38)]">
       {/* BROWSER BAR */}
 
-      <div
-        className="
-          flex
-          items-center
-          justify-between
-          border-b
-          border-[#D4B0F9]/10
-          bg-[#111A36]
-          px-5
-          py-4
-        "
-      >
-        <div className="flex gap-2">
-          <span className="h-2.5 w-2.5 rounded-full bg-[#F992AD]" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#D4B0F9]" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#A480F2]" />
-        </div>
+      <div className="flex items-center gap-2 border-b border-[#D4B0F9]/10 bg-[#111A36] px-5 py-4">
+        <span className="h-2.5 w-2.5 rounded-full bg-[#F992AD]" />
+        <span className="h-2.5 w-2.5 rounded-full bg-[#D4B0F9]" />
+        <span className="h-2.5 w-2.5 rounded-full bg-[#A480F2]" />
 
-        <p
-          className="
-            font-mono
-            text-[8px]
-            uppercase
-            tracking-[0.2em]
-            text-[#697394]
-          "
-        >
-          nishaan.app
-        </p>
+        <span className="ml-auto font-mono text-[9px] tracking-[0.16em] text-[#697394]">
+          nishaan.demo
+        </span>
       </div>
 
-      {/* APP */}
+      {/* ACTUAL NISHAAN VIDEO */}
 
-      <div
-        className="
-          grid
-          min-h-[560px]
-          md:grid-cols-[0.82fr_1.18fr]
-        "
+      <video
+        src="/projects/nishaan/demo.mp4"
+        autoPlay
+        muted
+        loop
+        playsInline
+        controls
+        className="block aspect-video w-full object-contain"
       >
-        {/* LEFT */}
-
-        <div
-          className="
-            relative
-            border-b
-            border-[#D4B0F9]/10
-            p-7
-            md:border-b-0
-            md:border-r
-            md:p-9
-          "
-        >
-          <div
-            className="
-              flex
-              items-center
-              gap-3
-              font-mono
-              text-[10px]
-              uppercase
-              tracking-[0.18em]
-              text-white
-            "
-          >
-            <span
-              className="
-                flex
-                h-9
-                w-9
-                items-center
-                justify-center
-                rounded-xl
-                bg-[#F78ECF]/10
-                text-lg
-                text-[#F78ECF]
-              "
-            >
-              ◉
-            </span>
-
-            NISHAAN
-          </div>
-
-          <p
-            className="
-              mt-16
-              max-w-md
-              font-mono
-              text-[9px]
-              uppercase
-              tracking-[0.2em]
-              text-[#A480F2]
-            "
-          >
-            remember a clue.
-            <br />
-            discover a place.
-          </p>
-
-          <h2
-            className="
-              mt-5
-              max-w-md
-              text-4xl
-              font-black
-              leading-[0.95]
-              tracking-[-0.045em]
-              text-white
-              md:text-5xl
-            "
-          >
-            Find places from your{" "}
-
-            <span
-              className="
-                bg-gradient-to-r
-                from-[#F992AD]
-                via-[#F78ECF]
-                to-[#A480F2]
-                bg-clip-text
-                text-transparent
-              "
-            >
-              memories.
-            </span>
-          </h2>
-
-          <p
-            className="
-              mt-6
-              max-w-sm
-              text-sm
-              leading-7
-              text-[#8F98B8]
-            "
-          >
-            Describe a place, speak what
-            you remember or provide an
-            image. Nishaan turns those
-            clues into possible locations.
-          </p>
-
-          {/* INPUT METHODS */}
-
-          <div
-            className="
-              mt-9
-              grid
-              grid-cols-3
-              overflow-hidden
-              rounded-xl
-              border
-              border-[#D4B0F9]/15
-            "
-          >
-            {[
-              "Text",
-              "Voice",
-              "Image",
-            ].map(
-              (
-                item,
-                index
-              ) => (
-                <div
-                  key={item}
-                  className={`
-                    px-4
-                    py-3
-                    text-center
-                    font-mono
-                    text-[9px]
-
-                    ${
-                      index === 0
-                        ? "bg-[#F78ECF]/10 text-[#F78ECF]"
-                        : "text-[#697394]"
-                    }
-                  `}
-                >
-                  {item}
-                </div>
-              )
-            )}
-          </div>
-
-          {/* INPUT */}
-
-          <div
-            className="
-              mt-4
-              flex
-              items-center
-              gap-3
-              rounded-xl
-              border
-              border-[#D4B0F9]/15
-              bg-[#111A36]
-              px-4
-              py-4
-            "
-          >
-            <span className="text-[#697394]">
-              ○
-            </span>
-
-            <p
-              className="
-                flex-1
-                text-[10px]
-                text-[#697394]
-              "
-            >
-              Describe what you
-              remember...
-            </p>
-
-            <span
-              className="
-                flex
-                h-9
-                w-9
-                items-center
-                justify-center
-                rounded-full
-                bg-[#F78ECF]
-                text-[#0E1630]
-              "
-            >
-              →
-            </span>
-          </div>
-        </div>
-
-        {/* RIGHT / MAP */}
-
-        <div
-          className="
-            relative
-            min-h-[440px]
-            overflow-hidden
-          "
-        >
-          {/* MAP PATTERN */}
-
-          <div
-            className="
-              absolute
-              inset-0
-              opacity-[0.13]
-            "
-            style={{
-              backgroundImage: `
-                linear-gradient(
-                  rgba(164,128,242,.35) 1px,
-                  transparent 1px
-                ),
-                linear-gradient(
-                  90deg,
-                  rgba(164,128,242,.35) 1px,
-                  transparent 1px
-                ),
-                linear-gradient(
-                  28deg,
-                  transparent 47%,
-                  rgba(212,176,249,.25) 48%,
-                  transparent 49%
-                ),
-                linear-gradient(
-                  -33deg,
-                  transparent 47%,
-                  rgba(109,140,255,.18) 48%,
-                  transparent 49%
-                )
-              `,
-              backgroundSize:
-                "44px 44px, 44px 44px, 115px 115px, 140px 140px",
-            }}
-          />
-
-          {/* WATER */}
-
-          <div
-            className="
-              absolute
-              bottom-[4%]
-              right-[7%]
-              h-[54%]
-              w-[57%]
-              rotate-[-8deg]
-              rounded-[48%]
-              bg-[#20396D]/30
-              blur-[2px]
-            "
-          />
-
-          {/* RADAR */}
-
-          <div
-            className="
-              absolute
-              left-[54%]
-              top-[55%]
-              h-[220px]
-              w-[220px]
-              -translate-x-1/2
-              -translate-y-1/2
-              rounded-full
-              border
-              border-[#F78ECF]/10
-            "
-          />
-
-          <div
-            className="
-              absolute
-              left-[54%]
-              top-[55%]
-              h-[140px]
-              w-[140px]
-              -translate-x-1/2
-              -translate-y-1/2
-              rounded-full
-              border
-              border-[#F78ECF]/15
-            "
-          />
-
-          {/* PIN */}
-
-          <div
-            className="
-              absolute
-              left-[54%]
-              top-[55%]
-              -translate-x-1/2
-              -translate-y-1/2
-            "
-          >
-            <span
-              className="
-                absolute
-                left-1/2
-                top-1/2
-                h-24
-                w-24
-                -translate-x-1/2
-                -translate-y-1/2
-                animate-ping
-                rounded-full
-                border
-                border-[#F78ECF]/15
-              "
-            />
-
-            <span
-              className="
-                flex
-                h-14
-                w-14
-                items-center
-                justify-center
-                rounded-full
-                border
-                border-[#F78ECF]/50
-                bg-[#F78ECF]/15
-                text-xl
-                text-[#F78ECF]
-                shadow-[0_0_45px_rgba(247,142,207,.4)]
-              "
-            >
-              ◉
-            </span>
-          </div>
-
-          {/* SMALL POINTS */}
-
-          <span
-            className="
-              absolute
-              left-[21%]
-              top-[32%]
-              h-2.5
-              w-2.5
-              rounded-full
-              bg-[#A480F2]
-              shadow-[0_0_12px_rgba(164,128,242,.8)]
-            "
-          />
-
-          <span
-            className="
-              absolute
-              right-[17%]
-              top-[25%]
-              h-2
-              w-2
-              rounded-full
-              bg-[#D4B0F9]
-            "
-          />
-
-          <span
-            className="
-              absolute
-              bottom-[18%]
-              left-[23%]
-              h-2
-              w-2
-              rounded-full
-              bg-[#6D8CFF]
-            "
-          />
-
-          {/* MATCH RESULT */}
-
-          <div
-            className="
-              absolute
-              right-6
-              top-7
-              w-[225px]
-              rounded-2xl
-              border
-              border-[#F78ECF]/20
-              bg-[#0E1630]/85
-              p-4
-              backdrop-blur-xl
-            "
-          >
-            <p
-              className="
-                font-mono
-                text-[8px]
-                uppercase
-                tracking-[0.18em]
-                text-[#F78ECF]
-              "
-            >
-              potential match
-            </p>
-
-            <p
-              className="
-                mt-2
-                text-sm
-                font-semibold
-                text-white
-              "
-            >
-              Possible location
-            </p>
-
-            <p
-              className="
-                mt-1
-                text-[9px]
-                text-[#697394]
-              "
-            >
-              geographic result
-            </p>
-
-            <div
-              className="
-                mt-4
-                flex
-                items-center
-                gap-3
-              "
-            >
-              <span
-                className="
-                  font-mono
-                  text-[8px]
-                  text-[#F78ECF]
-                "
-              >
-                92%
-              </span>
-
-              <span
-                className="
-                  h-1
-                  flex-1
-                  overflow-hidden
-                  rounded-full
-                  bg-[#D4B0F9]/10
-                "
-              >
-                <span
-                  className="
-                    block
-                    h-full
-                    w-[92%]
-                    bg-gradient-to-r
-                    from-[#F78ECF]
-                    to-[#A480F2]
-                  "
-                />
-              </span>
-            </div>
-          </div>
-
-          <p
-            className="
-              absolute
-              bottom-7
-              right-7
-              max-w-[180px]
-              text-right
-              font-mono
-              text-[9px]
-              italic
-              leading-5
-              text-[#D4B0F9]
-            "
-          >
-            same places.
-            <br />
-            new ways to find them.
-          </p>
-        </div>
-      </div>
+        Your browser does not support video.
+      </video>
     </div>
   );
 }
-
 /* ======================================================
    SCREENSHOT PLACEHOLDER
 ====================================================== */
@@ -785,66 +275,7 @@ export default function NishaanProjectPage() {
       {/* =================================================
           GLOBAL BACKGROUND
       ================================================= */}
-
-      <div
-        className="
-          pointer-events-none
-          fixed
-          inset-0
-          overflow-hidden
-        "
-      >
-        <div className="absolute inset-0 bg-[#0E1630]" />
-
-        <div
-          className="
-            absolute
-            -left-44
-            -top-44
-            h-[650px]
-            w-[650px]
-            rounded-full
-            bg-[#F78ECF]/10
-            blur-[130px]
-          "
-        />
-
-        <div
-          className="
-            absolute
-            -right-52
-            top-[22%]
-            h-[750px]
-            w-[750px]
-            rounded-full
-            bg-[#A480F2]/10
-            blur-[150px]
-          "
-        />
-
-        <div
-          className="
-            absolute
-            inset-0
-            opacity-[0.05]
-          "
-          style={{
-            backgroundImage: `
-              linear-gradient(
-                rgba(212,176,249,.30) 1px,
-                transparent 1px
-              ),
-              linear-gradient(
-                90deg,
-                rgba(212,176,249,.30) 1px,
-                transparent 1px
-              )
-            `,
-            backgroundSize:
-              "52px 52px",
-          }}
-        />
-      </div>
+      <HaloBackground />
 
       {/* =================================================
           NAV
@@ -1029,7 +460,7 @@ export default function NishaanProjectPage() {
               "
             >
               <a
-                href="https://github.com/emaanfatima312005-wq"
+                href="https://github.com/emaanfatima312005-wq/nishaan"
                 target="_blank"
                 rel="noreferrer"
                 className="
@@ -1053,6 +484,42 @@ export default function NishaanProjectPage() {
               >
                 GitHub ↗
               </a>
+
+              <a
+  href="https://nishaan-sigma.vercel.app"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="
+    group
+    inline-flex
+    items-center
+    justify-center
+    gap-3
+    rounded-xl
+    border
+    border-[#F78ECF]/50
+    bg-[#F78ECF]/10
+    px-7
+    py-3.5
+    font-mono
+    text-[10px]
+    font-semibold
+    uppercase
+    tracking-[0.16em]
+    text-[#FBBCEE]
+    transition-all
+    duration-300
+    hover:-translate-y-1
+    hover:border-[#F78ECF]
+    hover:bg-[#F78ECF]/20
+    hover:shadow-[0_0_30px_rgba(247,142,207,.25)]
+  "
+>
+  View Live Website
+  <span className="text-base transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
+    ↗
+  </span>
+</a>
 
               <Link
                 href="/portfolio#projects"
@@ -1314,107 +781,111 @@ export default function NishaanProjectPage() {
         </div>
       </section>
 
-      {/* =================================================
-          SCREENSHOTS
-      ================================================= */}
 
-      <section
+{/* =================================================
+    SCREENSHOTS
+================================================= */}
+
+<section
+  className="
+    relative
+    z-10
+    mx-auto
+    max-w-[1500px]
+    border-t
+    border-[#D4B0F9]/10
+    px-6
+    py-28
+    lg:px-12
+  "
+>
+  <SectionNumber
+    number="04"
+    label="Interface"
+  />
+
+  <div className="flex flex-col gap-7 lg:flex-row lg:items-end lg:justify-between">
+    <h2
+      className="
+        text-5xl
+        font-black
+        uppercase
+        leading-[0.9]
+        tracking-[-0.05em]
+        text-white
+        md:text-7xl
+      "
+    >
+      Inside
+      <br />
+
+      <span className="text-[#D4B0F9]">
+        Nishaan.
+      </span>
+    </h2>
+
+    <p className="max-w-md text-sm leading-7 text-[#8F98B8]">
+      A closer look at the interface
+      and experience behind Nishaan.
+    </p>
+  </div>
+
+  {/* REAL SCREENSHOTS */}
+
+  <div className="mt-16 grid gap-8 lg:grid-cols-2">
+    {[
+      {
+        src: "/projects/nishaan/screenshot-1.jpeg",
+        title: "Nishaan — Interface",
+      },
+      {
+        src: "/projects/nishaan/screenshot-2.jpeg",
+        title: "Nishaan — Features",
+      },
+    ].map((image) => (
+      <div
+        key={image.src}
         className="
-          relative
-          z-10
-          mx-auto
-          max-w-[1500px]
-          border-t
-          border-[#D4B0F9]/10
-          px-6
-          py-28
-          lg:px-12
+          overflow-hidden
+          rounded-[26px]
+          border
+          border-[#D4B0F9]/15
+          bg-[#111A36]/45
+          shadow-[0_25px_65px_rgba(0,0,0,.20)]
         "
       >
-        <SectionNumber
-          number="04"
-          label="Interface"
+        {/* BROWSER FRAME */}
+
+        <div className="flex items-center gap-2 border-b border-[#D4B0F9]/10 bg-[#111A36] px-5 py-4">
+          <span className="h-2.5 w-2.5 rounded-full bg-[#F992AD]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[#D4B0F9]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[#A480F2]" />
+
+          <span className="ml-auto font-mono text-[9px] text-[#697394]">
+            screenshot.preview
+          </span>
+        </div>
+
+        {/* IMAGE */}
+
+        <img
+          src={image.src}
+          alt={image.title}
+          loading="lazy"
+          className="block h-auto w-full"
         />
 
-        <div
-          className="
-            flex
-            flex-col
-            gap-7
-            lg:flex-row
-            lg:items-end
-            lg:justify-between
-          "
-        >
-          <h2
-            className="
-              text-5xl
-              font-black
-              uppercase
-              leading-[0.9]
-              tracking-[-0.05em]
-              text-white
-              md:text-7xl
-            "
-          >
-            Inside
-            <br />
+        {/* CAPTION */}
 
-            <span className="text-[#D4B0F9]">
-              Nishaan.
-            </span>
-          </h2>
-
-          <p
-            className="
-              max-w-md
-              text-sm
-              leading-7
-              text-[#8F98B8]
-            "
-          >
-            We&apos;ll replace these
-            placeholders with your real
-            Nishaan screenshots once you
-            send them.
+        <div className="border-t border-[#D4B0F9]/10 p-5">
+          <p className="text-sm font-medium text-[#DCE1F4]">
+            {image.title}
           </p>
         </div>
-
-        <div
-          className="
-            mt-16
-            grid
-            gap-6
-          "
-        >
-          <ScreenshotSlot
-            number="01"
-            title="Main Search Experience"
-            description="The primary interface where users provide the location clues they remember."
-            large
-          />
-
-          <div
-            className="
-              grid
-              gap-6
-              lg:grid-cols-2
-            "
-          >
-            <ScreenshotSlot
-              number="02"
-              title="AI Analysis"
-              description="The stage where remembered details are interpreted and transformed into useful clues."
-            />
-
-            <ScreenshotSlot
-              number="03"
-              title="Location Results"
-              description="Potential geographic matches and the final interactive map experience."
-            />
-          </div>
-        </div>
-      </section>
+      </div>
+    ))}
+  </div>
+</section>
 
       {/* =================================================
           MY ROLE + TECHNOLOGY
@@ -1608,119 +1079,7 @@ export default function NishaanProjectPage() {
         </div>
       </section>
 
-      {/* =================================================
-          LEARNING
-      ================================================= */}
-
-      <section
-        className="
-          relative
-          z-10
-          mx-auto
-          max-w-[1500px]
-          border-t
-          border-[#D4B0F9]/10
-          px-6
-          py-28
-          lg:px-12
-        "
-      >
-        <SectionNumber
-          number="06"
-          label="Reflection"
-        />
-
-        <div
-          className="
-            grid
-            gap-14
-            lg:grid-cols-[0.8fr_1.2fr]
-          "
-        >
-          <h2
-            className="
-              text-5xl
-              font-black
-              uppercase
-              leading-[0.9]
-              tracking-[-0.05em]
-              text-white
-              md:text-7xl
-            "
-          >
-            What I
-            <br />
-
-            <span
-              className="
-                bg-gradient-to-r
-                from-[#F992AD]
-                to-[#A480F2]
-                bg-clip-text
-                text-transparent
-              "
-            >
-              learned.
-            </span>
-          </h2>
-
-          <div
-            className="
-              grid
-              gap-4
-              sm:grid-cols-2
-            "
-          >
-            {[
-              "Designing interfaces around uncertain user input.",
-
-              "Connecting AI-generated information with real application workflows.",
-
-              "Working with geospatial concepts and location data.",
-
-              "Turning a complex technical idea into a user-friendly experience.",
-            ].map(
-              (
-                item,
-                index
-              ) => (
-                <div
-                  key={item}
-                  className="
-                    rounded-2xl
-                    border
-                    border-[#D4B0F9]/12
-                    bg-[#111A36]/35
-                    p-5
-                  "
-                >
-                  <p
-                    className="
-                      font-mono
-                      text-[9px]
-                      text-[#F78ECF]
-                    "
-                  >
-                    0{index + 1}
-                  </p>
-
-                  <p
-                    className="
-                      mt-4
-                      text-sm
-                      leading-6
-                      text-[#B8C0DC]
-                    "
-                  >
-                    {item}
-                  </p>
-                </div>
-              )
-            )}
-          </div>
-        </div>
-      </section>
-
+      
       {/* =================================================
           FINAL CTA
       ================================================= */}
@@ -1826,7 +1185,7 @@ export default function NishaanProjectPage() {
               "
             >
               <a
-                href="https://github.com/emaanfatima312005-wq"
+                href="https://github.com/emaanfatima312005-wq/nishaan"
                 target="_blank"
                 rel="noreferrer"
                 className="
@@ -1850,6 +1209,43 @@ export default function NishaanProjectPage() {
               >
                 GitHub ↗
               </a>
+              
+<a
+  href="https://nishaan-sigma.vercel.app"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="
+    group
+    inline-flex
+    items-center
+    justify-center
+    gap-3
+    rounded-xl
+    border
+    border-[#F78ECF]/50
+    bg-[#F78ECF]/10
+    px-7
+    py-3.5
+    font-mono
+    text-[10px]
+    font-semibold
+    uppercase
+    tracking-[0.16em]
+    text-[#FBBCEE]
+    transition-all
+    duration-300
+    hover:-translate-y-1
+    hover:border-[#F78ECF]
+    hover:bg-[#F78ECF]/20
+    hover:shadow-[0_0_30px_rgba(247,142,207,.25)]
+  "
+>
+  View Live Website
+  <span className="text-base transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
+    ↗
+  </span>
+</a>
+
 
               <Link
                 href="/portfolio#projects"
