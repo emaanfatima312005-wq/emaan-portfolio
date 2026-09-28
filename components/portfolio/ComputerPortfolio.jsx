@@ -6931,6 +6931,1456 @@ function ProjectVisual({
   );
 }
 
+
+/* ======================================================
+   06 — SKILLS
+   INTERACTIVE ORBIT DESIGN
+====================================================== */
+
+function SkillProjectPreview({ project }) {
+  const [imageFailed, setImageFailed] = useState(false);
+
+  return (
+    <a
+      href={project.href || "#skills"}
+      className="
+        group
+        block
+        overflow-hidden
+        rounded-xl
+        border
+        border-[#D4B0F9]/20
+        bg-[#111A36]/35
+        p-4
+        transition-all
+        duration-300
+        hover:-translate-y-1
+        hover:border-[#F78ECF]/50
+        hover:bg-[#111A36]/65
+      "
+    >
+      <div className="mb-4 flex items-center justify-between">
+        <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#D4B0F9]">
+          {project.name}
+        </span>
+
+        <span className="text-lg text-[#AEB7D5] transition-all duration-300 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-[#F78ECF]">
+          ↗
+        </span>
+      </div>
+
+      <div className="relative aspect-[16/9] overflow-hidden rounded-lg border border-white/10 bg-[#0B142B]">
+        {project.image && !imageFailed ? (
+          <img
+            src={project.image}
+            alt={`${project.name} project preview`}
+            onError={() => setImageFailed(true)}
+            loading="lazy"
+            className="
+              h-full
+              w-full
+              object-cover
+              object-top
+              transition-transform
+              duration-700
+              group-hover:scale-[1.05]
+            "
+          />
+        ) : (
+          <div className="relative flex h-full flex-col items-center justify-center overflow-hidden">
+            <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-[#A480F2]/20 blur-3xl" />
+
+            <div className="absolute -bottom-12 -left-12 h-40 w-40 rounded-full bg-[#F78ECF]/15 blur-3xl" />
+
+            <span className="relative text-center text-xl font-black uppercase tracking-[-0.05em] text-white">
+              {project.name}
+            </span>
+
+            <span className="relative mt-2 font-mono text-[8px] uppercase tracking-[0.16em] text-[#A480F2]">
+              Project case study
+            </span>
+          </div>
+        )}
+      </div>
+    </a>
+  );
+}
+
+
+/* ======================================================
+   LIQUID ORBIT VISUAL
+====================================================== */
+
+function SkillOrbit({
+  category,
+  focusedSkill,
+  onFocusSkill,
+}) {
+  const positions = [
+    { left: "50%", top: "9%", side: "top" },
+    { left: "80%", top: "24%", side: "right" },
+    { left: "91%", top: "53%", side: "right" },
+    { left: "77%", top: "82%", side: "right" },
+    { left: "28%", top: "85%", side: "left" },
+    { left: "9%", top: "53%", side: "left" },
+    { left: "20%", top: "24%", side: "left" },
+  ];
+
+  const labelPositions = {
+    top: "-top-8 left-1/2 -translate-x-1/2",
+    right: "left-[calc(100%+13px)] top-1/2 -translate-y-1/2",
+    left: "right-[calc(100%+13px)] top-1/2 -translate-y-1/2 text-right",
+  };
+
+  const currentSkill =
+    focusedSkill || category.skills[0].name;
+
+  return (
+    <div
+      className="
+        relative
+        flex
+        min-h-[540px]
+        w-full
+        items-center
+        justify-center
+        sm:min-h-[650px]
+        xl:min-h-[740px]
+      "
+    >
+      {/* ======================================
+          OUTER ATMOSPHERE
+      ====================================== */}
+
+      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[95%] w-[110%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#A480F2]/[0.08]" />
+
+      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[81%] w-[94%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#6D8CFF]/10" />
+
+      <div
+        className="
+          pointer-events-none
+          absolute
+          left-1/2
+          top-1/2
+          h-[65%]
+          w-[72%]
+          -translate-x-1/2
+          -translate-y-1/2
+          rounded-full
+          blur-[95px]
+          transition-colors
+          duration-700
+        "
+        style={{
+          background: `${category.accent}14`,
+        }}
+      />
+
+      {/* ======================================
+          MAIN ORBIT
+      ====================================== */}
+
+      <div
+        className="
+          relative
+          aspect-square
+          w-[min(74vw,450px)]
+          shrink-0
+          sm:w-[min(70vw,510px)]
+          xl:w-[min(36vw,570px)]
+        "
+      >
+        {/* ORBIT RINGS */}
+
+        <div className="pointer-events-none absolute inset-[6%] rounded-full border border-[#A480F2]/35" />
+
+        <div className="pointer-events-none absolute inset-[13%] rounded-full border border-dashed border-[#6D8CFF]/15" />
+
+        <div className="pointer-events-none absolute inset-[23%] rounded-full border border-[#F78ECF]/10" />
+
+        {/* DECORATIVE CONNECTIONS */}
+
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 500 500"
+          className="pointer-events-none absolute inset-0 h-full w-full"
+        >
+          <defs>
+            <linearGradient
+              id="skills-orbit-lines"
+              x1="0"
+              x2="1"
+              y1="0"
+              y2="1"
+            >
+              <stop offset="0%" stopColor="#6D8CFF" stopOpacity=".15" />
+
+              <stop offset="55%" stopColor="#A480F2" stopOpacity=".45" />
+
+              <stop offset="100%" stopColor="#F78ECF" stopOpacity=".15" />
+            </linearGradient>
+          </defs>
+
+          {[
+            [250, 45],
+            [400, 120],
+            [455, 265],
+            [385, 410],
+            [140, 425],
+            [45, 265],
+            [100, 120],
+          ].map(([x, y], index) => (
+            <line
+              key={index}
+              x1="250"
+              y1="250"
+              x2={x}
+              y2={y}
+              stroke="url(#skills-orbit-lines)"
+              strokeWidth=".7"
+            />
+          ))}
+
+          <circle
+            cx="250"
+            cy="250"
+            r="236"
+            fill="none"
+            stroke="#A480F2"
+            strokeWidth=".5"
+            strokeOpacity=".15"
+            strokeDasharray="2 7"
+          />
+        </svg>
+
+        {/* ==================================
+            LIQUID CORE
+        ================================== */}
+
+        <div className="pointer-events-none absolute inset-[22%]">
+          {/* SOFT OUTER GLOW */}
+
+          <div
+            className="
+              absolute
+              -inset-[5%]
+              rounded-full
+              blur-[34px]
+              transition-all
+              duration-700
+            "
+            style={{
+              background: `
+                radial-gradient(
+                  circle,
+                  ${category.accent}28,
+                  #A480F210 55%,
+                  transparent 75%
+                )
+              `,
+            }}
+          />
+
+          {/* LIQUID LAYER ONE */}
+
+          <div
+            className="
+              skills-liquid-one
+              absolute
+              inset-0
+              rounded-[54%_46%_62%_38%/42%_59%_41%_58%]
+              opacity-85
+            "
+            style={{
+              background: `
+                conic-gradient(
+                  from 35deg,
+                  rgba(109,140,255,.10),
+                  rgba(164,128,242,.72),
+                  rgba(247,142,207,.20),
+                  rgba(247,142,207,.78),
+                  rgba(212,176,249,.22),
+                  rgba(109,140,255,.55),
+                  rgba(164,128,242,.15)
+                )
+              `,
+              filter: "blur(8px)",
+            }}
+          />
+
+          {/* LIQUID LAYER TWO */}
+
+          <div
+            className="
+              skills-liquid-two
+              absolute
+              inset-[5%]
+              rounded-[37%_63%_45%_55%/62%_41%_59%_38%]
+              border
+              border-[#D4B0F9]/35
+              opacity-75
+            "
+            style={{
+              background: `
+                conic-gradient(
+                  from 170deg,
+                  transparent 0%,
+                  rgba(109,140,255,.33) 18%,
+                  rgba(164,128,242,.55) 34%,
+                  transparent 47%,
+                  rgba(247,142,207,.65) 67%,
+                  rgba(212,176,249,.18) 83%,
+                  transparent 100%
+                )
+              `,
+              boxShadow: `
+                inset 0 0 32px rgba(212,176,249,.20),
+                0 0 38px rgba(164,128,242,.16)
+              `,
+            }}
+          />
+
+          {/* LIQUID LAYER THREE */}
+
+          <div
+            className="
+              skills-liquid-three
+              absolute
+              inset-[9%]
+              rounded-[61%_39%_52%_48%/49%_57%_43%_51%]
+              border
+              border-[#F78ECF]/40
+              opacity-65
+            "
+            style={{
+              background: `
+                radial-gradient(
+                  ellipse at 22% 18%,
+                  rgba(212,176,249,.35),
+                  transparent 40%
+                ),
+                radial-gradient(
+                  ellipse at 80% 72%,
+                  rgba(247,142,207,.26),
+                  transparent 42%
+                )
+              `,
+              boxShadow: `
+                0 0 28px rgba(247,142,207,.14),
+                inset 0 0 35px rgba(109,140,255,.20)
+              `,
+            }}
+          />
+
+          {/* DARK GLASS CENTER */}
+
+          <div
+            className="
+              absolute
+              inset-[13%]
+              rounded-full
+              border
+              border-[#D4B0F9]/20
+              bg-[#111631]/80
+              shadow-[inset_0_0_45px_rgba(164,128,242,.15)]
+              backdrop-blur-md
+            "
+          />
+
+          {/* CENTER TEXT */}
+
+          <div
+            key={category.id}
+            className="
+              skills-core-enter
+              absolute
+              inset-0
+              z-10
+              flex
+              flex-col
+              items-center
+              justify-center
+              p-3
+              text-center
+            "
+          >
+            <p className="font-mono text-[9px] tracking-[0.2em] text-[#D4B0F9]">
+              {category.number}
+            </p>
+
+            <h3
+              className="
+                mt-4
+                text-[clamp(1.1rem,2vw,1.9rem)]
+                font-black
+                uppercase
+                leading-[1.07]
+                tracking-[0.04em]
+                text-white
+              "
+            >
+              {category.line1}
+              <br />
+              {category.line2}
+            </h3>
+
+            <p
+              className="
+                mt-4
+                max-w-[205px]
+                font-mono
+                text-[9px]
+                leading-[1.8]
+                text-[#BFC7E0]
+                sm:text-[10px]
+              "
+            >
+              {category.centerDescription}
+            </p>
+
+            <p
+              className="
+                mt-4
+                hidden
+                max-w-[180px]
+                truncate
+                font-mono
+                text-[8px]
+                uppercase
+                tracking-[0.12em]
+                sm:block
+              "
+              style={{ color: category.accent }}
+            >
+              Focus / {currentSkill}
+            </p>
+          </div>
+        </div>
+
+        {/* ==================================
+            TECHNOLOGIES AROUND THE ORBIT
+        ================================== */}
+
+        {category.skills.map((skill, index) => {
+          const position = positions[index];
+
+          const isFocused =
+            currentSkill === skill.name;
+
+          return (
+            <button
+              key={skill.name}
+              type="button"
+              aria-label={`Highlight ${skill.name}`}
+              aria-pressed={isFocused}
+              onMouseEnter={() => onFocusSkill(skill.name)}
+              onFocus={() => onFocusSkill(skill.name)}
+              onClick={() => onFocusSkill(skill.name)}
+              className="
+                group
+                absolute
+                z-20
+                flex
+                h-11
+                w-11
+                items-center
+                justify-center
+                rounded-full
+                border
+                bg-[#111631]/95
+                font-mono
+                text-[10px]
+                font-bold
+                text-white
+                backdrop-blur-xl
+                transition-all
+                duration-300
+                hover:scale-110
+                sm:h-[58px]
+                sm:w-[58px]
+                sm:text-sm
+              "
+              style={{
+                left: position.left,
+                top: position.top,
+                transform: "translate(-50%, -50%)",
+
+                borderColor: isFocused
+                  ? category.accent
+                  : `${category.accent}80`,
+
+                boxShadow: isFocused
+                  ? `0 0 25px ${category.accent}65`
+                  : `0 0 17px ${category.accent}25`,
+              }}
+            >
+              <span
+                className="transition-colors duration-300"
+                style={{
+                  color: isFocused
+                    ? category.accent
+                    : "#F8F7FF",
+                }}
+              >
+                {skill.symbol}
+              </span>
+
+              {/* TECHNOLOGY LABEL */}
+
+              <span
+                className={`
+                  pointer-events-none
+                  absolute
+                  hidden
+                  whitespace-nowrap
+                  text-[11px]
+                  font-normal
+                  normal-case
+                  tracking-normal
+                  text-[#C7CDE2]
+                  sm:block
+                  ${labelPositions[position.side]}
+                `}
+              >
+                {skill.name}
+              </span>
+            </button>
+          );
+        })}
+
+        {/* SMALL ORBIT PARTICLES */}
+
+        <span className="skills-particle-one pointer-events-none absolute left-[4%] top-[28%] h-2 w-2 rounded-full bg-[#6D8CFF] shadow-[0_0_14px_#6D8CFF]" />
+
+        <span className="skills-particle-two pointer-events-none absolute right-[7%] top-[37%] h-2 w-2 rounded-full bg-[#C580ED] shadow-[0_0_14px_#C580ED]" />
+
+        <span className="skills-particle-one pointer-events-none absolute bottom-[7%] left-[52%] h-1.5 w-1.5 rounded-full bg-[#F78ECF] shadow-[0_0_14px_#F78ECF]" />
+      </div>
+    </div>
+  );
+}
+
+
+/* ======================================================
+   MAIN SKILLS SECTION
+====================================================== */
+
+function SkillsSection() {
+  const [activeCategory, setActiveCategory] = useState(0);
+  const [focusedSkill, setFocusedSkill] = useState(null);
+
+  const categories = [
+    {
+      id: "frontend",
+      number: "01",
+      name: "Frontend & UI",
+      subtitle: "Web interfaces, design and interaction",
+      line1: "FRONTEND",
+      line2: "& UI",
+      accent: "#F78ECF",
+
+      description:
+        "Building responsive websites and interfaces, with attention to design, animation and interaction.",
+
+      centerDescription:
+        "Building responsive interfaces with thoughtful details and interaction.",
+
+      skills: [
+        { name: "Next.js", symbol: "N" },
+        { name: "JavaScript", symbol: "JS" },
+        { name: "Tailwind CSS", symbol: "≈" },
+        { name: "AOS Animations", symbol: "◇" },
+        { name: "Responsive Design", symbol: "▣" },
+        { name: "HTML & CSS", symbol: "</>" },
+        { name: "React", symbol: "⚛" },
+      ],
+
+      projects: [
+        {
+          name: "Nishaan",
+          href: "/projects/nishaan",
+          image: "/projects/nishaan/screenshot-1.png",
+        },
+        {
+          name: "COTSLE",
+          href: "/projects/cotsle",
+          image: "/projects/cotsle/homepage.png",
+        },
+      ],
+
+      otherSkills: [
+        "UI/UX",
+        "Animations",
+        "Responsive Layouts",
+      ],
+    },
+
+    {
+      id: "backend",
+      number: "02",
+      name: "Backend & Data",
+      subtitle: "APIs, databases and data handling",
+      line1: "BACKEND",
+      line2: "& DATA",
+      accent: "#A480F2",
+
+      description:
+        "Connecting interfaces with APIs, working with databases and developing backend functionality.",
+
+      centerDescription:
+        "Connecting the interface to the data and logic behind it.",
+
+      skills: [
+        { name: "Python", symbol: "Py" },
+        { name: "FastAPI", symbol: "FA" },
+        { name: "Flask", symbol: "Fl" },
+        { name: "PostgreSQL", symbol: "PG" },
+        { name: "SQLite", symbol: "SQL" },
+        { name: "REST APIs", symbol: "{}" },
+        { name: "PostGIS", symbol: "GIS" },
+      ],
+
+      projects: [
+        {
+          name: "Nishaan",
+          href: "/projects/nishaan",
+          image: "/projects/nishaan/screenshot-1.png",
+        },
+        {
+          name: "Donation Tracker",
+          href: "/projects/donation-tracker",
+          image:
+            "/projects/donation-tracker/screenshot-1.png",
+        },
+      ],
+
+      otherSkills: [
+        "Database Design",
+        "API Integration",
+        "Data Handling",
+      ],
+    },
+
+    {
+      id: "ai",
+      number: "03",
+      name: "AI & Geospatial",
+      subtitle: "Intelligent systems and location data",
+      line1: "AI &",
+      line2: "GEOSPATIAL",
+      accent: "#D4B0F9",
+
+      description:
+        "Exploring how AI and geospatial technologies can turn incomplete information into useful results.",
+
+      centerDescription:
+        "Finding connections between intelligent systems and real-world locations.",
+
+      skills: [
+        { name: "Groq API", symbol: "AI" },
+        { name: "NLP", symbol: "NLP" },
+        { name: "Computer Vision", symbol: "CV" },
+        { name: "Leaflet", symbol: "◈" },
+        { name: "OpenStreetMap", symbol: "◎" },
+        { name: "Geospatial Search", symbol: "⌖" },
+        { name: "AI Integration", symbol: "✦" },
+      ],
+
+      projects: [
+        {
+          name: "Nishaan",
+          href: "/projects/nishaan",
+          image: "/projects/nishaan/screenshot-1.png",
+        },
+      ],
+
+      otherSkills: [
+        "Machine Learning",
+        "AI Coursework",
+        "PostGIS",
+      ],
+    },
+
+    {
+      id: "tools",
+      number: "04",
+      name: "Tools & Workflow",
+      subtitle: "Development tools and everyday practice",
+      line1: "TOOLS &",
+      line2: "WORKFLOW",
+      accent: "#F992AD",
+
+      description:
+        "The languages, tools and development practices I use to build, test, debug and improve projects.",
+
+      centerDescription:
+        "The everyday tools and habits behind turning ideas into working applications.",
+
+      skills: [
+        { name: "Git", symbol: "Git" },
+        { name: "GitHub", symbol: "GH" },
+        { name: "VS Code", symbol: "</>" },
+        { name: "Java", symbol: "J" },
+        { name: "MySQL", symbol: "DB" },
+        { name: "Debugging", symbol: "⌘" },
+        { name: "Mobile Testing", symbol: "▣" },
+      ],
+
+      projects: [
+        {
+          name: "COTSLE",
+          href: "/projects/cotsle",
+          image: "/projects/cotsle/homepage.png",
+        },
+        {
+          name: "Lost & Found",
+          href: "/projects/lost-found",
+          image: "",
+        },
+      ],
+
+      otherSkills: [
+        "Problem Solving",
+        "Collaboration",
+        "Testing",
+      ],
+    },
+  ];
+
+  const active = categories[activeCategory];
+
+  function selectCategory(index) {
+    setActiveCategory(index);
+    setFocusedSkill(null);
+  }
+
+  return (
+    <section
+      id="skills"
+      className="
+        relative
+        z-10
+        mx-auto
+        max-w-[1600px]
+        scroll-mt-20
+        overflow-hidden
+        border-t
+        border-[#D4B0F9]/10
+        px-6
+        py-24
+        lg:px-10
+        xl:px-12
+      "
+    >
+      {/* BACKGROUND DETAILS */}
+
+      <div className="pointer-events-none absolute left-[43%] top-[12%] h-[520px] w-[520px] rounded-full bg-[#A480F2]/[0.045] blur-[150px]" />
+
+      <div
+        className="
+          relative
+          grid
+          gap-8
+          lg:grid-cols-[0.85fr_1.15fr]
+          xl:grid-cols-[0.93fr_1.38fr_0.72fr]
+          xl:gap-8
+        "
+      >
+        {/* ==================================
+            LEFT — TITLE AND CATEGORY MENU
+        ================================== */}
+
+        <div className="relative flex flex-col xl:pt-1">
+          <SectionLabel number="06">
+            Skills
+          </SectionLabel>
+
+          <div className="mt-16">
+            <p className="font-mono text-sm uppercase tracking-[0.48em] text-[#D4B0F9]">
+              SKILLS IN
+            </p>
+
+            <h2
+              className="
+                mt-3
+                whitespace-nowrap
+                text-[clamp(2.8rem,4.3vw,5.6rem)]
+                font-black
+                uppercase
+                leading-none
+                tracking-[-0.065em]
+              "
+            >
+              <AnimatedLetters
+                text="PRACTICE."
+                gradientColors={[
+                  "#FFFFFF",
+                  "#D4B0F9",
+                  "#A480F2",
+                  "#F78ECF",
+                ]}
+                startDelay={250}
+              />
+            </h2>
+
+            <p className="mt-8 max-w-[360px] font-mono text-[11px] leading-7 text-[#AEB7D5]">
+              Technologies I work with across my
+              projects, from building interfaces
+              to connecting data, exploring AI
+              and bringing ideas to life.
+            </p>
+          </div>
+
+          {/* CATEGORY MENU */}
+
+          <div className="mt-14 border-t border-[#D4B0F9]/20 xl:mt-20">
+            {categories.map((category, index) => {
+              const selected =
+                activeCategory === index;
+
+              return (
+                <button
+                  key={category.id}
+                  type="button"
+                  aria-pressed={selected}
+                  onMouseEnter={() =>
+                    selectCategory(index)
+                  }
+                  onFocus={() =>
+                    selectCategory(index)
+                  }
+                  onClick={() =>
+                    selectCategory(index)
+                  }
+                  className="
+                    group
+                    relative
+                    block
+                    w-full
+                    border-b
+                    border-[#D4B0F9]/20
+                    py-7
+                    pl-5
+                    pr-2
+                    text-left
+                    transition-all
+                    duration-300
+                  "
+                >
+                  {/* ACTIVE LEFT LINE */}
+
+                  <span
+                    className="
+                      absolute
+                      bottom-0
+                      left-0
+                      top-0
+                      w-[2px]
+                      transition-all
+                      duration-300
+                    "
+                    style={{
+                      background: selected
+                        ? category.accent
+                        : "transparent",
+
+                      boxShadow: selected
+                        ? `0 0 15px ${category.accent}`
+                        : "none",
+                    }}
+                  />
+
+                  {/* SUBTLE SELECTED GLOW */}
+
+                  <span
+                    className="
+                      pointer-events-none
+                      absolute
+                      inset-0
+                      bg-gradient-to-r
+                      from-[#F78ECF]/[0.07]
+                      to-transparent
+                      transition-opacity
+                      duration-300
+                    "
+                    style={{
+                      opacity: selected ? 1 : 0,
+                    }}
+                  />
+
+                  <div className="relative flex items-start gap-5">
+                    <span
+                      className="pt-1 font-mono text-xs"
+                      style={{
+                        color: selected
+                          ? category.accent
+                          : "#8F88CA",
+                      }}
+                    >
+                      {category.number}
+                    </span>
+
+                    <div className="min-w-0 flex-1">
+                      <h3
+                        className={`
+                          text-xl
+                          font-semibold
+                          tracking-[-0.025em]
+                          transition-colors
+                          duration-300
+                          sm:text-2xl
+
+                          ${
+                            selected
+                              ? "text-white"
+                              : "text-[#B2BAD2] group-hover:text-white"
+                          }
+                        `}
+                      >
+                        {category.name}
+                      </h3>
+
+                      <p className="mt-2 font-mono text-[10px] leading-5 text-[#8791B1]">
+                        {category.subtitle}
+                      </p>
+                    </div>
+
+                    <span
+                      className="
+                        text-xl
+                        transition-all
+                        duration-300
+                        group-hover:-translate-y-1
+                        group-hover:translate-x-1
+                      "
+                      style={{
+                        color: selected
+                          ? category.accent
+                          : "#AEB7D5",
+                      }}
+                    >
+                      →
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ==================================
+            CENTER — INTERACTIVE ORB
+        ================================== */}
+
+        <div className="relative flex min-w-0 items-center justify-center">
+          <SkillOrbit
+            category={active}
+            focusedSkill={focusedSkill}
+            onFocusSkill={setFocusedSkill}
+          />
+        </div>
+
+        {/* ==================================
+            RIGHT — RELATED PROJECTS
+        ================================== */}
+
+        <aside
+          className="
+            relative
+            flex
+            flex-col
+            gap-8
+            lg:col-span-2
+            lg:grid
+            lg:grid-cols-2
+            xl:col-span-1
+            xl:flex
+            xl:justify-center
+            xl:gap-10
+          "
+        >
+          {/* PROJECTS */}
+
+          <div>
+            <div className="mb-5 flex items-center gap-4">
+              <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#D4B0F9]">
+                USED IN
+              </span>
+
+              <span className="h-px flex-1 bg-[#D4B0F9]/30" />
+            </div>
+
+            <div
+              key={active.id}
+              className="
+                skills-preview-enter
+                space-y-4
+              "
+            >
+              {active.projects.map((project) => (
+                <SkillProjectPreview
+                  key={project.name}
+                  project={project}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* RELATED SKILLS */}
+
+          <div>
+            <div className="mb-5 flex items-center gap-4">
+              <span className="whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.18em] text-[#D4B0F9]">
+                ALSO EXPLORING
+              </span>
+
+              <span className="h-px flex-1 bg-[#D4B0F9]/30" />
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {active.otherSkills.map((skill) => (
+                <span
+                  key={skill}
+                  className="
+                    rounded-full
+                    border
+                    border-[#D4B0F9]/25
+                    bg-[#111A36]/30
+                    px-3.5
+                    py-2
+                    font-mono
+                    text-[9px]
+                    text-[#C7CDE2]
+                  "
+                >
+                  {skill}
+                </span>
+              ))}
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      {/* ======================================
+          BOTTOM CATEGORY NAVIGATION
+      ====================================== */}
+
+      <div
+        className="
+          relative
+          mt-16
+          flex
+          flex-col
+          items-center
+          justify-between
+          gap-7
+          border-t
+          border-[#D4B0F9]/10
+          pt-8
+          lg:flex-row
+        "
+      >
+        <div className="flex items-center gap-4">
+          <span className="h-px w-8 bg-[#A480F2]/55" />
+
+          <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#9D9BC9]">
+            EXPLORING.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-center gap-5 sm:gap-7">
+          {categories.map((category, index) => {
+            const selected =
+              activeCategory === index;
+
+            return (
+              <button
+                key={category.id}
+                type="button"
+                onClick={() =>
+                  selectCategory(index)
+                }
+                aria-pressed={selected}
+                className="
+                  flex
+                  items-center
+                  gap-3
+                  font-mono
+                  text-[9px]
+                  uppercase
+                  tracking-[0.14em]
+                  transition-colors
+                "
+                style={{
+                  color: selected
+                    ? "#F8F7FF"
+                    : "#838DAF",
+                }}
+              >
+                <span
+                  className="h-2 w-2 rounded-full transition-all duration-300"
+                  style={{
+                    background: selected
+                      ? category.accent
+                      : "#7770B4",
+
+                    boxShadow: selected
+                      ? `0 0 14px ${category.accent}`
+                      : "none",
+                  }}
+                />
+
+                {category.id === "frontend"
+                  ? "FRONTEND"
+                  : category.id === "backend"
+                    ? "BACKEND"
+                    : category.id === "ai"
+                      ? "AI + GEO"
+                      : "TOOLS"}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="flex items-center gap-4">
+          <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#9D9BC9]">
+            CONTINUOUSLY LEARNING
+          </p>
+
+          <span className="h-px w-8 bg-[#A480F2]/55" />
+        </div>
+      </div>
+
+      {/* ======================================
+          ANIMATIONS
+      ====================================== */}
+
+      <style>{`
+        @keyframes skillsLiquidOne {
+          0% {
+            transform: rotate(0deg) scale(1);
+            border-radius: 54% 46% 62% 38% /
+              42% 59% 41% 58%;
+          }
+
+          50% {
+            transform: rotate(180deg) scale(1.09);
+            border-radius: 42% 58% 38% 62% /
+              56% 42% 58% 44%;
+          }
+
+          100% {
+            transform: rotate(360deg) scale(1);
+            border-radius: 54% 46% 62% 38% /
+              42% 59% 41% 58%;
+          }
+        }
+
+        @keyframes skillsLiquidTwo {
+          0% {
+            transform: rotate(0deg) scale(1.04);
+          }
+
+          50% {
+            transform: rotate(-180deg) scale(.94);
+          }
+
+          100% {
+            transform: rotate(-360deg) scale(1.04);
+          }
+        }
+
+        @keyframes skillsLiquidThree {
+          0%, 100% {
+            transform: rotate(-12deg)
+              scale(1.02, .96);
+          }
+
+          50% {
+            transform: rotate(22deg)
+              scale(.96, 1.06);
+          }
+        }
+
+        @keyframes skillsParticleFloat {
+          0%, 100% {
+            transform: translateY(0);
+            opacity: .55;
+          }
+
+          50% {
+            transform: translateY(-13px);
+            opacity: 1;
+          }
+        }
+
+        @keyframes skillsCoreEnter {
+          from {
+            opacity: 0;
+            transform: translateY(12px);
+            filter: blur(4px);
+          }
+
+          to {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+          }
+        }
+
+        .skills-liquid-one {
+          animation: skillsLiquidOne
+            19s linear infinite;
+        }
+
+        .skills-liquid-two {
+          animation: skillsLiquidTwo
+            25s linear infinite;
+        }
+
+        .skills-liquid-three {
+          animation: skillsLiquidThree
+            12s ease-in-out infinite;
+        }
+
+        .skills-particle-one {
+          animation: skillsParticleFloat
+            4s ease-in-out infinite;
+        }
+
+        .skills-particle-two {
+          animation: skillsParticleFloat
+            5.5s ease-in-out infinite reverse;
+        }
+
+        .skills-core-enter,
+        .skills-preview-enter {
+          animation: skillsCoreEnter
+            550ms cubic-bezier(.22, 1, .36, 1)
+            both;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .skills-liquid-one,
+          .skills-liquid-two,
+          .skills-liquid-three,
+          .skills-particle-one,
+          .skills-particle-two,
+          .skills-core-enter,
+          .skills-preview-enter {
+            animation: none;
+          }
+        }
+      `}</style>
+    </section>
+  );
+}
+
+{/* ======================================
+          Contact Section
+      ====================================== */}
+    function ContactSection() {
+  return (
+    <section
+      id="contact"
+      className="
+        relative overflow-hidden
+        min-h-screen
+        bg-[#050816]
+        text-white
+        px-6 md:px-10 lg:px-16
+        py-24
+      "
+    >
+      {/* ================= BACKGROUND LAYERS ================= */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(247,140,207,0.16),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(168,128,242,0.18),transparent_30%),linear-gradient(135deg,#070b1f_0%,#09153a_45%,#050816_100%)]" />
+
+      <div className="absolute inset-0 opacity-[0.08] [background-image:linear-gradient(rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:42px_42px]" />
+
+      <div className="absolute -top-20 left-[-80px] h-[260px] w-[260px] rounded-full bg-[#f992ad]/20 blur-[80px]" />
+      <div className="absolute bottom-[-60px] right-[-80px] h-[280px] w-[280px] rounded-full bg-[#a480f2]/20 blur-[90px]" />
+
+      {/* floating stars */}
+      <div className="absolute left-[10%] top-[18%] h-2 w-2 rounded-full bg-[#fbbcee] opacity-70" />
+      <div className="absolute left-[20%] top-[65%] h-1.5 w-1.5 rounded-full bg-[#cfb9f7] opacity-60" />
+      <div className="absolute right-[16%] top-[22%] h-2 w-2 rounded-full bg-[#f78ecf] opacity-70" />
+      <div className="absolute right-[30%] bottom-[18%] h-1.5 w-1.5 rounded-full bg-[#d4b0f9] opacity-70" />
+
+      <div className="relative z-10 mx-auto max-w-7xl">
+        {/* top label */}
+        <div className="mb-8 flex items-center gap-4 text-[12px] uppercase tracking-[0.45em] text-[#cfb9f7]">
+          <span>06</span>
+          <div className="h-px w-14 bg-[#cfb9f7]/40" />
+          <span>Contact</span>
+        </div>
+
+        <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+          {/* ================= LEFT ================= */}
+          <div className="relative">
+            <p className="mb-4 font-mono text-[18px] text-[#b993ff]">
+              {`> open_connection()`}
+            </p>
+
+            <h2 className="max-w-[11ch] text-5xl font-black uppercase leading-[0.95] text-white sm:text-6xl lg:text-7xl">
+              LET&apos;S BUILD
+              <span className="block bg-gradient-to-r from-[#f992ad] via-[#f78ecf] to-[#a480f2] bg-clip-text text-transparent">
+                SOMETHING
+              </span>
+              TOGETHER.
+            </h2>
+
+            <p className="mt-8 max-w-xl text-[17px] leading-8 text-white/72">
+              I love building clean, meaningful and interactive digital
+              experiences. If you have a project, collaboration idea or just
+              want to connect, my inbox is always open.
+            </p>
+
+            {/* mini badges */}
+            <div className="mt-8 flex flex-wrap gap-3">
+              {[
+                "Software Engineering",
+                "Web Development",
+                "AI + Learning",
+                "Interactive Design",
+              ].map((item) => (
+                <span
+                  key={item}
+                  className="
+                    rounded-full border border-white/12
+                    bg-white/5 px-4 py-2 text-sm
+                    text-[#fbbcee] backdrop-blur-md
+                  "
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
+
+            {/* quote / mini panel */}
+            <div className="mt-10 max-w-md rounded-[26px] border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
+              <p className="text-sm uppercase tracking-[0.28em] text-[#cfb9f7]/80">
+                current status
+              </p>
+              <p className="mt-3 text-lg font-semibold text-white">
+                Open to learning, collaborations and meaningful projects.
+              </p>
+            </div>
+          </div>
+
+          {/* ================= RIGHT ================= */}
+          <div className="relative">
+            {/* orbit ring decoration */}
+            <div className="pointer-events-none absolute -left-10 top-10 h-40 w-40 rounded-full border border-[#f78ecf]/25" />
+            <div className="pointer-events-none absolute right-10 top-[-20px] h-24 w-24 rounded-full border border-[#a480f2]/20" />
+
+            <div className="rounded-[34px] border border-white/10 bg-white/6 p-6 shadow-[0_0_60px_rgba(164,128,242,0.12)] backdrop-blur-2xl md:p-8">
+              {/* top bar */}
+              <div className="mb-6 flex items-center gap-3">
+                <span className="h-3 w-3 rounded-full bg-[#f992ad]" />
+                <span className="h-3 w-3 rounded-full bg-[#f78ecf]" />
+                <span className="h-3 w-3 rounded-full bg-[#a480f2]" />
+                <span className="ml-auto text-[11px] uppercase tracking-[0.3em] text-white/40">
+                  connect.panel
+                </span>
+              </div>
+
+              {/* card header */}
+              <div className="rounded-[24px] border border-white/10 bg-[#0b1334]/70 p-5">
+                <p className="text-sm uppercase tracking-[0.28em] text-[#cfb9f7]">
+                  contact info
+                </p>
+
+                <div className="mt-5 space-y-4">
+                  <div className="rounded-2xl border border-white/8 bg-white/5 px-4 py-4">
+                    <p className="text-xs uppercase tracking-[0.25em] text-white/45">
+                      Email
+                    </p>
+                    <p className="mt-2 text-base font-medium text-white">
+                      emaanfatima312005@gmail.com
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border border-white/8 bg-white/5 px-4 py-4">
+                    <p className="text-xs uppercase tracking-[0.25em] text-white/45">
+                      Location
+                    </p>
+                    <p className="mt-2 text-base font-medium text-white">
+                      Islamabad / Rawalpindi, Pakistan
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* buttons */}
+              <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                <a
+                  href="mailto:emaanfatima312005@gmail.com"
+                  className="
+                    rounded-2xl bg-gradient-to-r from-[#f992ad] via-[#f78ecf] to-[#a480f2]
+                    px-5 py-4 text-center text-sm font-semibold uppercase tracking-[0.18em]
+                    text-white transition duration-300 hover:scale-[1.02]
+                  "
+                >
+                  Send Email
+                </a>
+
+                <a
+                  href="/resume.pdf"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="
+                    rounded-2xl border border-white/12 bg-white/6
+                    px-5 py-4 text-center text-sm font-semibold uppercase tracking-[0.18em]
+                    text-white transition duration-300 hover:bg-white/10
+                  "
+                >
+                  View Resume
+                </a>
+              </div>
+
+              {/* social row */}
+              <div className="mt-6 grid gap-4 sm:grid-cols-3">
+                <a
+                  href="https://linkedin.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-center text-sm font-medium text-white/85 transition hover:bg-white/10"
+                >
+                  LinkedIn
+                </a>
+
+                <a
+                  href="https://github.com/emaanfatima312005-wq"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-center text-sm font-medium text-white/85 transition hover:bg-white/10"
+                >
+                  GitHub
+                </a>
+
+                <a
+                  href="#projects"
+                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-center text-sm font-medium text-white/85 transition hover:bg-white/10"
+                >
+                  Projects
+                </a>
+              </div>
+
+              {/* bottom note */}
+              <div className="mt-6 rounded-2xl border border-dashed border-[#cfb9f7]/30 bg-[#0d1438]/50 px-4 py-4">
+                <p className="text-sm leading-7 text-white/65">
+                  Whether it’s a web project, creative idea, portfolio build or
+                  collaboration — I’d love to hear from you.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}  
+
 export function ComputerPortfolio() {
   const goTo = (id) => {
     document
@@ -7487,26 +8937,15 @@ export function ComputerPortfolio() {
 <JourneySection />
 <ExperienceSection />
 <ProjectsSection />
+<SkillsSection />
+<ContactSection />
 
 {/* =================================================
     TEMPORARY MARKERS FOR THE REST
 ================================================= */}
 
 {[
-   
-   [
-    "skills",
-    "06",
-    "SKILLS",
-    "A growing toolbox.",
-  ],
-
-  [
-    "contact",
-    "07",
-    "CONTACT",
-    "Let's build something meaningful.",
-  ],
+    
 ].map(
   ([
     id,
