@@ -8314,7 +8314,7 @@ function SkillsSection() {
               {/* buttons */}
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
                 <a
-                  href="mailto:emaanfatima312005@gmail.com"
+                  href="https://mail.google.com/mail/?view=cm&fs=1&to=emaan.fatima.312005@gmail.com"
                   className="
                     rounded-2xl bg-gradient-to-r from-[#f992ad] via-[#f78ecf] to-[#a480f2]
                     px-5 py-4 text-center text-sm font-semibold uppercase tracking-[0.18em]
@@ -8341,7 +8341,7 @@ function SkillsSection() {
               {/* social row */}
               <div className="mt-6 grid gap-4 sm:grid-cols-3">
                 <a
-                  href="https://linkedin.com"
+                  href="https://www.linkedin.com/in/emaan-fatima-919269343/"
                   target="_blank"
                   rel="noreferrer"
                   className="rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-center text-sm font-medium text-white/85 transition hover:bg-white/10"
