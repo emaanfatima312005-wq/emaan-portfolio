@@ -8381,6 +8381,342 @@ function SkillsSection() {
   );
 }  
 
+/* ======================================================
+   CUSTOM PORTFOLIO CURSOR
+   Keeps the existing sparkle trail,
+   but adds a clear visible pointer.
+====================================================== */
+
+function PortfolioCursor() {
+  const dotRef = useRef(null);
+  const ringRef = useRef(null);
+
+  useEffect(() => {
+    const dot = dotRef.current;
+    const ring = ringRef.current;
+
+    if (!dot || !ring) return;
+
+    // Don't use the custom cursor on touch devices.
+    const finePointer = window.matchMedia(
+      "(pointer: fine)"
+    );
+
+    if (!finePointer.matches) {
+      return;
+    }
+
+    let mouseX = -100;
+    let mouseY = -100;
+
+    let ringX = -100;
+    let ringY = -100;
+
+    let frameId;
+
+    const moveCursor = (event) => {
+      mouseX = event.clientX;
+      mouseY = event.clientY;
+
+      // Main dot follows instantly
+      dot.style.transform = `
+        translate3d(
+          ${mouseX}px,
+          ${mouseY}px,
+          0
+        )
+        translate(-50%, -50%)
+      `;
+
+      dot.style.opacity = "1";
+      ring.style.opacity = "1";
+    };
+
+    const animateRing = () => {
+      // Small delay gives the outer ring
+      // a smooth floating feel.
+      ringX +=
+        (mouseX - ringX) * 0.18;
+
+      ringY +=
+        (mouseY - ringY) * 0.18;
+
+      ring.style.transform = `
+        translate3d(
+          ${ringX}px,
+          ${ringY}px,
+          0
+        )
+        translate(-50%, -50%)
+      `;
+
+      frameId =
+        requestAnimationFrame(
+          animateRing
+        );
+    };
+
+    const handleMouseOver = (event) => {
+      const interactive =
+        event.target.closest(
+          `
+            a,
+            button,
+            [role="button"],
+            input,
+            textarea,
+            select
+          `
+        );
+
+      if (interactive) {
+        ring.classList.add(
+          "portfolio-cursor-hover"
+        );
+
+        dot.classList.add(
+          "portfolio-cursor-dot-hover"
+        );
+      }
+    };
+
+    const handleMouseOut = (event) => {
+      const interactive =
+        event.target.closest(
+          `
+            a,
+            button,
+            [role="button"],
+            input,
+            textarea,
+            select
+          `
+        );
+
+      if (interactive) {
+        ring.classList.remove(
+          "portfolio-cursor-hover"
+        );
+
+        dot.classList.remove(
+          "portfolio-cursor-dot-hover"
+        );
+      }
+    };
+
+    const hideCursor = () => {
+      dot.style.opacity = "0";
+      ring.style.opacity = "0";
+    };
+
+    const showCursor = () => {
+      dot.style.opacity = "1";
+      ring.style.opacity = "1";
+    };
+
+    window.addEventListener(
+      "mousemove",
+      moveCursor
+    );
+
+    document.addEventListener(
+      "mouseover",
+      handleMouseOver
+    );
+
+    document.addEventListener(
+      "mouseout",
+      handleMouseOut
+    );
+
+    document.documentElement.addEventListener(
+      "mouseleave",
+      hideCursor
+    );
+
+    document.documentElement.addEventListener(
+      "mouseenter",
+      showCursor
+    );
+
+    frameId =
+      requestAnimationFrame(
+        animateRing
+      );
+
+    return () => {
+      window.removeEventListener(
+        "mousemove",
+        moveCursor
+      );
+
+      document.removeEventListener(
+        "mouseover",
+        handleMouseOver
+      );
+
+      document.removeEventListener(
+        "mouseout",
+        handleMouseOut
+      );
+
+      document.documentElement.removeEventListener(
+        "mouseleave",
+        hideCursor
+      );
+
+      document.documentElement.removeEventListener(
+        "mouseenter",
+        showCursor
+      );
+
+      cancelAnimationFrame(frameId);
+    };
+  }, []);
+
+  return (
+    <>
+      {/* ==================================
+          OUTER RING
+      ================================== */}
+
+      <div
+        ref={ringRef}
+        aria-hidden="true"
+        className="
+          portfolio-cursor-ring
+
+          pointer-events-none
+          fixed
+          left-0
+          top-0
+          z-[9999]
+
+          h-7
+          w-7
+
+          rounded-full
+
+          border
+          border-[#F78ECF]/80
+
+          opacity-0
+
+          shadow-[
+            0_0_12px_rgba(247,142,207,.35),
+            inset_0_0_10px_rgba(164,128,242,.12)
+          ]
+
+          transition-[
+            width,
+            height,
+            border-color,
+            background-color,
+            opacity
+          ]
+
+          duration-300
+        "
+      />
+
+      {/* ==================================
+          CENTER DOT
+      ================================== */}
+
+      <div
+        ref={dotRef}
+        aria-hidden="true"
+        className="
+          portfolio-cursor-dot
+
+          pointer-events-none
+          fixed
+          left-0
+          top-0
+          z-[10000]
+
+          h-[7px]
+          w-[7px]
+
+          rounded-full
+
+          bg-[#F8F7FF]
+
+          opacity-0
+
+          shadow-[
+            0_0_5px_#FFFFFF,
+            0_0_12px_#F78ECF,
+            0_0_22px_rgba(164,128,242,.85)
+          ]
+
+          transition-[
+            width,
+            height,
+            background-color,
+            box-shadow,
+            opacity
+          ]
+
+          duration-200
+        "
+      />
+
+      <style>{`
+        /*
+          Interactive elements:
+          ring opens up instead of turning
+          into another distracting cursor.
+        */
+
+        .portfolio-cursor-ring.portfolio-cursor-hover {
+          width: 46px;
+          height: 46px;
+
+          border-color:
+            rgba(212, 176, 249, .95);
+
+          background:
+            rgba(164, 128, 242, .08);
+
+          box-shadow:
+            0 0 22px rgba(247,142,207,.28),
+            inset 0 0 18px rgba(164,128,242,.12);
+        }
+
+        .portfolio-cursor-dot.portfolio-cursor-dot-hover {
+          width: 5px;
+          height: 5px;
+
+          background: #F78ECF;
+
+          box-shadow:
+            0 0 6px #F78ECF,
+            0 0 15px rgba(247,142,207,.9);
+        }
+
+        /*
+          Don't display custom cursor
+          on touch/mobile devices.
+        */
+
+        @media (pointer: coarse) {
+          .portfolio-cursor-ring,
+          .portfolio-cursor-dot {
+            display: none;
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .portfolio-cursor-ring {
+            transition: none;
+          }
+        }
+      `}</style>
+    </>
+  );
+}
+
 export function ComputerPortfolio() {
   const goTo = (id) => {
     document
@@ -8394,6 +8730,7 @@ export function ComputerPortfolio() {
   return (
     <main className="relative min-h-screen overflow-x-hidden bg-[#0E1630] text-[#F8F7FF]">
       <PortfolioBackground />
+      <PortfolioCursor />
 
       {/* =================================================
           TOP TECH NAV
