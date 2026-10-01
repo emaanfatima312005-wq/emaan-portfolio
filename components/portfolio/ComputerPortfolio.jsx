@@ -16,7 +16,7 @@ import {
   Stars,
 } from "@react-three/drei";
 
-
+import PortfolioChatbot from "./PortfolioChatbot";
 
 /* ======================================================
    NAVIGATION
@@ -8726,9 +8726,28 @@ export function ComputerPortfolio() {
         block: "start",
       });
   };
+useEffect(() => {
+  if ("scrollRestoration" in window.history) {
+    window.history.scrollRestoration = "manual";
+  }
 
+  window.scrollTo({
+    top: 0,
+    left: 0,
+    behavior: "instant",
+  });
+
+  const frame = requestAnimationFrame(() => {
+    window.scrollTo(0, 0);
+  });
+
+  return () => {
+    cancelAnimationFrame(frame);
+  };
+}, []);
   return (
     <main className="relative min-h-screen overflow-x-hidden bg-[#0E1630] text-[#F8F7FF]">
+      <PortfolioChatbot />
       <PortfolioBackground />
       <PortfolioCursor />
 

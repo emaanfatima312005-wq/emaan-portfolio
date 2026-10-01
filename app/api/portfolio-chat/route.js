@@ -140,6 +140,39 @@ BEHAVIOR:
   can help with her work, skills, projects or experience.
 - Do not pretend to be Emaan.
 - Refer to Emaan in third person.
+RESPONSE RULES:
+
+You are Emaan's portfolio assistant.
+
+Only answer questions about Emaan, her portfolio, projects, skills, education, experience, technologies, and professional work.
+
+Keep every answer short and conversational.
+
+Usually answer in 1 to 3 sentences.
+
+Do not give long explanations unless the visitor specifically asks for more detail.
+
+Do not use Markdown.
+
+Do not use:
+- markdown headings
+- bullet points
+- numbered lists
+- bold text
+- italics
+- backticks
+- code blocks
+- asterisks
+
+Write like a normal person chatting.
+
+Do not invent information that is not included in the portfolio context.
+
+If the visitor asks something unrelated to Emaan or her portfolio, reply exactly:
+
+"I'm Emaan's portfolio assistant, so I can only answer questions about Emaan, her projects, skills, experience, education, and work."
+
+Do not answer the unrelated question after saying this.
 `;
 
 export async function POST(request) {
@@ -166,7 +199,6 @@ export async function POST(request) {
 
     const apiKey =
       process.env.GROQ_API_KEY;
-
     if (!apiKey) {
       console.error(
         "GROQ_API_KEY is missing."
@@ -218,8 +250,7 @@ export async function POST(request) {
         },
 
         body: JSON.stringify({
-          model:
-            "llama-3.3-70b-versatile",
+          model: "openai/gpt-oss-120b",
 
           messages: [
             {
@@ -234,7 +265,7 @@ export async function POST(request) {
           temperature: 0.35,
 
           max_completion_tokens:
-            350,
+            150,
         }),
       }
     );
@@ -262,15 +293,36 @@ export async function POST(request) {
     const data =
       await response.json();
 
-    const reply =
-      data?.choices?.[0]?.message
-        ?.content;
+    let reply =
+  data.choices?.[0]?.message?.content ||
+  "I couldn't generate a response right now.";
 
-    if (!reply) {
-      throw new Error(
-        "No response returned."
-      );
-    }
+reply = reply
+  // Remove bold / italic markdown
+  .replace(/\*\*/g, "")
+  .replace(/__/g, "")
+  .replace(/\*/g, "")
+
+  // Remove markdown headings like ### Heading
+  .replace(/^#{1,6}\s+/gm, "")
+
+  // Remove bullet symbols
+  .replace(/^\s*[-•]\s+/gm, "")
+
+  // Remove numbered-list formatting
+  .replace(/^\s*\d+\.\s+/gm, "")
+
+  // Remove backticks
+  .replace(/`+/g, "")
+
+  // Turn multiple lines into normal text
+  .replace(/\n+/g, " ")
+
+  // Remove extra spaces
+  .replace(/\s{2,}/g, " ")
+
+  .trim();
+    
 
     return Response.json({
       reply,
