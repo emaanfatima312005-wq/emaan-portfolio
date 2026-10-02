@@ -1,7 +1,16 @@
 "use client";
 
-import { useRef } from "react";
-import { useFrame } from "@react-three/fiber";
+import {
+  useRef,
+} from "react";
+
+import {
+  useFrame,
+} from "@react-three/fiber";
+
+import {
+  useTexture,
+} from "@react-three/drei";
 
 function Box({ args, position, rotation, color, castShadow = true, receiveShadow = true }) {
   return (
@@ -13,80 +22,139 @@ function Box({ args, position, rotation, color, castShadow = true, receiveShadow
 }
 
 function Monitor() {
-  const cursorRef = useRef();
-
-  useFrame((state) => {
-    if (cursorRef.current) {
-      cursorRef.current.material.opacity = Math.sin(state.clock.elapsedTime * 6) > 0 ? 1 : 0.2;
-    }
-  });
+  const portfolioTexture =
+    useTexture(
+      "/portfolio-preview.png"
+    );
 
   return (
-    <group position={[0, 1.35, 0]}>
-      {/* Outer Bezel */}
-      <Box args={[1.86, 1.18, 0.16]} position={[0, 0, 0]} color="#1e1f2b" />
+    <group
+      position={[
+        0,
+        1.35,
+        0,
+      ]}
+    >
+      {/* =========================================
+          OUTER MONITOR
+      ========================================= */}
 
-      {/* Screen Display Area - Dark IDE Theme */}
-      <mesh position={[0, 0, 0.088]}>
-        <boxGeometry args={[1.68, 1.0, 0.02]} />
-        <meshStandardMaterial color="#161722" />
+      <Box
+        args={[
+          1.86,
+          1.18,
+          0.16,
+        ]}
+        position={[
+          0,
+          0,
+          0,
+        ]}
+        color="#171B30"
+      />
+
+      {/* =========================================
+          INNER DARK SCREEN BACKGROUND
+      ========================================= */}
+
+      <mesh
+        position={[
+          0,
+          0,
+          0.088,
+        ]}
+      >
+        <boxGeometry
+          args={[
+            1.7,
+            1.02,
+            0.02,
+          ]}
+        />
+
+        <meshStandardMaterial
+          color="#070B19"
+        />
       </mesh>
 
-      {/* IDE Window Header Bar */}
-      <Box args={[1.68, 0.08, 0.022]} position={[0, 0.46, 0.09]} color="#242638" />
-      {/* Window Controls (Red, Yellow, Green dots) */}
-      <Box args={[0.03, 0.03, 0.01]} position={[-0.78, 0.46, 0.102]} color="#ff5f56" />
-      <Box args={[0.03, 0.03, 0.01]} position={[-0.73, 0.46, 0.102]} color="#ffbd2e" />
-      <Box args={[0.03, 0.03, 0.01]} position={[-0.68, 0.46, 0.102]} color="#27c93f" />
+      {/* =========================================
+          ACTUAL PORTFOLIO SCREENSHOT
 
-      {/* Code Lines on Screen (Syntax Highlighted) */}
-      {/* Line 1: import { whimsy } from "tech" */}
-      <Box args={[0.16, 0.03, 0.01]} position={[-0.66, 0.36, 0.1]} color="#ff70a6" />
-      <Box args={[0.26, 0.03, 0.01]} position={[-0.42, 0.36, 0.1]} color="#4cc9f0" />
-      <Box args={[0.12, 0.03, 0.01]} position={[-0.20, 0.36, 0.1]} color="#ff70a6" />
-      <Box args={[0.24, 0.03, 0.01]} position={[0.01, 0.36, 0.1]} color="#ffd166" />
+          Screenshot ratio is wider than monitor,
+          so we preserve the image ratio instead
+          of stretching Emaan's portfolio.
+      ========================================= */}
 
-      {/* Line 2: // Emaan Fatima // Software & AI */}
-      <Box args={[0.62, 0.025, 0.01]} position={[-0.43, 0.28, 0.1]} color="#6272a4" />
+      <mesh
+        position={[
+          0,
+          0,
+          0.105,
+        ]}
+      >
+        <planeGeometry
+          args={[
+            1.68,
+            0.79,
+          ]}
+        />
 
-      {/* Line 3: const dev = async () => { */}
-      <Box args={[0.14, 0.03, 0.01]} position={[-0.67, 0.20, 0.1]} color="#ff70a6" />
-      <Box args={[0.12, 0.03, 0.01]} position={[-0.51, 0.20, 0.1]} color="#7ae582" />
-      <Box args={[0.22, 0.03, 0.01]} position={[-0.31, 0.20, 0.1]} color="#4cc9f0" />
-
-      {/* Line 4:   await learn("AI & 3D Web"); */}
-      <Box args={[0.14, 0.03, 0.01]} position={[-0.60, 0.12, 0.1]} color="#ff70a6" />
-      <Box args={[0.16, 0.03, 0.01]} position={[-0.42, 0.12, 0.1]} color="#4cc9f0" />
-      <Box args={[0.34, 0.03, 0.01]} position={[-0.14, 0.12, 0.1]} color="#ffd166" />
-
-      {/* Line 5:   return createMagic(); */}
-      <Box args={[0.16, 0.03, 0.01]} position={[-0.59, 0.04, 0.1]} color="#ff70a6" />
-      <Box args={[0.28, 0.03, 0.01]} position={[-0.34, 0.04, 0.1]} color="#7ae582" />
-
-      {/* Line 6: }; */}
-      <Box args={[0.06, 0.03, 0.01]} position={[-0.71, -0.04, 0.1]} color="#4cc9f0" />
-
-      {/* Mini Terminal Box at Bottom of Screen */}
-      <Box args={[1.56, 0.28, 0.015]} position={[0, -0.26, 0.098]} color="#0c0d14" />
-      {/* Terminal prompt: >_ */}
-      <Box args={[0.04, 0.04, 0.008]} position={[-0.70, -0.22, 0.108]} color="#7ae582" />
-      <Box args={[0.28, 0.025, 0.008]} position={[-0.52, -0.22, 0.108]} color="#4cc9f0" />
-      {/* Blinking Terminal Cursor */}
-      <mesh ref={cursorRef} position={[-0.35, -0.22, 0.108]}>
-        <boxGeometry args={[0.03, 0.045, 0.008]} />
-        <meshStandardMaterial color="#7ae582" emissive="#7ae582" emissiveIntensity={0.8} transparent />
+        <meshBasicMaterial
+          map={
+            portfolioTexture
+          }
+          toneMapped={
+            false
+          }
+        />
       </mesh>
 
-      {/* Cute Whimsical Stickers on Screen Bezel */}
-      {/* Pink Heart Sticker */}
-      <Box args={[0.06, 0.06, 0.01]} position={[0.82, 0.48, 0.088]} color="#ff70a6" />
-      {/* Code Tag Sticker */}
-      <Box args={[0.12, 0.04, 0.01]} position={[0.78, -0.48, 0.088]} color="#4cc9f0" />
+      {/* =========================================
+          VERY SUBTLE SCREEN GLOW
+      ========================================= */}
 
-      {/* Stand neck */}
-      <Box args={[0.13, 0.42, 0.13]} position={[0, -0.75, 0]} color="#aaaeb7" />
-      {/* Stand base */}
-      <Box args={[0.72, 0.08, 0.42]} position={[0, -0.96, 0]} color="#aaaeb7" />
+      <pointLight
+        position={[
+          0,
+          0,
+          0.4,
+        ]}
+        intensity={0.7}
+        color="#A480F2"
+        distance={2}
+      />
+
+      {/* =========================================
+          MONITOR STAND
+      ========================================= */}
+
+      <Box
+        args={[
+          0.13,
+          0.42,
+          0.13,
+        ]}
+        position={[
+          0,
+          -0.75,
+          0,
+        ]}
+        color="#aaaeb7"
+      />
+
+      <Box
+        args={[
+          0.72,
+          0.08,
+          0.42,
+        ]}
+        position={[
+          0,
+          -0.96,
+          0,
+        ]}
+        color="#aaaeb7"
+      />
     </group>
   );
 }

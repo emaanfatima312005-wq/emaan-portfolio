@@ -8727,22 +8727,172 @@ export function ComputerPortfolio() {
       });
   };
 useEffect(() => {
-  if ("scrollRestoration" in window.history) {
-    window.history.scrollRestoration = "manual";
+  /* =========================================
+     MAKE SURE PORTFOLIO CAN SCROLL
+  ========================================= */
+
+  document.documentElement.style.overflowY =
+    "auto";
+
+  document.documentElement.style.overflowX =
+    "hidden";
+
+  document.body.style.overflowY =
+    "auto";
+
+  document.body.style.overflowX =
+    "hidden";
+
+  document.body.style.height =
+    "auto";
+
+  document.documentElement.style.height =
+    "auto";
+
+  /* =========================================
+     CHECK HOW WE ARRIVED HERE
+  ========================================= */
+
+  const enteredFromRoom =
+    sessionStorage.getItem(
+      "portfolioEnteredFromRoom"
+    ) === "true";
+
+  const navigation =
+    performance.getEntriesByType(
+      "navigation"
+    )[0];
+
+  const wasReload =
+    navigation?.type ===
+    "reload";
+
+  /* =========================================
+     REFRESH PORTFOLIO → GO BACK TO ROOM
+  ========================================= */
+
+  if (
+    wasReload &&
+    !enteredFromRoom
+  ) {
+    window.location.replace(
+      "/"
+    );
+
+    return;
   }
 
-  window.scrollTo({
-    top: 0,
-    left: 0,
-    behavior: "instant",
-  });
+  /* =========================================
+     DISABLE BROWSER SCROLL RESTORATION
+  ========================================= */
 
-  const frame = requestAnimationFrame(() => {
-    window.scrollTo(0, 0);
-  });
+  if (
+    "scrollRestoration" in
+    window.history
+  ) {
+    window.history.scrollRestoration =
+      "manual";
+  }
+
+  let secondFrame;
+
+  const firstFrame =
+    requestAnimationFrame(
+      () => {
+        secondFrame =
+          requestAnimationFrame(
+            () => {
+              /* =================================
+                 ENTERED THROUGH 3D ROOM
+
+                 ALWAYS OPEN INTRO / TOP.
+              ================================= */
+
+              if (
+                enteredFromRoom
+              ) {
+                sessionStorage.removeItem(
+                  "portfolioEnteredFromRoom"
+                );
+
+                /*
+                  Remove any leftover
+                  #projects from the URL.
+                */
+
+                window.history.replaceState(
+                  null,
+                  "",
+                  "/portfolio"
+                );
+
+                window.scrollTo({
+                  top: 0,
+                  left: 0,
+                  behavior:
+                    "instant",
+                });
+
+                return;
+              }
+
+              /* =================================
+                 NORMAL PORTFOLIO NAVIGATION
+
+                 Allow hashes when someone
+                 intentionally visits one.
+              ================================= */
+
+              const sectionId =
+                window.location.hash.replace(
+                  "#",
+                  ""
+                );
+
+              if (sectionId) {
+                const section =
+                  document.getElementById(
+                    sectionId
+                  );
+
+                if (section) {
+                  section.scrollIntoView({
+                    behavior:
+                      "auto",
+
+                    block:
+                      "start",
+                  });
+
+                  return;
+                }
+              }
+
+              /* =================================
+                 DEFAULT → INTRO
+              ================================= */
+
+              window.scrollTo({
+                top: 0,
+                left: 0,
+                behavior:
+                  "instant",
+              });
+            }
+          );
+      }
+    );
 
   return () => {
-    cancelAnimationFrame(frame);
+    cancelAnimationFrame(
+      firstFrame
+    );
+
+    if (secondFrame) {
+      cancelAnimationFrame(
+        secondFrame
+      );
+    }
   };
 }, []);
   return (
@@ -8767,17 +8917,85 @@ useEffect(() => {
         "
       >
         <div className="mx-auto flex max-w-[1500px] items-center justify-between px-6 py-4 lg:px-12">
-          <button
-            onClick={() =>
-              goTo("intro")
-            }
-            className="font-mono text-sm font-semibold tracking-[0.16em]"
-          >
-            EMAAN.DEV
-            <span className="text-[#F78ECF]">
-              _
-            </span>
-          </button>
+        <div className="flex items-center gap-3">
+  {/* BACK TO ROOM */}
+
+  <button
+    type="button"
+    aria-label="Back to room"
+    title="Back to room"
+    onClick={() => {
+      sessionStorage.removeItem(
+        "portfolioEnteredFromRoom"
+      );
+
+      window.location.href =
+        "/";
+    }}
+    className="
+      group
+
+      flex
+      h-8
+      w-8
+
+      items-center
+      justify-center
+
+      rounded-full
+
+      border
+      border-[#D4B0F9]/20
+
+      bg-[#111A36]/45
+
+      font-mono
+      text-base
+
+      text-[#AEB7D5]
+
+      transition-all
+      duration-300
+
+      hover:-translate-x-1
+      hover:border-[#F78ECF]/60
+      hover:bg-[#F78ECF]/10
+      hover:text-[#F78ECF]
+      hover:shadow-[0_0_20px_rgba(247,142,207,.18)]
+    "
+  >
+    <span
+      className="
+        transition-transform
+        duration-300
+
+        group-hover:-translate-x-0.5
+      "
+    >
+      ←
+    </span>
+  </button>
+
+  {/* EMAAN.DEV */}
+
+  <button
+    onClick={() =>
+      goTo("intro")
+    }
+    className="
+      font-mono
+      text-sm
+      font-semibold
+      tracking-[0.16em]
+    "
+  >
+    EMAAN.DEV
+
+    <span className="text-[#F78ECF]">
+      _
+    </span>
+  </button>
+</div>
 
           <nav className="hidden items-center gap-5 lg:flex">
             {navItems.map(
