@@ -3913,43 +3913,6 @@ function ProjectsSection() {
         "/projects/donation-tracker",  
     },
 
-    {
-      id: "lost-found",
-      number: "04",
-      title:
-        "LOST & FOUND",
-
-      subtitle:
-        "Search • Match • Recover",
-
-      category:
-        "JAVA + MYSQL",
-
-      description:
-        "A desktop management system for reporting, searching and recovering lost and found items.",
-
-      detail:
-        "The system manages item records, potential matches, verification and claiming through structured database operations.",
-
-      accent:
-        "#D4B0F9",
-
-      glow:
-        "rgba(212,176,249,.22)",
-
-      stack: [
-        "Java",
-        "MySQL",
-        "OOP",
-        "CRUD",
-      ],
-
-      preview:
-        "lostfound",
-
-      page:
-        "/projects/lost-found",  
-    },
   ];
 
   const active =

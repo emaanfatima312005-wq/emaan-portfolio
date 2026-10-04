@@ -2683,11 +2683,11 @@ body {
 
   font-family: monospace;
 
-  font-size: 10px;
+  font-size: 15px;
 
   letter-spacing: 0.05em;
 
-  color: rgba(34, 34, 34, 0.38);
+  color: rgba(0, 0, 0, 0.38);
 }
 
 .three-scroll-hint span {
@@ -2695,7 +2695,7 @@ body {
 
   color: var(--orange);
 
-  font-size: 18px;
+  font-size: 20px;
 
   animation:
     threeScrollBounce
